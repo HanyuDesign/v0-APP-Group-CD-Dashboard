@@ -82,7 +82,7 @@ export function MarketResults({ result }: MarketResultsProps) {
                   cy="50%"
                   outerRadius={70}
                   label={({ name, value }) => `${name}: ${value}%`}
-                  labelLine={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1 }}
+                  labelLine={{ stroke: '#666666', strokeWidth: 1 }}
                 >
                   {marketShareData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
@@ -90,10 +90,11 @@ export function MarketResults({ result }: MarketResultsProps) {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: 'hsl(var(--card))',
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '6px',
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #e0e0e0',
+                    borderRadius: '4px',
                     fontSize: '12px',
+                    color: '#1a1a1a',
                   }}
                   formatter={(value: number) => [`${value}%`, 'Share']}
                 />
@@ -118,29 +119,29 @@ export function MarketResults({ result }: MarketResultsProps) {
               <BarChart data={capacityChangeData} layout="vertical" margin={{ left: 70 }}>
                 <XAxis 
                   type="number" 
-                  tick={{ fontSize: 10, fill: '#f1f5f9' }}
-                  axisLine={{ stroke: '#64748b' }}
-                  tickLine={{ stroke: '#64748b' }}
+                  tick={{ fontSize: 10, fill: '#1a1a1a' }}
+                  axisLine={{ stroke: '#666666' }}
+                  tickLine={{ stroke: '#666666' }}
                   domain={['dataMin', 'dataMax']}
                 />
                 <YAxis
                   type="category"
                   dataKey="name"
-                  tick={{ fontSize: 10, fill: '#f1f5f9' }}
+                  tick={{ fontSize: 10, fill: '#1a1a1a' }}
                   width={65}
-                  axisLine={{ stroke: '#64748b' }}
-                  tickLine={{ stroke: '#64748b' }}
+                  axisLine={{ stroke: '#666666' }}
+                  tickLine={{ stroke: '#666666' }}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#1e293b',
-                    border: '1px solid #334155',
-                    borderRadius: '6px',
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #e0e0e0',
+                    borderRadius: '4px',
                     fontSize: '12px',
-                    color: '#f1f5f9',
+                    color: '#1a1a1a',
                   }}
-                  labelStyle={{ color: '#f1f5f9' }}
-                  itemStyle={{ color: '#f1f5f9' }}
+                  labelStyle={{ color: '#1a1a1a' }}
+                  itemStyle={{ color: '#1a1a1a' }}
                   formatter={(value: number) => [
                     `${value > 0 ? '+' : ''}${value} kt`,
                     'Change'

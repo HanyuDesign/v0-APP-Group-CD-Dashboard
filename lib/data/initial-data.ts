@@ -6,7 +6,7 @@ import type {
   DownstreamSettings,
 } from '@/lib/types/war-game'
 
-// Player data with distinct, vibrant colors for dark mode readability
+// Player data with Bain-style colors (red primary, professional palette)
 export const PLAYERS: Player[] = [
   {
     id: 'app-china',
@@ -15,7 +15,7 @@ export const PLAYERS: Player[] = [
     type: 'app',
     region: 'china',
     isAIDriven: false,
-    color: '#3b82f6', // Blue - APP primary
+    color: '#cc0000', // Bain Red - APP primary
     pulpCapacity: 350,
     paperCapacity: 200,
     boardCapacity: 280,
@@ -28,7 +28,7 @@ export const PLAYERS: Player[] = [
     type: 'app',
     region: 'indonesia',
     isAIDriven: false,
-    color: '#60a5fa', // Light blue - APP secondary
+    color: '#e63946', // Lighter red - APP secondary
     pulpCapacity: 800,
     paperCapacity: 150,
     boardCapacity: 200,
@@ -41,7 +41,7 @@ export const PLAYERS: Player[] = [
     type: 'competitor',
     region: 'china',
     isAIDriven: true,
-    color: '#f59e0b', // Amber
+    color: '#1d4e89', // Navy blue
     pulpCapacity: 180,
     paperCapacity: 250,
     boardCapacity: 150,
@@ -54,7 +54,7 @@ export const PLAYERS: Player[] = [
     type: 'competitor',
     region: 'china',
     isAIDriven: true,
-    color: '#ef4444', // Red
+    color: '#2a9d8f', // Teal
     pulpCapacity: 120,
     paperCapacity: 180,
     boardCapacity: 100,
@@ -67,7 +67,7 @@ export const PLAYERS: Player[] = [
     type: 'competitor',
     region: 'china',
     isAIDriven: true,
-    color: '#a855f7', // Purple
+    color: '#e9c46a', // Gold/Amber
     pulpCapacity: 80,
     paperCapacity: 60,
     boardCapacity: 80,
@@ -80,7 +80,7 @@ export const PLAYERS: Player[] = [
     type: 'competitor',
     region: 'china',
     isAIDriven: true,
-    color: '#6b7280', // Gray
+    color: '#6c757d', // Gray
     pulpCapacity: 150,
     paperCapacity: 200,
     boardCapacity: 120,
@@ -93,7 +93,7 @@ export const PLAYERS: Player[] = [
     type: 'exporter',
     region: 'latam',
     isAIDriven: true,
-    color: '#22c55e', // Green
+    color: '#264653', // Dark teal
     pulpCapacity: 1100,
     paperCapacity: 0,
     boardCapacity: 0,
@@ -106,7 +106,7 @@ export const PLAYERS: Player[] = [
     type: 'exporter',
     region: 'indonesia',
     isAIDriven: true,
-    color: '#14b8a6', // Teal
+    color: '#f4a261', // Orange
     pulpCapacity: 280,
     paperCapacity: 0,
     boardCapacity: 0,
@@ -119,7 +119,7 @@ export const PLAYERS: Player[] = [
     type: 'competitor',
     region: 'china',
     isAIDriven: true,
-    color: '#ec4899', // Pink
+    color: '#7b2d8e', // Purple
     pulpCapacity: 0,
     paperCapacity: 0,
     boardCapacity: 0,

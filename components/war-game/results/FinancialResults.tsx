@@ -135,15 +135,22 @@ function SystemPLCard({ systemPL }: { systemPL: APPSystemPL }) {
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis 
               dataKey="name" 
-              tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+              tick={{ fontSize: 11, fill: '#1a1a1a' }}
+              axisLine={{ stroke: '#666666' }}
+              tickLine={{ stroke: '#666666' }}
             />
-            <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
+            <YAxis 
+              tick={{ fontSize: 10, fill: '#1a1a1a' }} 
+              axisLine={{ stroke: '#666666' }}
+              tickLine={{ stroke: '#666666' }}
+            />
             <Tooltip
               contentStyle={{
-                backgroundColor: 'hsl(var(--card))',
-                border: '1px solid hsl(var(--border))',
-                borderRadius: '6px',
+                backgroundColor: '#ffffff',
+                border: '1px solid #e0e0e0',
+                borderRadius: '4px',
                 fontSize: '12px',
+                color: '#1a1a1a',
               }}
             />
             <Legend wrapperStyle={{ fontSize: '11px' }} />
@@ -216,20 +223,25 @@ export function FinancialResults({ result }: FinancialResultsProps) {
               <BarChart data={ebitdaData} layout="vertical" margin={{ left: 70 }}>
                 <XAxis 
                   type="number" 
-                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                  tick={{ fontSize: 10, fill: '#1a1a1a' }}
+                  axisLine={{ stroke: '#666666' }}
+                  tickLine={{ stroke: '#666666' }}
                 />
                 <YAxis
                   type="category"
                   dataKey="name"
-                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                  tick={{ fontSize: 10, fill: '#1a1a1a' }}
                   width={65}
+                  axisLine={{ stroke: '#666666' }}
+                  tickLine={{ stroke: '#666666' }}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: 'hsl(var(--card))',
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '6px',
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #e0e0e0',
+                    borderRadius: '4px',
                     fontSize: '12px',
+                    color: '#1a1a1a',
                   }}
                   formatter={(value: number, name: string, props: { payload: { margin: number } }) => [
                     `${value} (Margin: ${props.payload.margin}%)`,
