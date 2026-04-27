@@ -87,7 +87,12 @@ export function ForestryModule({
                   </span>
                 )}
                 {woodchipPrice && (
-                  <span className="text-sm font-semibold text-foreground">
+                  <span className={cn(
+                    'text-sm font-semibold',
+                    woodchipPrice === 'low' && 'text-success',
+                    woodchipPrice === 'medium' && 'text-warning',
+                    woodchipPrice === 'high' && 'text-destructive'
+                  )}>
                     Price: {POLICY_LABELS.priceLevel[woodchipPrice]}
                   </span>
                 )}
