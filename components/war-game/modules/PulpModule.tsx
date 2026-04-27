@@ -31,26 +31,34 @@ interface PulpModuleProps {
 }
 
 export function PulpModule({ settings, onChange, competitorChanges }: PulpModuleProps) {
-  const chinaPlayers = PLAYERS.filter(p => p.region === 'china' || p.type === 'exporter')
+  // Get APP players first, then China-based competitors and exporters
+  const appPlayers = PLAYERS.filter(p => p.type === 'app')
+  const otherPlayers = PLAYERS.filter(p => 
+    p.type !== 'app' && (p.region === 'china' || p.type === 'exporter')
+  )
+  const allPlayers = [...appPlayers, ...otherPlayers]
   
-  // Prepare capacity data for chart
-  const capacityData = chinaPlayers.map(player => {
+  // Prepare capacity data for chart - APP at top
+  const capacityData = allPlayers.map(player => {
     const change = competitorChanges?.find(c => c.playerId === player.id)
     let capacity = player.pulpCapacity
+    let capacityChange = 0
     
     if (player.id === 'app-china') {
-      capacity += settings.guangxi.pulpCapacity + settings.jiangsuFujian.pulpCapacity
+      capacityChange = settings.guangxi.pulpCapacity + settings.jiangsuFujian.pulpCapacity
+      capacity += capacityChange
     } else if (change) {
-      capacity += change.pulpChange
+      capacityChange = change.pulpChange
+      capacity += capacityChange
     }
     
     return {
       name: player.nameCn,
       capacity,
+      isAPP: player.type === 'app',
       isAIDriven: player.isAIDriven,
       color: player.color,
-      change: change?.pulpChange || (player.id === 'app-china' ? 
-        settings.guangxi.pulpCapacity + settings.jiangsuFujian.pulpCapacity : 0),
+      change: capacityChange,
     }
   })
 
@@ -74,7 +82,7 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
         {/* Capacity chart */}
         <div className="rounded-lg bg-secondary/30 p-3">
           <p className="mb-2 text-xs font-medium text-muted-foreground">Capacity Distribution (kt/year)</p>
-          <ResponsiveContainer width="100%" height={140}>
+          <ResponsiveContainer width="100%" height={180}>
             <BarChart data={capacityData} layout="vertical" margin={{ left: 60, right: 10 }}>
               <XAxis 
                 type="number" 
