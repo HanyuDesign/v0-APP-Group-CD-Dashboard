@@ -11,9 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { cn } from '@/lib/utils'
 import { Factory, Package } from 'lucide-react'
-import { AIBadge } from '../shared/AIBadge'
 import type { APPCapacitySettings, PlayerCapacityChange } from '@/lib/types/war-game'
 import { PLAYERS, CAPACITY_RANGE, YEAR_OPTIONS } from '@/lib/data/initial-data'
 import {
@@ -258,43 +256,9 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
           </div>
         </div>
 
-        {/* Competitors (AI-driven) */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-muted-foreground">Competitor Response</span>
-            <AIBadge />
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            {PLAYERS.filter(p => p.isAIDriven && p.type !== 'exporter').map(player => {
-              const change = competitorChanges?.find(c => c.playerId === player.id)
-              return (
-                <div
-                  key={player.id}
-                  className={cn(
-                    'rounded-lg border border-border/50 bg-card/30 p-2 text-xs',
-                    change?.action === 'delay' && 'border-warning/50',
-                    change?.action === 'add' && 'border-success/50'
-                  )}
-                >
-                  <div className="flex items-center gap-1.5">
-                    <span
-                      className="h-2 w-2 rounded-full"
-                      style={{ backgroundColor: player.color }}
-                    />
-                    <span className="font-medium">{player.nameCn}</span>
-                  </div>
-                  {change && (
-                    <p className={cn(
-                      'mt-1',
-                      change.pulpChange > 0 ? 'text-success' : 'text-destructive'
-                    )}>
-                      {change.pulpChange > 0 ? '+' : ''}{change.pulpChange} kt
-                    </p>
-                  )}
-                </div>
-              )
-            })}
-          </div>
+        {/* Note about AI-driven competitors */}
+        <div className="rounded-lg bg-secondary/30 p-2 text-xs text-muted-foreground">
+          <p>Competitor capacity decisions are simulated by AI and shown in Results below.</p>
         </div>
       </CardContent>
     </Card>

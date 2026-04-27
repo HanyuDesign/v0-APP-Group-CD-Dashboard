@@ -10,8 +10,9 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
-import { BarChart3, PieChart } from 'lucide-react'
+import { BarChart3, PieChart, FileText, Package, Bath } from 'lucide-react'
 import { AIBadge } from '../shared/AIBadge'
+import { TrafficLight } from '../shared/TrafficLight'
 import type { SimulationResult } from '@/lib/types/war-game'
 import { PLAYERS } from '@/lib/data/initial-data'
 import {
@@ -31,7 +32,20 @@ interface MarketResultsProps {
 }
 
 export function MarketResults({ result }: MarketResultsProps) {
-  const { playerMarketOutcomes, exporterAllocations, competitorChanges } = result
+  const { playerMarketOutcomes, exporterAllocations, competitorChanges, segmentOutcomes } = result
+
+  // Segment icons mapping
+  const segmentIcons: Record<string, React.ReactNode> = {
+    paper: <FileText className="h-4 w-4 text-muted-foreground" />,
+    board: <Package className="h-4 w-4 text-chart-3" />,
+    tissue: <Bath className="h-4 w-4 text-chart-2" />,
+  }
+
+  const segmentLabels: Record<string, string> = {
+    paper: 'Paper',
+    board: 'Packaging / Board',
+    tissue: 'Tissue',
+  }
 
   // Prepare market share pie chart data
   const marketShareData = playerMarketOutcomes
@@ -218,6 +232,90 @@ export function MarketResults({ result }: MarketResultsProps) {
               })}
             </TableBody>
           </Table>
+        </CardContent>
+      </Card>
+
+      {/* Downstream Segment Outcomes */}
+      <Card className="border-border/50 bg-card/80">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm">Downstream Segment Outcomes</CardTitle>
+            <AIBadge size="sm" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-3 gap-4">
+            {segmentOutcomes.map(outcome => (
+              <div
+                key={outcome.segment}
+                className="rounded-lg border border-border/50 bg-card/50 p-3"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  {segmentIcons[outcome.segment]}
+                  <span className="font-medium">{segmentLabels[outcome.segment]}</span>
+                </div>
+                
+                {/* Supply-demand balance */}
+                <div className="space-y-1 mb-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">Supply-Demand</span>
+                    <span className={cn(
+                      'font-mono',
+                      outcome.supplyDemandBalance > 50 && 'text-destructive',
+                      outcome.supplyDemandBalance < -20 && 'text-success',
+                      Math.abs(outcome.supplyDemandBalance) <= 50 && 'text-warning'
+                    )}>
+                      {outcome.supplyDemandBalance > 0 ? 'Surplus ' : 'Shortage '}
+                      {Math.abs(Math.round(outcome.supplyDemandBalance))} kt
+                    </span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-secondary">
+                    <div
+                      className={cn(
+                        'h-full rounded-full transition-all',
+                        outcome.supplyDemandBalance > 50 && 'bg-destructive',
+                        outcome.supplyDemandBalance < -20 && 'bg-success',
+                        Math.abs(outcome.supplyDemandBalance) <= 50 && 'bg-warning'
+                      )}
+                      style={{
+                        width: `${Math.min(100, Math.max(10, 50 + outcome.supplyDemandBalance / 3))}%`
+                      }}
+                    />
+                  </div>
+                </div>
+                
+                {/* Utilization */}
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-muted-foreground">Utilization</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs">
+                      {Math.round(outcome.utilization)}%
+                    </span>
+                    <TrafficLight
+                      status={
+                        outcome.utilization >= 90 ? 'green' :
+                        outcome.utilization >= 80 ? 'amber' : 'red'
+                      }
+                    />
+                  </div>
+                </div>
+                
+                {/* Margin pressure */}
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Margin Pressure</span>
+                  <span className={cn(
+                    'text-xs font-medium',
+                    outcome.marginPressure === 'high' && 'text-success',
+                    outcome.marginPressure === 'medium' && 'text-warning',
+                    outcome.marginPressure === 'low' && 'text-destructive'
+                  )}>
+                    {outcome.marginPressure === 'high' ? 'Low' : 
+                     outcome.marginPressure === 'medium' ? 'Medium' : 'High'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
         </CardContent>
       </Card>
 

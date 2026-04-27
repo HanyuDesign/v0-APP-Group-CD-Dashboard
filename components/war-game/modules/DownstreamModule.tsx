@@ -8,17 +8,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { cn } from '@/lib/utils'
 import { FileText, Package, Bath, TrendingDown, TrendingUp, Minus } from 'lucide-react'
-import { TrafficLight } from '../shared/TrafficLight'
-import { AIBadge } from '../shared/AIBadge'
-import type { DownstreamSettings, DemandScenario, SegmentOutcome } from '@/lib/types/war-game'
+import type { DownstreamSettings, DemandScenario } from '@/lib/types/war-game'
 import { POLICY_LABELS } from '@/lib/data/initial-data'
 
 interface DownstreamModuleProps {
   settings: DownstreamSettings
   onChange: (settings: DownstreamSettings) => void
-  segmentOutcomes?: SegmentOutcome[]
 }
 
 const demandOptions: DemandScenario[] = ['low', 'base', 'high']
@@ -38,10 +34,9 @@ function SegmentCard({
   icon,
   demandValue,
   onDemandChange,
-  outcome,
   description,
   trend,
-}: SegmentCardProps) {
+}: Omit<SegmentCardProps, 'outcome'>) {
   return (
     <div className="rounded-lg border border-border/50 bg-card/50 p-3">
       <div className="flex items-center justify-between">
@@ -56,7 +51,7 @@ function SegmentCard({
       
       <p className="mt-1 text-xs text-muted-foreground">{description}</p>
       
-      <div className="mt-3 space-y-2">
+      <div className="mt-3">
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground">Demand Scenario</span>
           <Select
@@ -75,69 +70,6 @@ function SegmentCard({
             </SelectContent>
           </Select>
         </div>
-        
-        {outcome && (
-          <>
-            {/* Supply-demand balance */}
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">Supply-Demand Balance</span>
-                <span className={cn(
-                  'font-mono',
-                  outcome.supplyDemandBalance > 50 && 'text-destructive',
-                  outcome.supplyDemandBalance < -20 && 'text-success',
-                  Math.abs(outcome.supplyDemandBalance) <= 50 && 'text-warning'
-                )}>
-                  {outcome.supplyDemandBalance > 0 ? 'Surplus ' : 'Shortage '}
-                  {Math.abs(Math.round(outcome.supplyDemandBalance))} kt
-                </span>
-              </div>
-              <div className="h-1.5 rounded-full bg-secondary">
-                <div
-                  className={cn(
-                    'h-full rounded-full transition-all',
-                    outcome.supplyDemandBalance > 50 && 'bg-destructive',
-                    outcome.supplyDemandBalance < -20 && 'bg-success',
-                    Math.abs(outcome.supplyDemandBalance) <= 50 && 'bg-warning'
-                  )}
-                  style={{
-                    width: `${Math.min(100, Math.max(10, 50 + outcome.supplyDemandBalance / 3))}%`
-                  }}
-                />
-              </div>
-            </div>
-            
-            {/* Utilization */}
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">Utilization</span>
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-xs">
-                  {Math.round(outcome.utilization)}%
-                </span>
-                <TrafficLight
-                  status={
-                    outcome.utilization >= 90 ? 'green' :
-                    outcome.utilization >= 80 ? 'amber' : 'red'
-                  }
-                />
-              </div>
-            </div>
-            
-            {/* Margin pressure */}
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">Margin Pressure</span>
-              <span className={cn(
-                'text-xs font-medium',
-                outcome.marginPressure === 'high' && 'text-success',
-                outcome.marginPressure === 'medium' && 'text-warning',
-                outcome.marginPressure === 'low' && 'text-destructive'
-              )}>
-                {outcome.marginPressure === 'high' ? 'Low' : 
-                 outcome.marginPressure === 'medium' ? 'Medium' : 'High'}
-              </span>
-            </div>
-          </>
-        )}
       </div>
     </div>
   )
@@ -146,22 +78,14 @@ function SegmentCard({
 export function DownstreamModule({
   settings,
   onChange,
-  segmentOutcomes,
 }: DownstreamModuleProps) {
-  const paperOutcome = segmentOutcomes?.find(s => s.segment === 'paper')
-  const boardOutcome = segmentOutcomes?.find(s => s.segment === 'board')
-  const tissueOutcome = segmentOutcomes?.find(s => s.segment === 'tissue')
-
   return (
     <Card className="h-full border-border/50 bg-card/80">
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Package className="h-5 w-5 text-chart-3" />
-            Downstream Markets
-          </CardTitle>
-          <AIBadge size="md" />
-        </div>
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Package className="h-5 w-5 text-chart-3" />
+          Downstream Markets
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {/* Paper */}
@@ -170,7 +94,6 @@ export function DownstreamModule({
           icon={<FileText className="h-4 w-4 text-muted-foreground" />}
           demandValue={settings.paperDemand}
           onDemandChange={(v) => onChange({ ...settings, paperDemand: v })}
-          outcome={paperOutcome}
           description="Shrinking market, ongoing closures"
           trend="shrinking"
         />
@@ -181,7 +104,6 @@ export function DownstreamModule({
           icon={<Package className="h-4 w-4 text-chart-3" />}
           demandValue={settings.boardDemand}
           onDemandChange={(v) => onChange({ ...settings, boardDemand: v })}
-          outcome={boardOutcome}
           description="E-commerce driven growth"
           trend="growing"
         />
@@ -192,17 +114,13 @@ export function DownstreamModule({
           icon={<Bath className="h-4 w-4 text-chart-2" />}
           demandValue={settings.tissueDemand}
           onDemandChange={(v) => onChange({ ...settings, tissueDemand: v })}
-          outcome={tissueOutcome}
           description="Consumer upgrade driven"
           trend="growing"
         />
         
-        {/* Competitor response note */}
+        {/* Note about AI-driven outputs */}
         <div className="rounded-lg bg-secondary/30 p-2 text-xs text-muted-foreground">
-          <p className="flex items-center gap-1">
-            <AIBadge size="sm" />
-            <span>Competitor downstream capacity adjusted by AI based on market economics and APP moves</span>
-          </p>
+          <p>Segment outcomes and competitor responses shown in Results below.</p>
         </div>
       </CardContent>
     </Card>

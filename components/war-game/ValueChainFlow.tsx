@@ -73,7 +73,6 @@ export function ValueChainFlow({ input, onInputChange, result }: ValueChainFlowP
         <DownstreamModule
           settings={input.downstream}
           onChange={handleDownstreamChange}
-          segmentOutcomes={result?.segmentOutcomes}
         />
       </div>
     </div>
