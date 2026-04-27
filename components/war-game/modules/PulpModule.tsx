@@ -87,10 +87,18 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'hsl(var(--card))',
-                  border: '1px solid hsl(var(--border))',
+                  backgroundColor: '#1e293b',
+                  border: '1px solid #334155',
                   borderRadius: '6px',
                   fontSize: '12px',
+                  color: '#f1f5f9',
+                }}
+                labelStyle={{
+                  color: '#f1f5f9',
+                  fontWeight: 500,
+                }}
+                itemStyle={{
+                  color: '#f1f5f9',
                 }}
                 formatter={(value: number, name: string, props: { payload: { change: number } }) => {
                   const change = props.payload.change
