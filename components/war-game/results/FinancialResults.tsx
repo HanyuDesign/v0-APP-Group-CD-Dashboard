@@ -145,8 +145,8 @@ function SystemPLCard({ systemPL }: { systemPL: APPSystemPL }) {
               }}
             />
             <Legend wrapperStyle={{ fontSize: '11px' }} />
-            <Bar dataKey="Pulp" stackId="a" fill="hsl(var(--chart-1))" radius={[0, 0, 0, 0]} />
-            <Bar dataKey="Downstream" stackId="a" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="Pulp" stackId="a" fill="#1d4e89" radius={[0, 0, 0, 0]} name="Pulp" />
+            <Bar dataKey="Downstream" stackId="a" fill="#2a9d8f" radius={[4, 4, 0, 0]} name="Downstream" />
           </BarChart>
         </ResponsiveContainer>
 
