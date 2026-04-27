@@ -115,25 +115,32 @@ export function MarketResults({ result }: MarketResultsProps) {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={capacityChangeData} layout="vertical" margin={{ left: 60 }}>
+              <BarChart data={capacityChangeData} layout="vertical" margin={{ left: 70 }}>
                 <XAxis 
                   type="number" 
-                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                  tick={{ fontSize: 10, fill: '#f1f5f9' }}
+                  axisLine={{ stroke: '#64748b' }}
+                  tickLine={{ stroke: '#64748b' }}
                   domain={['dataMin', 'dataMax']}
                 />
                 <YAxis
                   type="category"
                   dataKey="name"
-                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
-                  width={55}
+                  tick={{ fontSize: 10, fill: '#f1f5f9' }}
+                  width={65}
+                  axisLine={{ stroke: '#64748b' }}
+                  tickLine={{ stroke: '#64748b' }}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: 'hsl(var(--card))',
-                    border: '1px solid hsl(var(--border))',
+                    backgroundColor: '#1e293b',
+                    border: '1px solid #334155',
                     borderRadius: '6px',
                     fontSize: '12px',
+                    color: '#f1f5f9',
                   }}
+                  labelStyle={{ color: '#f1f5f9' }}
+                  itemStyle={{ color: '#f1f5f9' }}
                   formatter={(value: number) => [
                     `${value > 0 ? '+' : ''}${value} kt`,
                     'Change'
@@ -143,7 +150,7 @@ export function MarketResults({ result }: MarketResultsProps) {
                   {capacityChangeData.map((entry, index) => (
                     <Cell 
                       key={`cell-${index}`} 
-                      fill={entry.change > 0 ? 'hsl(var(--success))' : 'hsl(var(--destructive))'} 
+                      fill={entry.color} 
                     />
                   ))}
                 </Bar>
