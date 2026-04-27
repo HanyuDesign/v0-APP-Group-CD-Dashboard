@@ -32,25 +32,24 @@ interface FinancialResultsProps {
   result: SimulationResult
 }
 
-// IRR card component
+// IRR card component with Bain-style colors
 function IRRCard({ project }: { project: ProjectIRR }) {
+  // Bain-style colors for IRR status
+  const statusColors = {
+    green: { stroke: '#2e7d32', fill: 'rgba(46, 125, 50, 0.15)', border: 'border-[#2e7d32]/40', text: 'text-[#2e7d32]' },
+    amber: { stroke: '#ed6c02', fill: 'rgba(237, 108, 2, 0.15)', border: 'border-[#ed6c02]/40', text: 'text-[#ed6c02]' },
+    red: { stroke: '#cc0000', fill: 'rgba(204, 0, 0, 0.15)', border: 'border-[#cc0000]/40', text: 'text-[#cc0000]' },
+  }
+  const colors = statusColors[project.status]
+
   return (
-    <Card className={cn(
-      'border-border/50 bg-card/80',
-      project.status === 'green' && 'border-success/30',
-      project.status === 'amber' && 'border-warning/30',
-      project.status === 'red' && 'border-destructive/30'
-    )}>
+    <Card className={cn('bg-card/80', colors.border)}>
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium">{project.projectName}</p>
             <p className="mt-1 text-2xl font-bold">
-              <span className={cn(
-                project.status === 'green' && 'text-success',
-                project.status === 'amber' && 'text-warning',
-                project.status === 'red' && 'text-destructive'
-              )}>
+              <span className={colors.text}>
                 {project.irr}%
               </span>
               <span className="ml-2 text-sm font-normal text-muted-foreground">IRR</span>
@@ -74,17 +73,9 @@ function IRRCard({ project }: { project: ProjectIRR }) {
               <Area
                 type="monotone"
                 dataKey="value"
-                stroke={
-                  project.status === 'green' ? 'hsl(var(--success))' :
-                  project.status === 'amber' ? 'hsl(var(--warning))' :
-                  'hsl(var(--destructive))'
-                }
-                fill={
-                  project.status === 'green' ? 'hsl(var(--success) / 0.2)' :
-                  project.status === 'amber' ? 'hsl(var(--warning) / 0.2)' :
-                  'hsl(var(--destructive) / 0.2)'
-                }
-                strokeWidth={1.5}
+                stroke={colors.stroke}
+                fill={colors.fill}
+                strokeWidth={2}
               />
             </AreaChart>
           </ResponsiveContainer>
