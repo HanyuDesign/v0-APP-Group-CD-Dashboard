@@ -72,13 +72,13 @@ export function ForestryModule({
               <ArrowRight className="h-4 w-4 text-muted-foreground rotate-90" />
             </div>
             
-            {/* Woodchip pool */}
-            <div className="rounded-lg border-2 border-primary/50 bg-primary/10 p-2.5 text-center">
-              <p className="text-xs font-semibold text-primary">China Woodchip Pool</p>
-              <div className="mt-1 flex items-center justify-center gap-3">
+            {/* Woodchip pool - Simulation Result */}
+            <div className="rounded-lg border-2 border-primary/50 bg-primary/10 p-3 text-center">
+              <p className="text-sm font-bold text-primary">China Woodchip Pool</p>
+              <div className="mt-2 flex flex-col items-center gap-1">
                 {woodchipAvailability && (
                   <span className={cn(
-                    'text-[10px] font-medium',
+                    'text-base font-bold',
                     woodchipAvailability === 'high' && 'text-success',
                     woodchipAvailability === 'medium' && 'text-warning',
                     woodchipAvailability === 'low' && 'text-destructive'
@@ -87,7 +87,7 @@ export function ForestryModule({
                   </span>
                 )}
                 {woodchipPrice && (
-                  <span className="text-[10px] text-muted-foreground">
+                  <span className="text-sm font-semibold text-foreground">
                     Price: {POLICY_LABELS.priceLevel[woodchipPrice]}
                   </span>
                 )}
