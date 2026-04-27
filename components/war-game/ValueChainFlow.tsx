@@ -32,9 +32,9 @@ export function ValueChainFlow({ input, onInputChange, result }: ValueChainFlowP
   }
 
   return (
-    <div className="flex items-stretch gap-4">
-      {/* Forestry & Woodchips */}
-      <div className="w-[320px] flex-shrink-0">
+    <div className="flex items-stretch gap-3">
+      {/* Forestry & Woodchips - 2 parts */}
+      <div className="flex-[2] min-w-0">
         <ForestryModule
           settings={input.forestry}
           onChange={handleForestryChange}
@@ -46,13 +46,13 @@ export function ValueChainFlow({ input, onInputChange, result }: ValueChainFlowP
       {/* Arrow */}
       <div className="flex flex-shrink-0 items-center">
         <div className="flex flex-col items-center gap-1">
-          <ArrowRight className="h-6 w-6 text-muted-foreground" />
-          <span className="text-[10px] text-muted-foreground">Woodchip Supply</span>
+          <ArrowRight className="h-5 w-5 text-muted-foreground" />
+          <span className="text-[9px] text-muted-foreground whitespace-nowrap">Woodchip</span>
         </div>
       </div>
 
-      {/* Pulp Capacity */}
-      <div className="min-w-[380px] flex-1">
+      {/* Pulp Capacity - 3 parts */}
+      <div className="flex-[3] min-w-0">
         <PulpModule
           settings={input.appCapacity}
           onChange={handleAppCapacityChange}
@@ -63,13 +63,13 @@ export function ValueChainFlow({ input, onInputChange, result }: ValueChainFlowP
       {/* Arrow */}
       <div className="flex flex-shrink-0 items-center">
         <div className="flex flex-col items-center gap-1">
-          <ArrowRight className="h-6 w-6 text-muted-foreground" />
-          <span className="text-[10px] text-muted-foreground">Pulp Supply</span>
+          <ArrowRight className="h-5 w-5 text-muted-foreground" />
+          <span className="text-[9px] text-muted-foreground whitespace-nowrap">Pulp</span>
         </div>
       </div>
 
-      {/* Downstream Markets */}
-      <div className="w-[300px] flex-shrink-0">
+      {/* Downstream Markets - 2 parts */}
+      <div className="flex-[2] min-w-0">
         <DownstreamModule
           settings={input.downstream}
           onChange={handleDownstreamChange}
