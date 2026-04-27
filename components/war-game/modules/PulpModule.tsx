@@ -265,10 +265,7 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
           </div>
         </div>
 
-        {/* Note about AI-driven competitors */}
-        <div className="rounded-lg bg-secondary/30 p-2 text-xs text-muted-foreground">
-          <p>Competitor capacity decisions are simulated by AI and shown in Results below.</p>
-        </div>
+
       </CardContent>
     </Card>
   )

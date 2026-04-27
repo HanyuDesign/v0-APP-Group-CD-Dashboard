@@ -118,10 +118,7 @@ export function DownstreamModule({
           trend="growing"
         />
         
-        {/* Note about AI-driven outputs */}
-        <div className="rounded-lg bg-secondary/30 p-2 text-xs text-muted-foreground">
-          <p>Segment outcomes and competitor responses shown in Results below.</p>
-        </div>
+
       </CardContent>
     </Card>
   )
