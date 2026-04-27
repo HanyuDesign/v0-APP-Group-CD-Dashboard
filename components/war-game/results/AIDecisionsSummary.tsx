@@ -110,84 +110,84 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
         </div>
       </div>
 
-      {/* AI Insights Overview - High-tech dark blue theme */}
-      <Card className="border-[#1e3a5f] bg-gradient-to-br from-[#0a1929] via-[#0d2137] to-[#1a365d] text-white shadow-lg shadow-blue-900/20">
+      {/* AI Insights Overview - High-tech light purple theme */}
+      <Card className="border-purple-300 bg-gradient-to-br from-purple-50 via-violet-50 to-indigo-50 shadow-lg shadow-purple-200/50">
         <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-sm text-cyan-300">
-            <Lightbulb className="h-4 w-4 text-cyan-400" />
+          <CardTitle className="flex items-center gap-2 text-sm text-purple-700">
+            <Lightbulb className="h-4 w-4 text-purple-600" />
             AI Strategic Insights
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-4 gap-4 mb-4">
             {/* APP Strategy Summary */}
-            <div className="rounded-lg bg-cyan-500/20 border border-cyan-500/30 p-3">
-              <p className="text-xs text-cyan-200/70 mb-1">APP Expansion</p>
-              <p className="text-lg font-bold text-cyan-300">+{appChinaPulpAdd} kt</p>
-              <p className="text-[10px] text-cyan-200/60">Pulp capacity</p>
+            <div className="rounded-lg bg-purple-100 border border-purple-200 p-3">
+              <p className="text-xs text-purple-600 mb-1">APP Expansion</p>
+              <p className="text-xl font-bold text-purple-700">+{appChinaPulpAdd} kt</p>
+              <p className="text-xs text-purple-500">Pulp capacity</p>
             </div>
             
             {/* Competitor Response Summary */}
-            <div className="rounded-lg bg-white/5 border border-white/10 p-3">
-              <p className="text-xs text-blue-200/70 mb-1">Competitor Response</p>
+            <div className="rounded-lg bg-white/80 border border-purple-200 p-3">
+              <p className="text-xs text-purple-600 mb-1">Competitor Response</p>
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1">
-                  <TrendingUp className="h-3 w-3 text-emerald-400" />
-                  <span className="text-sm font-semibold text-white">{competitorsExpanding}</span>
+                  <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
+                  <span className="text-xl font-bold text-gray-800">{competitorsExpanding}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Minus className="h-3 w-3 text-gray-400" />
-                  <span className="text-sm font-semibold text-white">{competitorsMaintaining}</span>
+                  <Minus className="h-3.5 w-3.5 text-gray-400" />
+                  <span className="text-xl font-bold text-gray-800">{competitorsMaintaining}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <TrendingDown className="h-3 w-3 text-amber-400" />
-                  <span className="text-sm font-semibold text-white">{competitorsDelaying}</span>
+                  <TrendingDown className="h-3.5 w-3.5 text-amber-500" />
+                  <span className="text-xl font-bold text-gray-800">{competitorsDelaying}</span>
                 </div>
               </div>
-              <p className="text-[10px] text-blue-200/60 mt-1">
+              <p className="text-xs text-purple-500 mt-1">
                 Net: {totalCompetitorPulpChange > 0 ? '+' : ''}{totalCompetitorPulpChange} kt pulp
               </p>
             </div>
             
             {/* Exporter Summary */}
-            <div className="rounded-lg bg-white/5 border border-white/10 p-3">
-              <p className="text-xs text-blue-200/70 mb-1">Exporter China Focus</p>
-              <p className="text-lg font-bold text-white">{Math.round(avgChinaShare * 100)}%</p>
-              <p className="text-[10px] text-blue-200/60">{totalChinaExports} kt to China</p>
+            <div className="rounded-lg bg-white/80 border border-purple-200 p-3">
+              <p className="text-xs text-purple-600 mb-1">Exporter China Focus</p>
+              <p className="text-xl font-bold text-gray-800">{Math.round(avgChinaShare * 100)}%</p>
+              <p className="text-xs text-purple-500">{totalChinaExports} kt to China</p>
             </div>
             
             {/* Market Balance Summary */}
-            <div className="rounded-lg bg-white/5 border border-white/10 p-3">
-              <p className="text-xs text-blue-200/70 mb-1">Downstream Health</p>
-              <div className="flex items-center gap-1">
+            <div className="rounded-lg bg-white/80 border border-purple-200 p-3">
+              <p className="text-xs text-purple-600 mb-1">Downstream Health</p>
+              <div className="flex items-center gap-1.5">
                 {segmentOutcomes.map(s => (
                   <div
                     key={s.segment}
                     className={cn(
-                      'h-4 w-4 rounded-full flex items-center justify-center',
+                      'h-5 w-5 rounded-full flex items-center justify-center',
                       s.utilization >= 90 && 'bg-emerald-500',
                       s.utilization >= 80 && s.utilization < 90 && 'bg-amber-500',
                       s.utilization < 80 && 'bg-red-500'
                     )}
                   >
-                    <span className="text-[8px] text-white font-bold">
+                    <span className="text-[9px] text-white font-bold">
                       {s.segment.charAt(0).toUpperCase()}
                     </span>
                   </div>
                 ))}
               </div>
-              <p className="text-[10px] text-blue-200/60 mt-1">
+              <p className="text-xs text-purple-500 mt-1">
                 Avg util: {Math.round(segmentOutcomes.reduce((s, o) => s + o.utilization, 0) / segmentOutcomes.length)}%
               </p>
             </div>
           </div>
           
           {/* Insight bullets */}
-          <div className="space-y-2 border-t border-white/10 pt-3">
+          <div className="space-y-2 border-t border-purple-200 pt-3">
             {insights.map((insight, index) => (
               <div key={index} className="flex items-start gap-2 text-sm">
-                <span className="text-cyan-400 font-bold mt-0.5">•</span>
-                <p className="text-blue-100">{insight}</p>
+                <span className="text-purple-600 font-bold mt-0.5">•</span>
+                <p className="text-gray-700">{insight}</p>
               </div>
             ))}
           </div>
