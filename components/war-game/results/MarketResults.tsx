@@ -175,6 +175,77 @@ export function MarketResults({ result }: MarketResultsProps) {
         </Card>
       </div>
 
+      {/* Competitor Capacity Decisions - Full List */}
+      <Card className="border-border/50 bg-card/80">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm">Competitor Capacity Decisions (AI Simulation)</CardTitle>
+            <AIBadge size="sm" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-3">
+            {competitorChanges.map(change => {
+              const player = PLAYERS.find(p => p.id === change.playerId)!
+              return (
+                <div
+                  key={change.playerId}
+                  className={cn(
+                    'rounded-lg border p-3',
+                    change.action === 'delay' && 'border-warning/50 bg-warning/5',
+                    change.action === 'add' && 'border-success/50 bg-success/5',
+                    change.action === 'maintain' && 'border-border/50 bg-card/50'
+                  )}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="h-2.5 w-2.5 rounded-full"
+                        style={{ backgroundColor: player.color }}
+                      />
+                      <span className="font-medium">{player.nameCn}</span>
+                    </div>
+                    <span className={cn(
+                      'text-xs font-medium px-2 py-0.5 rounded',
+                      change.action === 'delay' && 'bg-warning/20 text-warning',
+                      change.action === 'add' && 'bg-success/20 text-success',
+                      change.action === 'maintain' && 'bg-muted text-muted-foreground'
+                    )}>
+                      {change.action === 'delay' ? 'Delay' : change.action === 'add' ? 'Expand' : 'Maintain'}
+                    </span>
+                  </div>
+                  <div className="mt-2 space-y-1 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Pulp Change</span>
+                      <span className={cn(
+                        'font-mono',
+                        change.pulpChange > 0 && 'text-success',
+                        change.pulpChange < 0 && 'text-destructive',
+                        change.pulpChange === 0 && 'text-muted-foreground'
+                      )}>
+                        {change.pulpChange > 0 ? '+' : ''}{change.pulpChange} kt
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Downstream Change</span>
+                      <span className={cn(
+                        'font-mono',
+                        change.downstreamChange > 0 && 'text-success',
+                        change.downstreamChange < 0 && 'text-destructive',
+                        change.downstreamChange === 0 && 'text-muted-foreground'
+                      )}>
+                        {change.downstreamChange > 0 ? '+' : ''}{change.downstreamChange} kt
+                      </span>
+                    </div>
+                    <p className="mt-2 text-muted-foreground italic">{change.reasoning}</p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Player market details table */}
       <Card className="border-border/50 bg-card/80">
         <CardHeader className="pb-2">
