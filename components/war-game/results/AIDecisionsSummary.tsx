@@ -159,18 +159,18 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
             {/* Market Balance Summary */}
             <div className="rounded-lg bg-white/80 border border-purple-200 p-3">
               <p className="text-xs text-purple-600 mb-1">Downstream Health</p>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 {segmentOutcomes.map(s => (
                   <div
                     key={s.segment}
                     className={cn(
-                      'h-5 w-5 rounded-full flex items-center justify-center',
+                      'h-7 w-7 rounded-full flex items-center justify-center',
                       s.utilization >= 90 && 'bg-emerald-500',
                       s.utilization >= 80 && s.utilization < 90 && 'bg-amber-500',
                       s.utilization < 80 && 'bg-red-500'
                     )}
                   >
-                    <span className="text-[9px] text-white font-bold">
+                    <span className="text-xl font-bold text-white">
                       {s.segment.charAt(0).toUpperCase()}
                     </span>
                   </div>
