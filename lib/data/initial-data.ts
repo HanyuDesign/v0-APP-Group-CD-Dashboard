@@ -113,9 +113,9 @@ export const PLAYERS: Player[] = [
     tissueCapacity: 50,
   },
   {
-    id: 'others',
-    name: 'Others',
-    nameCn: 'Others',
+    id: 'vinda',
+    name: 'Vinda',
+    nameCn: 'Vinda',
     type: 'competitor',
     region: 'china',
     isAIDriven: true,
