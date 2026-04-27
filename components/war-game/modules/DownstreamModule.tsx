@@ -58,12 +58,12 @@ function SegmentCard({
       
       <div className="mt-3 space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">需求情景</span>
+          <span className="text-xs text-muted-foreground">Demand Scenario</span>
           <Select
             value={demandValue}
             onValueChange={(v) => onDemandChange(v as DemandScenario)}
           >
-            <SelectTrigger className="h-7 w-24 text-xs">
+            <SelectTrigger className="h-7 w-28 text-xs">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -78,18 +78,18 @@ function SegmentCard({
         
         {outcome && (
           <>
-            {/* 供需平衡 */}
+            {/* Supply-demand balance */}
             <div className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">供需平衡</span>
+                <span className="text-muted-foreground">Supply-Demand Balance</span>
                 <span className={cn(
                   'font-mono',
                   outcome.supplyDemandBalance > 50 && 'text-destructive',
                   outcome.supplyDemandBalance < -20 && 'text-success',
                   Math.abs(outcome.supplyDemandBalance) <= 50 && 'text-warning'
                 )}>
-                  {outcome.supplyDemandBalance > 0 ? '过剩 ' : '短缺 '}
-                  {Math.abs(Math.round(outcome.supplyDemandBalance))} 万吨
+                  {outcome.supplyDemandBalance > 0 ? 'Surplus ' : 'Shortage '}
+                  {Math.abs(Math.round(outcome.supplyDemandBalance))} kt
                 </span>
               </div>
               <div className="h-1.5 rounded-full bg-secondary">
@@ -107,9 +107,9 @@ function SegmentCard({
               </div>
             </div>
             
-            {/* 产能利用率 */}
+            {/* Utilization */}
             <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">产能利用率</span>
+              <span className="text-xs text-muted-foreground">Utilization</span>
               <div className="flex items-center gap-2">
                 <span className="font-mono text-xs">
                   {Math.round(outcome.utilization)}%
@@ -123,17 +123,17 @@ function SegmentCard({
               </div>
             </div>
             
-            {/* 利润压力 */}
+            {/* Margin pressure */}
             <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">利润压力</span>
+              <span className="text-xs text-muted-foreground">Margin Pressure</span>
               <span className={cn(
                 'text-xs font-medium',
                 outcome.marginPressure === 'high' && 'text-success',
                 outcome.marginPressure === 'medium' && 'text-warning',
                 outcome.marginPressure === 'low' && 'text-destructive'
               )}>
-                {outcome.marginPressure === 'high' ? '低' : 
-                 outcome.marginPressure === 'medium' ? '中' : '高'}
+                {outcome.marginPressure === 'high' ? 'Low' : 
+                 outcome.marginPressure === 'medium' ? 'Medium' : 'High'}
               </span>
             </div>
           </>
@@ -158,50 +158,50 @@ export function DownstreamModule({
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Package className="h-5 w-5 text-chart-3" />
-            下游市场
+            Downstream Markets
           </CardTitle>
           <AIBadge size="md" />
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
-        {/* 纸张 */}
+        {/* Paper */}
         <SegmentCard
-          title="纸张"
+          title="Paper"
           icon={<FileText className="h-4 w-4 text-muted-foreground" />}
           demandValue={settings.paperDemand}
           onDemandChange={(v) => onChange({ ...settings, paperDemand: v })}
           outcome={paperOutcome}
-          description="收缩市场，持续关停"
+          description="Shrinking market, ongoing closures"
           trend="shrinking"
         />
         
-        {/* 包装纸板 */}
+        {/* Packaging / Cartonboard */}
         <SegmentCard
-          title="包装纸板"
+          title="Packaging / Board"
           icon={<Package className="h-4 w-4 text-chart-3" />}
           demandValue={settings.boardDemand}
           onDemandChange={(v) => onChange({ ...settings, boardDemand: v })}
           outcome={boardOutcome}
-          description="电商驱动增长"
+          description="E-commerce driven growth"
           trend="growing"
         />
         
-        {/* 生活用纸 */}
+        {/* Tissue */}
         <SegmentCard
-          title="生活用纸"
+          title="Tissue"
           icon={<Bath className="h-4 w-4 text-chart-2" />}
           demandValue={settings.tissueDemand}
           onDemandChange={(v) => onChange({ ...settings, tissueDemand: v })}
           outcome={tissueOutcome}
-          description="消费升级带动"
+          description="Consumer upgrade driven"
           trend="growing"
         />
         
-        {/* 竞争对手响应说明 */}
+        {/* Competitor response note */}
         <div className="rounded-lg bg-secondary/30 p-2 text-xs text-muted-foreground">
           <p className="flex items-center gap-1">
             <AIBadge size="sm" />
-            <span>竞争对手下游产能由AI根据市场经济性和APP动作自动调整</span>
+            <span>Competitor downstream capacity adjusted by AI based on market economics and APP moves</span>
           </p>
         </div>
       </CardContent>

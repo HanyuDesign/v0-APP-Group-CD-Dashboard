@@ -33,7 +33,7 @@ export function ValueChainFlow({ input, onInputChange, result }: ValueChainFlowP
 
   return (
     <div className="flex items-stretch gap-4">
-      {/* 林业与木片 */}
+      {/* Forestry & Woodchips */}
       <div className="w-[320px] flex-shrink-0">
         <ForestryModule
           settings={input.forestry}
@@ -43,15 +43,15 @@ export function ValueChainFlow({ input, onInputChange, result }: ValueChainFlowP
         />
       </div>
 
-      {/* 箭头 */}
+      {/* Arrow */}
       <div className="flex flex-shrink-0 items-center">
         <div className="flex flex-col items-center gap-1">
           <ArrowRight className="h-6 w-6 text-muted-foreground" />
-          <span className="text-[10px] text-muted-foreground">木片供应</span>
+          <span className="text-[10px] text-muted-foreground">Woodchip Supply</span>
         </div>
       </div>
 
-      {/* 浆产能 */}
+      {/* Pulp Capacity */}
       <div className="min-w-[380px] flex-1">
         <PulpModule
           settings={input.appCapacity}
@@ -60,15 +60,15 @@ export function ValueChainFlow({ input, onInputChange, result }: ValueChainFlowP
         />
       </div>
 
-      {/* 箭头 */}
+      {/* Arrow */}
       <div className="flex flex-shrink-0 items-center">
         <div className="flex flex-col items-center gap-1">
           <ArrowRight className="h-6 w-6 text-muted-foreground" />
-          <span className="text-[10px] text-muted-foreground">浆供应</span>
+          <span className="text-[10px] text-muted-foreground">Pulp Supply</span>
         </div>
       </div>
 
-      {/* 下游市场 */}
+      {/* Downstream Markets */}
       <div className="w-[300px] flex-shrink-0">
         <DownstreamModule
           settings={input.downstream}

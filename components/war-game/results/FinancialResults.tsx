@@ -12,7 +12,7 @@ import {
 import { cn } from '@/lib/utils'
 import { DollarSign, TrendingUp, Building2, Globe } from 'lucide-react'
 import { TrafficLight } from '../shared/TrafficLight'
-import type { SimulationResult, ProjectIRR, APPSystemPL, PlayerFinancialOutcome } from '@/lib/types/war-game'
+import type { SimulationResult, ProjectIRR, APPSystemPL } from '@/lib/types/war-game'
 import { PLAYERS, IRR_HURDLE } from '@/lib/data/initial-data'
 import {
   Bar,
@@ -32,7 +32,7 @@ interface FinancialResultsProps {
   result: SimulationResult
 }
 
-// IRR卡片组件
+// IRR card component
 function IRRCard({ project }: { project: ProjectIRR }) {
   return (
     <Card className={cn(
@@ -58,16 +58,16 @@ function IRRCard({ project }: { project: ProjectIRR }) {
           </div>
           <TrafficLight 
             status={project.status} 
-            label={project.status === 'green' ? '达标' : project.status === 'amber' ? '临界' : '未达标'}
+            label={project.status === 'green' ? 'Above Hurdle' : project.status === 'amber' ? 'Near Hurdle' : 'Below Hurdle'}
           />
         </div>
         
         <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-          <span>门槛: {IRR_HURDLE}%</span>
-          <span>NPV指数: {project.npvIndex.toFixed(2)}</span>
+          <span>Hurdle: {IRR_HURDLE}%</span>
+          <span>NPV Index: {project.npvIndex.toFixed(2)}</span>
         </div>
         
-        {/* 迷你现金流图 */}
+        {/* Mini cash flow chart */}
         <div className="mt-3 h-12">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={project.cashFlows.map((value, index) => ({ year: index, value }))}>
@@ -94,24 +94,24 @@ function IRRCard({ project }: { project: ProjectIRR }) {
   )
 }
 
-// APP系统损益组件
+// APP system P&L component
 function SystemPLCard({ systemPL }: { systemPL: APPSystemPL }) {
   const data = [
     {
-      name: '中国',
-      浆: systemPL.chinaPulpProfit,
-      下游: systemPL.chinaDownstreamProfit,
+      name: 'China',
+      Pulp: systemPL.chinaPulpProfit,
+      Downstream: systemPL.chinaDownstreamProfit,
     },
     {
-      name: '印尼',
-      浆: systemPL.indonesiaPulpProfit,
-      下游: systemPL.indonesiaDownstreamProfit,
+      name: 'Indonesia',
+      Pulp: systemPL.indonesiaPulpProfit,
+      Downstream: systemPL.indonesiaDownstreamProfit,
     },
   ]
 
   const totalData = [
-    { name: '中国', value: systemPL.chinaProfit, share: systemPL.chinaShare },
-    { name: '印尼', value: systemPL.indonesiaProfit, share: 100 - systemPL.chinaShare },
+    { name: 'China', value: systemPL.chinaProfit, share: systemPL.chinaShare },
+    { name: 'Indonesia', value: systemPL.indonesiaProfit, share: 100 - systemPL.chinaShare },
   ]
 
   return (
@@ -119,17 +119,17 @@ function SystemPLCard({ systemPL }: { systemPL: APPSystemPL }) {
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-sm">
           <Globe className="h-4 w-4 text-primary" />
-          APP系统损益 (中国 + 印尼)
+          APP System P&L (China + Indonesia)
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* 总利润 */}
+        {/* Total profit */}
         <div className="rounded-lg bg-primary/10 p-4 text-center">
-          <p className="text-sm text-muted-foreground">总系统利润指数</p>
+          <p className="text-sm text-muted-foreground">Total System Profit Index</p>
           <p className="text-3xl font-bold text-primary">{systemPL.totalProfit}</p>
         </div>
 
-        {/* 堆叠柱状图 */}
+        {/* Stacked bar chart */}
         <ResponsiveContainer width="100%" height={160}>
           <BarChart data={data} margin={{ left: 20, right: 20 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -147,18 +147,18 @@ function SystemPLCard({ systemPL }: { systemPL: APPSystemPL }) {
               }}
             />
             <Legend wrapperStyle={{ fontSize: '11px' }} />
-            <Bar dataKey="浆" stackId="a" fill="hsl(var(--chart-1))" radius={[0, 0, 0, 0]} />
-            <Bar dataKey="下游" stackId="a" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="Pulp" stackId="a" fill="hsl(var(--chart-1))" radius={[0, 0, 0, 0]} />
+            <Bar dataKey="Downstream" stackId="a" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
 
-        {/* 利润占比 */}
+        {/* Profit share */}
         <div className="grid grid-cols-2 gap-3">
           {totalData.map(item => (
             <div key={item.name} className="rounded-lg border border-border/50 bg-card/50 p-3 text-center">
-              <p className="text-xs text-muted-foreground">{item.name}利润</p>
+              <p className="text-xs text-muted-foreground">{item.name} Profit</p>
               <p className="text-lg font-semibold">{item.value}</p>
-              <p className="text-xs text-muted-foreground">占比 {Math.round(item.share)}%</p>
+              <p className="text-xs text-muted-foreground">Share {Math.round(item.share)}%</p>
             </div>
           ))}
         </div>
@@ -170,7 +170,7 @@ function SystemPLCard({ systemPL }: { systemPL: APPSystemPL }) {
 export function FinancialResults({ result }: FinancialResultsProps) {
   const { playerFinancials, projectIRRs, appSystemPL } = result
 
-  // 准备EBITDA柱状图数据
+  // Prepare EBITDA bar chart data
   const ebitdaData = playerFinancials
     .filter(p => p.ebitda > 0)
     .map(financial => {
@@ -187,12 +187,12 @@ export function FinancialResults({ result }: FinancialResultsProps) {
 
   return (
     <div className="space-y-4">
-      {/* APP项目IRR */}
+      {/* APP Project IRR */}
       {projectIRRs.length > 0 && (
         <div>
           <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
             <Building2 className="h-4 w-4 text-primary" />
-            APP项目IRR
+            APP Project IRR
           </h3>
           <div className="grid grid-cols-2 gap-4">
             {projectIRRs.map(project => (
@@ -203,12 +203,12 @@ export function FinancialResults({ result }: FinancialResultsProps) {
       )}
 
       <div className="grid grid-cols-2 gap-4">
-        {/* 玩家EBITDA对比 */}
+        {/* Player EBITDA comparison */}
         <Card className="border-border/50 bg-card/80">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-sm">
               <DollarSign className="h-4 w-4" />
-              玩家EBITDA对比
+              Player EBITDA Comparison
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -232,7 +232,7 @@ export function FinancialResults({ result }: FinancialResultsProps) {
                     fontSize: '12px',
                   }}
                   formatter={(value: number, name: string, props: { payload: { margin: number } }) => [
-                    `${value} (利润率: ${props.payload.margin}%)`,
+                    `${value} (Margin: ${props.payload.margin}%)`,
                     'EBITDA'
                   ]}
                 />
@@ -246,28 +246,28 @@ export function FinancialResults({ result }: FinancialResultsProps) {
           </CardContent>
         </Card>
 
-        {/* APP系统损益 */}
+        {/* APP System P&L */}
         <SystemPLCard systemPL={appSystemPL} />
       </div>
 
-      {/* 玩家财务详情表 */}
+      {/* Player financial details table */}
       <Card className="border-border/50 bg-card/80">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-sm">
             <TrendingUp className="h-4 w-4" />
-            玩家财务详情
+            Player Financial Details
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow className="border-border/50">
-                <TableHead className="text-xs">玩家</TableHead>
-                <TableHead className="text-right text-xs">收入指数</TableHead>
+                <TableHead className="text-xs">Player</TableHead>
+                <TableHead className="text-right text-xs">Revenue Index</TableHead>
                 <TableHead className="text-right text-xs">EBITDA</TableHead>
-                <TableHead className="text-right text-xs">EBITDA利润率</TableHead>
-                <TableHead className="text-right text-xs">浆利润</TableHead>
-                <TableHead className="text-right text-xs">下游利润</TableHead>
+                <TableHead className="text-right text-xs">EBITDA Margin</TableHead>
+                <TableHead className="text-right text-xs">Pulp Profit</TableHead>
+                <TableHead className="text-right text-xs">Downstream Profit</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

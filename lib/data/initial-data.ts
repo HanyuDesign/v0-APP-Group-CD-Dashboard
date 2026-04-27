@@ -6,12 +6,12 @@ import type {
   DownstreamSettings,
 } from '@/lib/types/war-game'
 
-// 玩家数据
+// Player data
 export const PLAYERS: Player[] = [
   {
     id: 'app-china',
     name: 'APP China',
-    nameCn: 'APP中国',
+    nameCn: 'APP China',
     type: 'app',
     region: 'china',
     isAIDriven: false,
@@ -24,7 +24,7 @@ export const PLAYERS: Player[] = [
   {
     id: 'app-indonesia',
     name: 'APP Indonesia',
-    nameCn: 'APP印尼',
+    nameCn: 'APP Indonesia',
     type: 'app',
     region: 'indonesia',
     isAIDriven: false,
@@ -37,7 +37,7 @@ export const PLAYERS: Player[] = [
   {
     id: 'sun-paper',
     name: 'Sun Paper',
-    nameCn: '太阳纸业',
+    nameCn: 'Sun Paper',
     type: 'competitor',
     region: 'china',
     isAIDriven: true,
@@ -50,7 +50,7 @@ export const PLAYERS: Player[] = [
   {
     id: 'chenming',
     name: 'Chenming',
-    nameCn: '晨鸣纸业',
+    nameCn: 'Chenming',
     type: 'competitor',
     region: 'china',
     isAIDriven: true,
@@ -63,7 +63,7 @@ export const PLAYERS: Player[] = [
   {
     id: 'liansheng',
     name: 'Liansheng',
-    nameCn: '联盛纸业',
+    nameCn: 'Liansheng',
     type: 'competitor',
     region: 'china',
     isAIDriven: true,
@@ -75,8 +75,8 @@ export const PLAYERS: Player[] = [
   },
   {
     id: 'others-china',
-    name: 'Others',
-    nameCn: '其他中国企业',
+    name: 'Others China',
+    nameCn: 'Others China',
     type: 'competitor',
     region: 'china',
     isAIDriven: true,
@@ -115,7 +115,7 @@ export const PLAYERS: Player[] = [
   {
     id: 'vinda',
     name: 'Vinda',
-    nameCn: '维达',
+    nameCn: 'Vinda',
     type: 'competitor',
     region: 'china',
     isAIDriven: true,
@@ -127,14 +127,14 @@ export const PLAYERS: Player[] = [
   },
 ]
 
-// 默认林业设置
+// Default forestry settings
 export const DEFAULT_FORESTRY_SETTINGS: ForestrySettings = {
   chinaLoggingPolicy: 'baseline',
   vietnamExportPolicy: 'baseline',
   vietnamExportPrice: 'medium',
 }
 
-// 默认APP产能设置
+// Default APP capacity settings
 export const DEFAULT_APP_CAPACITY_SETTINGS: APPCapacitySettings = {
   guangxi: {
     pulpCapacity: 200,
@@ -154,51 +154,51 @@ export const DEFAULT_APP_CAPACITY_SETTINGS: APPCapacitySettings = {
   },
 }
 
-// 默认下游设置
+// Default downstream settings
 export const DEFAULT_DOWNSTREAM_SETTINGS: DownstreamSettings = {
   paperDemand: 'base',
   boardDemand: 'base',
   tissueDemand: 'base',
 }
 
-// 默认完整输入
+// Default full simulation input
 export const DEFAULT_SIMULATION_INPUT: SimulationInput = {
   forestry: DEFAULT_FORESTRY_SETTINGS,
   appCapacity: DEFAULT_APP_CAPACITY_SETTINGS,
   downstream: DEFAULT_DOWNSTREAM_SETTINGS,
 }
 
-// 政策选项标签
+// Policy option labels
 export const POLICY_LABELS = {
   chinaLoggingPolicy: {
-    tight: '紧缩',
-    baseline: '基准',
-    relaxed: '宽松',
+    tight: 'Tight',
+    baseline: 'Baseline',
+    relaxed: 'Relaxed',
   },
   vietnamExportPolicy: {
-    restricted: '限制',
-    baseline: '基准',
-    expanded: '扩大',
+    restricted: 'Restricted',
+    baseline: 'Baseline',
+    expanded: 'Expanded',
   },
   priceLevel: {
-    low: '低',
-    medium: '中',
-    high: '高',
+    low: 'Low',
+    medium: 'Medium',
+    high: 'High',
   },
   demandScenario: {
-    low: '低需求',
-    base: '基准',
-    high: '高需求',
+    low: 'Low Demand',
+    base: 'Baseline',
+    high: 'High Demand',
   },
 }
 
-// IRR门槛
+// IRR hurdle rate
 export const IRR_HURDLE = 12 // 12%
 
-// 年份选项
+// Year options
 export const YEAR_OPTIONS = [2025, 2026, 2027, 2028, 2029, 2030]
 
-// 产能范围
+// Capacity range settings
 export const CAPACITY_RANGE = {
   pulp: { min: 0, max: 400, step: 25 },
   board: { min: 0, max: 200, step: 20 },

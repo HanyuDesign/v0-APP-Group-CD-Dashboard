@@ -14,10 +14,10 @@ import type {
 } from '@/lib/types/war-game'
 import { PLAYERS, IRR_HURDLE } from '@/lib/data/initial-data'
 
-// 模拟延迟
+// Simulation delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
-// 计算木片市场结果
+// Calculate woodchip market outcome
 function calculateWoodchipOutcome(input: SimulationInput): WoodchipOutcome {
   const { chinaLoggingPolicy, vietnamExportPolicy, vietnamExportPrice } = input.forestry
   
@@ -26,7 +26,7 @@ function calculateWoodchipOutcome(input: SimulationInput): WoodchipOutcome {
   let domesticSupply = 100
   let vietnamImport = 30
   
-  // 中国伐木政策影响
+  // China logging policy impact
   if (chinaLoggingPolicy === 'tight') {
     domesticSupply = 70
     priceLevel = 'high'
@@ -35,7 +35,7 @@ function calculateWoodchipOutcome(input: SimulationInput): WoodchipOutcome {
     priceLevel = 'low'
   }
   
-  // 越南出口政策影响
+  // Vietnam export policy impact
   if (vietnamExportPolicy === 'restricted') {
     vietnamImport = 15
     availability = 'low'
@@ -44,7 +44,7 @@ function calculateWoodchipOutcome(input: SimulationInput): WoodchipOutcome {
     availability = 'high'
   }
   
-  // 价格调整
+  // Price adjustment
   if (vietnamExportPrice === 'low') {
     priceLevel = priceLevel === 'high' ? 'medium' : 'low'
   } else if (vietnamExportPrice === 'high') {
@@ -54,12 +54,12 @@ function calculateWoodchipOutcome(input: SimulationInput): WoodchipOutcome {
   return { availability, priceLevel, domesticSupply, vietnamImport }
 }
 
-// AI模拟竞争对手响应
+// AI simulate competitor responses
 function simulateCompetitorChanges(input: SimulationInput): PlayerCapacityChange[] {
   const appTotalNewPulp = input.appCapacity.guangxi.pulpCapacity + input.appCapacity.jiangsuFujian.pulpCapacity
   const changes: PlayerCapacityChange[] = []
   
-  // Sun Paper 响应
+  // Sun Paper response
   if (appTotalNewPulp > 300) {
     changes.push({
       playerId: 'sun-paper',
@@ -67,7 +67,7 @@ function simulateCompetitorChanges(input: SimulationInput): PlayerCapacityChange
       boardChange: 0,
       tissueChange: 0,
       action: 'delay',
-      reasoning: 'APP大规模扩产导致市场过剩预期，延迟新产能投放',
+      reasoning: 'Large-scale APP expansion leads to expected market oversupply, delaying new capacity',
     })
   } else if (appTotalNewPulp > 200) {
     changes.push({
@@ -76,7 +76,7 @@ function simulateCompetitorChanges(input: SimulationInput): PlayerCapacityChange
       boardChange: 20,
       tissueChange: 0,
       action: 'add',
-      reasoning: '跟随市场扩张，保持竞争地位',
+      reasoning: 'Following market expansion to maintain competitive position',
     })
   } else {
     changes.push({
@@ -85,11 +85,11 @@ function simulateCompetitorChanges(input: SimulationInput): PlayerCapacityChange
       boardChange: 40,
       tissueChange: 20,
       action: 'add',
-      reasoning: 'APP扩产保守，加速自身扩张抢占份额',
+      reasoning: 'Conservative APP expansion allows accelerated growth to capture market share',
     })
   }
   
-  // Chenming 响应
+  // Chenming response
   if (appTotalNewPulp > 250) {
     changes.push({
       playerId: 'chenming',
@@ -97,7 +97,7 @@ function simulateCompetitorChanges(input: SimulationInput): PlayerCapacityChange
       boardChange: 0,
       tissueChange: 0,
       action: 'delay',
-      reasoning: '市场竞争加剧，暂缓浆产能项目',
+      reasoning: 'Intensified market competition, postponing pulp capacity projects',
     })
   } else {
     changes.push({
@@ -106,51 +106,51 @@ function simulateCompetitorChanges(input: SimulationInput): PlayerCapacityChange
       boardChange: 30,
       tissueChange: 15,
       action: 'add',
-      reasoning: '维持既定扩产计划',
+      reasoning: 'Maintaining planned expansion schedule',
     })
   }
   
-  // Liansheng 响应
+  // Liansheng response
   changes.push({
     playerId: 'liansheng',
     pulpChange: appTotalNewPulp > 300 ? -20 : 25,
     boardChange: 15,
     tissueChange: 10,
     action: appTotalNewPulp > 300 ? 'delay' : 'add',
-    reasoning: appTotalNewPulp > 300 ? '规避过剩风险' : '稳步扩张',
+    reasoning: appTotalNewPulp > 300 ? 'Avoiding oversupply risk' : 'Steady expansion',
   })
   
-  // 其他企业
+  // Others
   changes.push({
     playerId: 'others-china',
     pulpChange: appTotalNewPulp > 300 ? -40 : 20,
     boardChange: 10,
     tissueChange: 20,
     action: appTotalNewPulp > 300 ? 'delay' : 'add',
-    reasoning: '跟随市场趋势',
+    reasoning: 'Following market trends',
   })
   
   return changes
 }
 
-// AI模拟出口商响应
+// AI simulate exporter responses
 function simulateExporterAllocations(input: SimulationInput, woodchip: WoodchipOutcome): ExporterAllocation[] {
   const appTotalNewPulp = input.appCapacity.guangxi.pulpCapacity + input.appCapacity.jiangsuFujian.pulpCapacity
   
-  // Suzano 分配
-  let suzanoChinaShare = 0.35 // 基准35%出口到中国
+  // Suzano allocation
+  let suzanoChinaShare = 0.35 // Baseline 35% exports to China
   if (appTotalNewPulp > 300) {
-    suzanoChinaShare = 0.25 // APP大扩产，减少中国出口
+    suzanoChinaShare = 0.25 // Large APP expansion, reduce China exports
   } else if (appTotalNewPulp < 150) {
-    suzanoChinaShare = 0.45 // APP扩产保守，增加中国出口
+    suzanoChinaShare = 0.45 // Conservative APP expansion, increase China exports
   }
   
   if (woodchip.priceLevel === 'high') {
-    suzanoChinaShare += 0.05 // 木片价高，浆价也高，增加出口
+    suzanoChinaShare += 0.05 // High woodchip price, high pulp price, increase exports
   }
   
-  // APRIL 分配
-  let aprilChinaShare = 0.6 // 基准60%出口到中国
+  // APRIL allocation
+  let aprilChinaShare = 0.6 // Baseline 60% exports to China
   if (appTotalNewPulp > 250) {
     aprilChinaShare = 0.5
   }
@@ -165,20 +165,20 @@ function simulateExporterAllocations(input: SimulationInput, woodchip: WoodchipO
       otherRegionsVolume: Math.round(suzano.pulpCapacity * (1 - suzanoChinaShare)),
       chinaShare: suzanoChinaShare,
       reasoning: appTotalNewPulp > 300 
-        ? '中国市场过剩预期，转向其他高价地区' 
-        : '中国需求稳定，维持出口份额',
+        ? 'Expected China oversupply, shifting to higher-priced regions' 
+        : 'Stable China demand, maintaining export share',
     },
     {
       playerId: 'april',
       chinaVolume: Math.round(april.pulpCapacity * aprilChinaShare),
       otherRegionsVolume: Math.round(april.pulpCapacity * (1 - aprilChinaShare)),
       chinaShare: aprilChinaShare,
-      reasoning: '根据中国市场竞争态势调整配额',
+      reasoning: 'Adjusting allocation based on China market competition',
     },
   ]
 }
 
-// 计算细分市场结果
+// Calculate segment outcomes
 function calculateSegmentOutcomes(
   input: SimulationInput, 
   competitorChanges: PlayerCapacityChange[]
@@ -186,10 +186,10 @@ function calculateSegmentOutcomes(
   const { guangxi, jiangsuFujian } = input.appCapacity
   const { paperDemand, boardDemand, tissueDemand } = input.downstream
   
-  // 需求倍数
+  // Demand multiplier
   const demandMultiplier = { low: 0.85, base: 1, high: 1.15 }
   
-  // 计算总产能变化
+  // Calculate total capacity changes
   let totalBoardChange = 0
   let totalTissueChange = 0
   
@@ -198,30 +198,30 @@ function calculateSegmentOutcomes(
     totalTissueChange += change.tissueChange
   })
   
-  // APP新增产能
+  // APP new capacity
   const appNewBoard = (guangxi.includeBoard ? guangxi.boardCapacity : 0) + 
                       (jiangsuFujian.includeBoard ? jiangsuFujian.boardCapacity : 0)
   const appNewTissue = (guangxi.includeTissue ? guangxi.tissueCapacity : 0) + 
                        (jiangsuFujian.includeTissue ? jiangsuFujian.tissueCapacity : 0)
   
-  // 基准市场数据
+  // Base market data
   const baseMarket = {
     paper: { capacity: 900, demand: 750 },
     board: { capacity: 730, demand: 680 },
     tissue: { capacity: 580, demand: 520 },
   }
   
-  // 纸张 - 收缩市场
-  const paperCapacity = baseMarket.paper.capacity - 30 // 持续关停
-  const paperDemandValue = baseMarket.paper.demand * demandMultiplier[paperDemand] * 0.97 // 需求下降
+  // Paper - shrinking market
+  const paperCapacity = baseMarket.paper.capacity - 30 // Ongoing closures
+  const paperDemandValue = baseMarket.paper.demand * demandMultiplier[paperDemand] * 0.97 // Declining demand
   const paperUtilization = (paperDemandValue / paperCapacity) * 100
   
-  // 包装纸板
+  // Packaging / Cartonboard
   const boardCapacity = baseMarket.board.capacity + appNewBoard + totalBoardChange
   const boardDemandValue = baseMarket.board.demand * demandMultiplier[boardDemand]
   const boardUtilization = (boardDemandValue / boardCapacity) * 100
   
-  // 生活用纸
+  // Tissue
   const tissueCapacity = baseMarket.tissue.capacity + appNewTissue + totalTissueChange
   const tissueDemandValue = baseMarket.tissue.demand * demandMultiplier[tissueDemand]
   const tissueUtilization = (tissueDemandValue / tissueCapacity) * 100
@@ -260,7 +260,7 @@ function calculateSegmentOutcomes(
   ]
 }
 
-// 计算玩家市场结果
+// Calculate player market outcomes
 function calculatePlayerMarketOutcomes(
   input: SimulationInput,
   competitorChanges: PlayerCapacityChange[],
@@ -269,14 +269,14 @@ function calculatePlayerMarketOutcomes(
   const outcomes: PlayerMarketOutcome[] = []
   const { guangxi, jiangsuFujian } = input.appCapacity
   
-  // 计算总浆产能（用于市场份额）
+  // Calculate total pulp capacity (for market share)
   let totalPulpCapacity = 0
   
   PLAYERS.forEach(player => {
     let pulpCapacity = player.pulpCapacity
     let downstreamCapacity = player.boardCapacity + player.tissueCapacity
     
-    // APP中国新增产能
+    // APP China new capacity
     if (player.id === 'app-china') {
       pulpCapacity += guangxi.pulpCapacity + jiangsuFujian.pulpCapacity
       if (guangxi.includeBoard) downstreamCapacity += guangxi.boardCapacity
@@ -285,17 +285,17 @@ function calculatePlayerMarketOutcomes(
       if (jiangsuFujian.includeTissue) downstreamCapacity += jiangsuFujian.tissueCapacity
     }
     
-    // 竞争对手产能变化
+    // Competitor capacity changes
     const change = competitorChanges.find(c => c.playerId === player.id)
     if (change) {
       pulpCapacity += change.pulpChange
       downstreamCapacity += change.boardChange + change.tissueChange
     }
     
-    // 出口商特殊处理
+    // Exporter special handling
     const allocation = exporterAllocations.find(a => a.playerId === player.id)
     if (allocation) {
-      pulpCapacity = allocation.chinaVolume // 只算中国出口量
+      pulpCapacity = allocation.chinaVolume // Only count China exports
     }
     
     totalPulpCapacity += pulpCapacity
@@ -303,9 +303,9 @@ function calculatePlayerMarketOutcomes(
     outcomes.push({
       playerId: player.id,
       pulpCapacity,
-      pulpVolume: Math.round(pulpCapacity * 0.88), // 88%利用率
+      pulpVolume: Math.round(pulpCapacity * 0.88), // 88% utilization
       pulpUtilization: 88,
-      pulpMarketShare: 0, // 后续计算
+      pulpMarketShare: 0, // Calculate later
       downstreamCapacity,
       downstreamVolume: Math.round(downstreamCapacity * 0.85),
       downstreamUtilization: 85,
@@ -313,7 +313,7 @@ function calculatePlayerMarketOutcomes(
     })
   })
   
-  // 计算市场份额
+  // Calculate market share
   outcomes.forEach(outcome => {
     outcome.pulpMarketShare = (outcome.pulpCapacity / totalPulpCapacity) * 100
   })
@@ -321,7 +321,7 @@ function calculatePlayerMarketOutcomes(
   return outcomes
 }
 
-// 计算玩家财务结果
+// Calculate player financials
 function calculatePlayerFinancials(
   input: SimulationInput,
   playerMarketOutcomes: PlayerMarketOutcome[],
@@ -330,24 +330,24 @@ function calculatePlayerFinancials(
   const { guangxi, jiangsuFujian } = input.appCapacity
   const appTotalNewPulp = guangxi.pulpCapacity + jiangsuFujian.pulpCapacity
   
-  // 价格/成本影响
+  // Price/cost impact
   const woodchipCostMultiplier = woodchip.priceLevel === 'high' ? 1.15 : woodchip.priceLevel === 'low' ? 0.9 : 1
   const marketPressure = appTotalNewPulp > 300 ? 0.85 : appTotalNewPulp > 200 ? 0.95 : 1.05
   
   return playerMarketOutcomes.map(market => {
     const player = PLAYERS.find(p => p.id === market.playerId)!
     
-    // 基准利润率
+    // Base margin
     let basePulpMargin = player.type === 'app' ? 0.22 : player.type === 'exporter' ? 0.25 : 0.18
     let baseDownstreamMargin = player.type === 'app' ? 0.15 : 0.12
     
-    // 调整因素
+    // Adjustment factors
     const marginAdjustment = marketPressure * (1 / woodchipCostMultiplier)
     basePulpMargin *= marginAdjustment
     baseDownstreamMargin *= marginAdjustment
     
-    // 计算指数化财务数据
-    const pulpRevenue = market.pulpVolume * 4.5 // 简化的收入指数
+    // Calculate indexed financials
+    const pulpRevenue = market.pulpVolume * 4.5 // Simplified revenue index
     const downstreamRevenue = market.downstreamVolume * 6
     const revenue = pulpRevenue + downstreamRevenue
     
@@ -368,38 +368,38 @@ function calculatePlayerFinancials(
   })
 }
 
-// 计算项目IRR
+// Calculate project IRRs
 function calculateProjectIRRs(input: SimulationInput, woodchip: WoodchipOutcome): ProjectIRR[] {
   const { guangxi, jiangsuFujian } = input.appCapacity
   const appTotalNewPulp = guangxi.pulpCapacity + jiangsuFujian.pulpCapacity
   
-  // 基准IRR受市场条件影响
-  let baseIRR = 15 // 基准15%
+  // Base IRR affected by market conditions
+  let baseIRR = 15 // Baseline 15%
   
-  // 木片成本影响
+  // Woodchip cost impact
   if (woodchip.priceLevel === 'high') baseIRR -= 2
   if (woodchip.priceLevel === 'low') baseIRR += 1.5
   
-  // 市场竞争影响
+  // Market competition impact
   if (appTotalNewPulp > 300) baseIRR -= 3
   if (appTotalNewPulp > 250) baseIRR -= 1.5
   
   const projects: ProjectIRR[] = []
   
-  // 广西项目
+  // Guangxi project
   if (guangxi.pulpCapacity > 0) {
     let guangxiIRR = baseIRR
-    // 规模效应
+    // Scale effect
     if (guangxi.pulpCapacity >= 200) guangxiIRR += 1.5
-    // 下游整合加成
+    // Downstream integration bonus
     if (guangxi.includeBoard) guangxiIRR += 1
     if (guangxi.includeTissue) guangxiIRR += 0.5
-    // 时间因素
+    // Timing factor
     if (guangxi.startYear <= 2026) guangxiIRR += 0.5
     
     projects.push({
       projectId: 'guangxi',
-      projectName: '广西项目',
+      projectName: 'Guangxi Project',
       irr: Math.round(guangxiIRR * 10) / 10,
       npvIndex: guangxiIRR > IRR_HURDLE ? 1.2 : guangxiIRR > IRR_HURDLE - 2 ? 1.0 : 0.8,
       status: guangxiIRR >= IRR_HURDLE ? 'green' : guangxiIRR >= IRR_HURDLE - 2 ? 'amber' : 'red',
@@ -407,9 +407,9 @@ function calculateProjectIRRs(input: SimulationInput, woodchip: WoodchipOutcome)
     })
   }
   
-  // 江苏/福建项目
+  // Jiangsu/Fujian project
   if (jiangsuFujian.pulpCapacity > 0) {
-    let jfIRR = baseIRR - 0.5 // 略低于广西（市场竞争更激烈）
+    let jfIRR = baseIRR - 0.5 // Slightly lower than Guangxi (more intense market competition)
     if (jiangsuFujian.pulpCapacity >= 150) jfIRR += 1
     if (jiangsuFujian.includeBoard) jfIRR += 1
     if (jiangsuFujian.includeTissue) jfIRR += 0.5
@@ -417,7 +417,7 @@ function calculateProjectIRRs(input: SimulationInput, woodchip: WoodchipOutcome)
     
     projects.push({
       projectId: 'jiangsu-fujian',
-      projectName: '江苏/福建项目',
+      projectName: 'Jiangsu/Fujian Project',
       irr: Math.round(jfIRR * 10) / 10,
       npvIndex: jfIRR > IRR_HURDLE ? 1.15 : jfIRR > IRR_HURDLE - 2 ? 0.95 : 0.75,
       status: jfIRR >= IRR_HURDLE ? 'green' : jfIRR >= IRR_HURDLE - 2 ? 'amber' : 'red',
@@ -428,7 +428,7 @@ function calculateProjectIRRs(input: SimulationInput, woodchip: WoodchipOutcome)
   return projects
 }
 
-// 计算APP系统损益
+// Calculate APP system P&L
 function calculateAPPSystemPL(playerFinancials: PlayerFinancialOutcome[]): APPSystemPL {
   const appChina = playerFinancials.find(p => p.playerId === 'app-china')!
   const appIndonesia = playerFinancials.find(p => p.playerId === 'app-indonesia')!
@@ -449,33 +449,33 @@ function calculateAPPSystemPL(playerFinancials: PlayerFinancialOutcome[]): APPSy
   }
 }
 
-// 主模拟函数
+// Main simulation function
 export async function runSimulation(input: SimulationInput): Promise<SimulationResult> {
-  // 模拟处理时间
+  // Simulate processing time
   await delay(1500)
   
-  // 1. 计算木片市场
+  // 1. Calculate woodchip market
   const woodchip = calculateWoodchipOutcome(input)
   
-  // 2. AI模拟竞争对手响应
+  // 2. AI simulate competitor responses
   const competitorChanges = simulateCompetitorChanges(input)
   
-  // 3. AI模拟出口商响应
+  // 3. AI simulate exporter responses
   const exporterAllocations = simulateExporterAllocations(input, woodchip)
   
-  // 4. 计算细分市场结果
+  // 4. Calculate segment outcomes
   const segmentOutcomes = calculateSegmentOutcomes(input, competitorChanges)
   
-  // 5. 计算玩家市场结果
+  // 5. Calculate player market outcomes
   const playerMarketOutcomes = calculatePlayerMarketOutcomes(input, competitorChanges, exporterAllocations)
   
-  // 6. 计算玩家财务结果
+  // 6. Calculate player financials
   const playerFinancials = calculatePlayerFinancials(input, playerMarketOutcomes, woodchip)
   
-  // 7. 计算项目IRR
+  // 7. Calculate project IRRs
   const projectIRRs = calculateProjectIRRs(input, woodchip)
   
-  // 8. 计算APP系统损益
+  // 8. Calculate APP system P&L
   const appSystemPL = calculateAPPSystemPL(playerFinancials)
   
   return {

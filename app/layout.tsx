@@ -7,8 +7,8 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'APP 战略模拟工具',
-  description: 'AI驱动的浆纸行业战争模拟与情景规划平台',
+  title: 'APP Strategic War-Gaming Tool',
+  description: 'AI-powered pulp & paper industry war-gaming and scenario planning platform',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -35,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="zh-CN" className="bg-background">
+    <html lang="en" className="bg-background">
       <body className="font-sans antialiased min-h-screen">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}

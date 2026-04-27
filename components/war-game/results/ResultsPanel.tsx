@@ -23,10 +23,10 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
             <Clock className="h-8 w-8 text-muted-foreground" />
           </div>
           <p className="mt-4 text-lg font-medium text-muted-foreground">
-            等待模拟
+            Awaiting Simulation
           </p>
           <p className="mt-1 text-sm text-muted-foreground/70">
-            设置参数后点击"运行模拟"查看结果
+            Set parameters and click &quot;Run Simulation&quot; to view results
           </p>
         </CardContent>
       </Card>
@@ -39,10 +39,10 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
         <CardContent className="flex flex-col items-center justify-center py-16">
           <Spinner size="lg" />
           <p className="mt-4 text-lg font-medium">
-            正在运行模拟...
+            Running Simulation...
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            AI代理正在分析竞争对手响应
+            AI agents are analyzing competitor responses
           </p>
         </CardContent>
       </Card>
@@ -58,11 +58,11 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
       <TabsList className="mb-4 grid w-full max-w-md grid-cols-2">
         <TabsTrigger value="market" className="gap-2">
           <BarChart3 className="h-4 w-4" />
-          市场结果
+          Market Results
         </TabsTrigger>
         <TabsTrigger value="financial" className="gap-2">
           <DollarSign className="h-4 w-4" />
-          财务结果
+          Financial Results
         </TabsTrigger>
       </TabsList>
       

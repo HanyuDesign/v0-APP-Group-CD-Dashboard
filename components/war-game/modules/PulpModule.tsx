@@ -35,7 +35,7 @@ interface PulpModuleProps {
 export function PulpModule({ settings, onChange, competitorChanges }: PulpModuleProps) {
   const chinaPlayers = PLAYERS.filter(p => p.region === 'china' || p.type === 'exporter')
   
-  // 计算产能数据用于图表
+  // Prepare capacity data for chart
   const capacityData = chinaPlayers.map(player => {
     const change = competitorChanges?.find(c => c.playerId === player.id)
     let capacity = player.pulpCapacity
@@ -69,13 +69,13 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Factory className="h-5 w-5 text-primary" />
-          浆产能与玩家
+          Pulp Capacity & Players
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-5">
-        {/* 产能图表 */}
+        {/* Capacity chart */}
         <div className="rounded-lg bg-secondary/30 p-3">
-          <p className="mb-2 text-xs font-medium text-muted-foreground">产能分布 (万吨/年)</p>
+          <p className="mb-2 text-xs font-medium text-muted-foreground">Capacity Distribution (kt/year)</p>
           <ResponsiveContainer width="100%" height={140}>
             <BarChart data={capacityData} layout="vertical" margin={{ left: 60, right: 10 }}>
               <XAxis type="number" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
@@ -95,8 +95,8 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
                 formatter={(value: number, name: string, props: { payload: { change: number } }) => {
                   const change = props.payload.change
                   return [
-                    `${value} 万吨${change ? ` (${change > 0 ? '+' : ''}${change})` : ''}`,
-                    '产能'
+                    `${value} kt${change ? ` (${change > 0 ? '+' : ''}${change})` : ''}`,
+                    'Capacity'
                   ]
                 }}
               />
@@ -109,17 +109,17 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
           </ResponsiveContainer>
         </div>
 
-        {/* APP新产能决策 */}
+        {/* APP new capacity decisions */}
         <div className="rounded-lg border-2 border-primary/30 bg-primary/5 p-4">
           <div className="mb-3 flex items-center gap-2">
             <Package className="h-4 w-4 text-primary" />
-            <span className="font-semibold text-primary">APP新产能决策</span>
+            <span className="font-semibold text-primary">APP Capacity Decisions</span>
           </div>
           
-          {/* 广西项目 */}
+          {/* Guangxi project */}
           <div className="space-y-3 rounded-lg bg-card/50 p-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">广西项目</span>
+              <span className="text-sm font-medium">Guangxi Project</span>
               <Select
                 value={settings.guangxi.startYear.toString()}
                 onValueChange={(v) => updateGuangxi({ startYear: parseInt(v) })}
@@ -129,7 +129,7 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
                 </SelectTrigger>
                 <SelectContent>
                   {YEAR_OPTIONS.map(year => (
-                    <SelectItem key={year} value={year.toString()}>{year}年</SelectItem>
+                    <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -137,8 +137,8 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
             
             <div className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <Label>浆产能</Label>
-                <span className="font-mono text-primary">{settings.guangxi.pulpCapacity} 万吨</span>
+                <Label>Pulp Capacity</Label>
+                <span className="font-mono text-primary">{settings.guangxi.pulpCapacity} kt</span>
               </div>
               <Slider
                 value={[settings.guangxi.pulpCapacity]}
@@ -156,10 +156,10 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
                   checked={settings.guangxi.includeBoard}
                   onCheckedChange={(v) => updateGuangxi({ includeBoard: v })}
                 />
-                <Label htmlFor="guangxi-board" className="text-xs">纸板</Label>
+                <Label htmlFor="guangxi-board" className="text-xs">Board</Label>
                 {settings.guangxi.includeBoard && (
                   <span className="text-xs text-muted-foreground">
-                    {settings.guangxi.boardCapacity}万吨
+                    {settings.guangxi.boardCapacity}kt
                   </span>
                 )}
               </div>
@@ -169,20 +169,20 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
                   checked={settings.guangxi.includeTissue}
                   onCheckedChange={(v) => updateGuangxi({ includeTissue: v })}
                 />
-                <Label htmlFor="guangxi-tissue" className="text-xs">生活用纸</Label>
+                <Label htmlFor="guangxi-tissue" className="text-xs">Tissue</Label>
                 {settings.guangxi.includeTissue && (
                   <span className="text-xs text-muted-foreground">
-                    {settings.guangxi.tissueCapacity}万吨
+                    {settings.guangxi.tissueCapacity}kt
                   </span>
                 )}
               </div>
             </div>
           </div>
           
-          {/* 江苏/福建项目 */}
+          {/* Jiangsu/Fujian project */}
           <div className="mt-3 space-y-3 rounded-lg bg-card/50 p-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">江苏/福建项目</span>
+              <span className="text-sm font-medium">Jiangsu/Fujian Project</span>
               <Select
                 value={settings.jiangsuFujian.startYear.toString()}
                 onValueChange={(v) => updateJiangsuFujian({ startYear: parseInt(v) })}
@@ -192,7 +192,7 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
                 </SelectTrigger>
                 <SelectContent>
                   {YEAR_OPTIONS.map(year => (
-                    <SelectItem key={year} value={year.toString()}>{year}年</SelectItem>
+                    <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -200,8 +200,8 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
             
             <div className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <Label>浆产能</Label>
-                <span className="font-mono text-primary">{settings.jiangsuFujian.pulpCapacity} 万吨</span>
+                <Label>Pulp Capacity</Label>
+                <span className="font-mono text-primary">{settings.jiangsuFujian.pulpCapacity} kt</span>
               </div>
               <Slider
                 value={[settings.jiangsuFujian.pulpCapacity]}
@@ -219,10 +219,10 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
                   checked={settings.jiangsuFujian.includeBoard}
                   onCheckedChange={(v) => updateJiangsuFujian({ includeBoard: v })}
                 />
-                <Label htmlFor="jf-board" className="text-xs">纸板</Label>
+                <Label htmlFor="jf-board" className="text-xs">Board</Label>
                 {settings.jiangsuFujian.includeBoard && (
                   <span className="text-xs text-muted-foreground">
-                    {settings.jiangsuFujian.boardCapacity}万吨
+                    {settings.jiangsuFujian.boardCapacity}kt
                   </span>
                 )}
               </div>
@@ -232,10 +232,10 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
                   checked={settings.jiangsuFujian.includeTissue}
                   onCheckedChange={(v) => updateJiangsuFujian({ includeTissue: v })}
                 />
-                <Label htmlFor="jf-tissue" className="text-xs">生活用纸</Label>
+                <Label htmlFor="jf-tissue" className="text-xs">Tissue</Label>
                 {settings.jiangsuFujian.includeTissue && (
                   <span className="text-xs text-muted-foreground">
-                    {settings.jiangsuFujian.tissueCapacity}万吨
+                    {settings.jiangsuFujian.tissueCapacity}kt
                   </span>
                 )}
               </div>
@@ -243,10 +243,10 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
           </div>
         </div>
 
-        {/* 竞争对手（AI驱动） */}
+        {/* Competitors (AI-driven) */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-muted-foreground">竞争对手响应</span>
+            <span className="text-sm font-medium text-muted-foreground">Competitor Response</span>
             <AIBadge />
           </div>
           <div className="grid grid-cols-2 gap-2">
@@ -273,7 +273,7 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
                       'mt-1',
                       change.pulpChange > 0 ? 'text-success' : 'text-destructive'
                     )}>
-                      {change.pulpChange > 0 ? '+' : ''}{change.pulpChange} 万吨
+                      {change.pulpChange > 0 ? '+' : ''}{change.pulpChange} kt
                     </p>
                   )}
                 </div>

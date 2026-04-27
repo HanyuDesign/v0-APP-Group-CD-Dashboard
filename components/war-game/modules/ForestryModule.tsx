@@ -42,29 +42,29 @@ export function ForestryModule({
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
           <TreePine className="h-5 w-5 text-success" />
-          林业与木片
+          Forestry & Woodchips
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-5">
-        {/* 可视化地图示意 */}
+        {/* Map visualization */}
         <div className="relative rounded-lg bg-secondary/30 p-4">
           <div className="flex items-center justify-between gap-4">
-            {/* 华南 */}
+            {/* South China */}
             <div className="flex-1 rounded-lg border border-border/50 bg-card/50 p-3 text-center">
               <TreePine className="mx-auto h-6 w-6 text-success" />
-              <p className="mt-1 text-sm font-medium">华南林区</p>
-              <p className="text-xs text-muted-foreground">国内木片供应</p>
+              <p className="mt-1 text-sm font-medium">South China</p>
+              <p className="text-xs text-muted-foreground">Domestic woodchip supply</p>
             </div>
             
-            {/* 箭头 */}
+            {/* Arrow */}
             <div className="flex flex-col items-center">
               <ArrowRight className="h-5 w-5 text-muted-foreground" />
               <ArrowRight className="h-5 w-5 text-muted-foreground" />
             </div>
             
-            {/* 木片池 */}
+            {/* Woodchip pool */}
             <div className="flex-1 rounded-lg border-2 border-primary/50 bg-primary/10 p-3 text-center">
-              <p className="text-sm font-semibold text-primary">中国木片池</p>
+              <p className="text-sm font-semibold text-primary">China Woodchip Pool</p>
               {woodchipAvailability && (
                 <p className={cn(
                   'mt-1 text-xs font-medium',
@@ -72,37 +72,37 @@ export function ForestryModule({
                   woodchipAvailability === 'medium' && 'text-warning',
                   woodchipAvailability === 'low' && 'text-destructive'
                 )}>
-                  可用性: {woodchipAvailability === 'high' ? '充足' : woodchipAvailability === 'medium' ? '中等' : '紧张'}
+                  Availability: {woodchipAvailability === 'high' ? 'Abundant' : woodchipAvailability === 'medium' ? 'Moderate' : 'Tight'}
                 </p>
               )}
               {woodchipPrice && (
                 <p className="text-xs text-muted-foreground">
-                  价格: {POLICY_LABELS.priceLevel[woodchipPrice]}
+                  Price: {POLICY_LABELS.priceLevel[woodchipPrice]}
                 </p>
               )}
             </div>
             
-            {/* 箭头 */}
+            {/* Arrow */}
             <div className="flex flex-col items-center">
               <ArrowRight className="h-5 w-5 text-muted-foreground rotate-180" />
               <ArrowRight className="h-5 w-5 text-muted-foreground rotate-180" />
             </div>
             
-            {/* 越南 */}
+            {/* Vietnam */}
             <div className="flex-1 rounded-lg border border-border/50 bg-card/50 p-3 text-center">
               <Ship className="mx-auto h-6 w-6 text-chart-2" />
-              <p className="mt-1 text-sm font-medium">越南</p>
-              <p className="text-xs text-muted-foreground">木片出口 (~30%)</p>
+              <p className="mt-1 text-sm font-medium">Vietnam</p>
+              <p className="text-xs text-muted-foreground">Woodchip exports (~30%)</p>
             </div>
           </div>
         </div>
 
-        {/* 政策控制 */}
+        {/* Policy controls */}
         <div className="space-y-4">
-          {/* 中国伐木政策 */}
+          {/* China logging policy */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-sm">中国伐木政策</Label>
+              <Label className="text-sm">China Logging Policy</Label>
               <span className="text-sm font-medium text-primary">
                 {POLICY_LABELS.chinaLoggingPolicy[settings.chinaLoggingPolicy]}
               </span>
@@ -115,16 +115,16 @@ export function ForestryModule({
               className="w-full"
             />
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>紧缩</span>
-              <span>基准</span>
-              <span>宽松</span>
+              <span>Tight</span>
+              <span>Baseline</span>
+              <span>Relaxed</span>
             </div>
           </div>
 
-          {/* 越南出口政策 */}
+          {/* Vietnam export policy */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-sm">越南出口政策</Label>
+              <Label className="text-sm">Vietnam Export Policy</Label>
               <span className="text-sm font-medium text-primary">
                 {POLICY_LABELS.vietnamExportPolicy[settings.vietnamExportPolicy]}
               </span>
@@ -137,16 +137,16 @@ export function ForestryModule({
               className="w-full"
             />
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>限制</span>
-              <span>基准</span>
-              <span>扩大</span>
+              <span>Restricted</span>
+              <span>Baseline</span>
+              <span>Expanded</span>
             </div>
           </div>
 
-          {/* 越南出口价格 */}
+          {/* Vietnam export price */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-sm">越南出口价格</Label>
+              <Label className="text-sm">Vietnam Export Price</Label>
               <span className="text-sm font-medium text-primary">
                 {POLICY_LABELS.priceLevel[settings.vietnamExportPrice]}
               </span>
@@ -159,9 +159,9 @@ export function ForestryModule({
               className="w-full"
             />
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>低</span>
-              <span>中</span>
-              <span>高</span>
+              <span>Low</span>
+              <span>Medium</span>
+              <span>High</span>
             </div>
           </div>
         </div>
