@@ -10,9 +10,8 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
-import { BarChart3, PieChart, FileText, Package, Bath } from 'lucide-react'
+import { BarChart3, PieChart } from 'lucide-react'
 import { AIBadge } from '../shared/AIBadge'
-import { TrafficLight } from '../shared/TrafficLight'
 import type { SimulationResult } from '@/lib/types/war-game'
 import { PLAYERS } from '@/lib/data/initial-data'
 import {
@@ -32,20 +31,7 @@ interface MarketResultsProps {
 }
 
 export function MarketResults({ result }: MarketResultsProps) {
-  const { playerMarketOutcomes, exporterAllocations, competitorChanges, segmentOutcomes } = result
-
-  // Segment icons mapping
-  const segmentIcons: Record<string, React.ReactNode> = {
-    paper: <FileText className="h-4 w-4 text-muted-foreground" />,
-    board: <Package className="h-4 w-4 text-chart-3" />,
-    tissue: <Bath className="h-4 w-4 text-chart-2" />,
-  }
-
-  const segmentLabels: Record<string, string> = {
-    paper: 'Paper',
-    board: 'Packaging / Board',
-    tissue: 'Tissue',
-  }
+  const { playerMarketOutcomes, competitorChanges } = result
 
   // Prepare market share pie chart data
   const marketShareData = playerMarketOutcomes
@@ -175,77 +161,6 @@ export function MarketResults({ result }: MarketResultsProps) {
         </Card>
       </div>
 
-      {/* Competitor Capacity Decisions - Full List */}
-      <Card className="border-border/50 bg-card/80">
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-sm">Competitor Capacity Decisions (AI Simulation)</CardTitle>
-            <AIBadge size="sm" />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-3">
-            {competitorChanges.map(change => {
-              const player = PLAYERS.find(p => p.id === change.playerId)!
-              return (
-                <div
-                  key={change.playerId}
-                  className={cn(
-                    'rounded-lg border p-3',
-                    change.action === 'delay' && 'border-warning/50 bg-warning/5',
-                    change.action === 'add' && 'border-success/50 bg-success/5',
-                    change.action === 'maintain' && 'border-border/50 bg-card/50'
-                  )}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="h-2.5 w-2.5 rounded-full"
-                        style={{ backgroundColor: player.color }}
-                      />
-                      <span className="font-medium">{player.nameCn}</span>
-                    </div>
-                    <span className={cn(
-                      'text-xs font-medium px-2 py-0.5 rounded',
-                      change.action === 'delay' && 'bg-warning/20 text-warning',
-                      change.action === 'add' && 'bg-success/20 text-success',
-                      change.action === 'maintain' && 'bg-muted text-muted-foreground'
-                    )}>
-                      {change.action === 'delay' ? 'Delay' : change.action === 'add' ? 'Expand' : 'Maintain'}
-                    </span>
-                  </div>
-                  <div className="mt-2 space-y-1 text-xs">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Pulp Change</span>
-                      <span className={cn(
-                        'font-mono',
-                        change.pulpChange > 0 && 'text-success',
-                        change.pulpChange < 0 && 'text-destructive',
-                        change.pulpChange === 0 && 'text-muted-foreground'
-                      )}>
-                        {change.pulpChange > 0 ? '+' : ''}{change.pulpChange} kt
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Downstream Change</span>
-                      <span className={cn(
-                        'font-mono',
-                        change.downstreamChange > 0 && 'text-success',
-                        change.downstreamChange < 0 && 'text-destructive',
-                        change.downstreamChange === 0 && 'text-muted-foreground'
-                      )}>
-                        {change.downstreamChange > 0 ? '+' : ''}{change.downstreamChange} kt
-                      </span>
-                    </div>
-                    <p className="mt-2 text-muted-foreground italic">{change.reasoning}</p>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Player market details table */}
       <Card className="border-border/50 bg-card/80">
         <CardHeader className="pb-2">
@@ -303,132 +218,6 @@ export function MarketResults({ result }: MarketResultsProps) {
               })}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
-
-      {/* Downstream Segment Outcomes */}
-      <Card className="border-border/50 bg-card/80">
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-sm">Downstream Segment Outcomes</CardTitle>
-            <AIBadge size="sm" />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-3 gap-4">
-            {segmentOutcomes.map(outcome => (
-              <div
-                key={outcome.segment}
-                className="rounded-lg border border-border/50 bg-card/50 p-3"
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  {segmentIcons[outcome.segment]}
-                  <span className="font-medium">{segmentLabels[outcome.segment]}</span>
-                </div>
-                
-                {/* Supply-demand balance */}
-                <div className="space-y-1 mb-2">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Supply-Demand</span>
-                    <span className={cn(
-                      'font-mono',
-                      outcome.supplyDemandBalance > 50 && 'text-destructive',
-                      outcome.supplyDemandBalance < -20 && 'text-success',
-                      Math.abs(outcome.supplyDemandBalance) <= 50 && 'text-warning'
-                    )}>
-                      {outcome.supplyDemandBalance > 0 ? 'Surplus ' : 'Shortage '}
-                      {Math.abs(Math.round(outcome.supplyDemandBalance))} kt
-                    </span>
-                  </div>
-                  <div className="h-1.5 rounded-full bg-secondary">
-                    <div
-                      className={cn(
-                        'h-full rounded-full transition-all',
-                        outcome.supplyDemandBalance > 50 && 'bg-destructive',
-                        outcome.supplyDemandBalance < -20 && 'bg-success',
-                        Math.abs(outcome.supplyDemandBalance) <= 50 && 'bg-warning'
-                      )}
-                      style={{
-                        width: `${Math.min(100, Math.max(10, 50 + outcome.supplyDemandBalance / 3))}%`
-                      }}
-                    />
-                  </div>
-                </div>
-                
-                {/* Utilization */}
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-muted-foreground">Utilization</span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs">
-                      {Math.round(outcome.utilization)}%
-                    </span>
-                    <TrafficLight
-                      status={
-                        outcome.utilization >= 90 ? 'green' :
-                        outcome.utilization >= 80 ? 'amber' : 'red'
-                      }
-                    />
-                  </div>
-                </div>
-                
-                {/* Margin pressure */}
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Margin Pressure</span>
-                  <span className={cn(
-                    'text-xs font-medium',
-                    outcome.marginPressure === 'high' && 'text-success',
-                    outcome.marginPressure === 'medium' && 'text-warning',
-                    outcome.marginPressure === 'low' && 'text-destructive'
-                  )}>
-                    {outcome.marginPressure === 'high' ? 'Low' : 
-                     outcome.marginPressure === 'medium' ? 'Medium' : 'High'}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Exporter allocation */}
-      <Card className="border-border/50 bg-card/80">
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-sm">Exporter Allocation Decisions</CardTitle>
-            <AIBadge size="sm" />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4">
-            {exporterAllocations.map(allocation => {
-              const player = PLAYERS.find(p => p.id === allocation.playerId)!
-              return (
-                <div
-                  key={allocation.playerId}
-                  className="rounded-lg border border-border/50 bg-card/50 p-3"
-                >
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="h-2.5 w-2.5 rounded-full"
-                      style={{ backgroundColor: player.color }}
-                    />
-                    <span className="font-medium">{player.nameCn}</span>
-                  </div>
-                  <div className="mt-2 space-y-1 text-xs">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">China Exports</span>
-                      <span className="font-mono">{allocation.chinaVolume} kt ({Math.round(allocation.chinaShare * 100)}%)</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Other Regions</span>
-                      <span className="font-mono">{allocation.otherRegionsVolume} kt</span>
-                    </div>
-                    <p className="mt-2 text-ai-badge">{allocation.reasoning}</p>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
         </CardContent>
       </Card>
     </div>

@@ -3,6 +3,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent } from '@/components/ui/card'
 import { BarChart3, DollarSign, Clock } from 'lucide-react'
+import { AIDecisionsSummary } from './AIDecisionsSummary'
 import { MarketResults } from './MarketResults'
 import { FinancialResults } from './FinancialResults'
 import type { SimulationResult, SimulationStatus } from '@/lib/types/war-game'
@@ -54,25 +55,40 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
   }
 
   return (
-    <Tabs defaultValue="market" className="w-full">
-      <TabsList className="mb-4 grid w-full max-w-md grid-cols-2">
-        <TabsTrigger value="market" className="gap-2">
-          <BarChart3 className="h-4 w-4" />
-          Market Results
-        </TabsTrigger>
-        <TabsTrigger value="financial" className="gap-2">
-          <DollarSign className="h-4 w-4" />
-          Financial Results
-        </TabsTrigger>
-      </TabsList>
-      
-      <TabsContent value="market" className={cn(status === 'running' && 'opacity-50')}>
-        <MarketResults result={result} />
-      </TabsContent>
-      
-      <TabsContent value="financial" className={cn(status === 'running' && 'opacity-50')}>
-        <FinancialResults result={result} />
-      </TabsContent>
-    </Tabs>
+    <div className="space-y-6">
+      {/* Section 1: AI Decisions Summary */}
+      <section>
+        <AIDecisionsSummary result={result} />
+      </section>
+
+      {/* Section 2: Detailed Market & Financial Results */}
+      <section>
+        <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+          <span className="h-px flex-1 bg-border" />
+          Detailed Analysis
+          <span className="h-px flex-1 bg-border" />
+        </h3>
+        <Tabs defaultValue="market" className="w-full">
+          <TabsList className="mb-4 grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="market" className="gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Market Results
+            </TabsTrigger>
+            <TabsTrigger value="financial" className="gap-2">
+              <DollarSign className="h-4 w-4" />
+              Financial Results
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="market" className={cn(status === 'running' && 'opacity-50')}>
+            <MarketResults result={result} />
+          </TabsContent>
+          
+          <TabsContent value="financial" className={cn(status === 'running' && 'opacity-50')}>
+            <FinancialResults result={result} />
+          </TabsContent>
+        </Tabs>
+      </section>
+    </div>
   )
 }
