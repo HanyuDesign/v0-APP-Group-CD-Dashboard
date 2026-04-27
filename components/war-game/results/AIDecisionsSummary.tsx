@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import { FileText, Package, Bath, Bot } from 'lucide-react'
+import { FileText, Package, Bath, Bot, Building2 } from 'lucide-react'
 import { AIBadge } from '../shared/AIBadge'
 import { TrafficLight } from '../shared/TrafficLight'
 import type { SimulationResult } from '@/lib/types/war-game'
@@ -13,7 +13,21 @@ interface AIDecisionsSummaryProps {
 }
 
 export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
-  const { competitorChanges, exporterAllocations, segmentOutcomes } = result
+  const { competitorChanges, exporterAllocations, segmentOutcomes, input } = result
+
+  // Calculate APP's capacity decisions from input
+  const appChinaPlayer = PLAYERS.find(p => p.id === 'app-china')!
+  const appIndonesiaPlayer = PLAYERS.find(p => p.id === 'app-indonesia')!
+
+  // APP China new capacity from Guangxi + Jiangsu/Fujian
+  const appChinaPulpAdd = input.appCapacity.guangxi.pulpCapacity + input.appCapacity.jiangsuFujian.pulpCapacity
+  const appChinaBoardAdd = 
+    (input.appCapacity.guangxi.includeBoard ? input.appCapacity.guangxi.boardCapacity : 0) +
+    (input.appCapacity.jiangsuFujian.includeBoard ? input.appCapacity.jiangsuFujian.boardCapacity : 0)
+  const appChinaTissueAdd = 
+    (input.appCapacity.guangxi.includeTissue ? input.appCapacity.guangxi.tissueCapacity : 0) +
+    (input.appCapacity.jiangsuFujian.includeTissue ? input.appCapacity.jiangsuFujian.tissueCapacity : 0)
+  const appChinaDownstreamAdd = appChinaBoardAdd + appChinaTissueAdd
 
   // Segment icons mapping
   const segmentIcons: Record<string, React.ReactNode> = {
@@ -42,15 +56,90 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        {/* Competitor Capacity Decisions */}
+        {/* Capacity Decisions - APP (Focused) + Competitors */}
         <Card className="border-border/50 bg-card/80 col-span-1">
           <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm">Competitor Capacity Decisions</CardTitle>
-              <AIBadge size="sm" />
-            </div>
+            <CardTitle className="text-sm">Capacity Decisions</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 max-h-[400px] overflow-y-auto">
+          <CardContent className="space-y-3 max-h-[420px] overflow-y-auto">
+            {/* APP Group - Focused */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs font-semibold text-primary">
+                <Building2 className="h-3.5 w-3.5" />
+                APP Group (Your Strategy)
+              </div>
+              
+              {/* APP China */}
+              <div className="rounded-lg border-2 border-primary/50 bg-primary/5 p-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="h-2 w-2 rounded-full"
+                      style={{ backgroundColor: appChinaPlayer.color }}
+                    />
+                    <span className="text-sm font-medium">{appChinaPlayer.nameCn}</span>
+                  </div>
+                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-primary/20 text-primary">
+                    Expand
+                  </span>
+                </div>
+                <div className="mt-1.5 flex gap-4 text-[11px]">
+                  <div>
+                    <span className="text-muted-foreground">Pulp: </span>
+                    <span className="font-mono text-primary">+{appChinaPulpAdd} kt</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Downstream: </span>
+                    <span className="font-mono text-primary">+{appChinaDownstreamAdd} kt</span>
+                  </div>
+                </div>
+                <p className="mt-1 text-[10px] text-muted-foreground">
+                  Guangxi: {input.appCapacity.guangxi.pulpCapacity} kt pulp ({input.appCapacity.guangxi.startYear})
+                  {input.appCapacity.guangxi.includeBoard && `, ${input.appCapacity.guangxi.boardCapacity} kt board`}
+                  {input.appCapacity.guangxi.includeTissue && `, ${input.appCapacity.guangxi.tissueCapacity} kt tissue`}
+                </p>
+                <p className="text-[10px] text-muted-foreground">
+                  Jiangsu/Fujian: {input.appCapacity.jiangsuFujian.pulpCapacity} kt pulp ({input.appCapacity.jiangsuFujian.startYear})
+                  {input.appCapacity.jiangsuFujian.includeBoard && `, ${input.appCapacity.jiangsuFujian.boardCapacity} kt board`}
+                  {input.appCapacity.jiangsuFujian.includeTissue && `, ${input.appCapacity.jiangsuFujian.tissueCapacity} kt tissue`}
+                </p>
+              </div>
+              
+              {/* APP Indonesia */}
+              <div className="rounded-lg border-2 border-primary/30 bg-primary/5 p-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="h-2 w-2 rounded-full"
+                      style={{ backgroundColor: appIndonesiaPlayer.color }}
+                    />
+                    <span className="text-sm font-medium">{appIndonesiaPlayer.nameCn}</span>
+                  </div>
+                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
+                    Maintain
+                  </span>
+                </div>
+                <div className="mt-1.5 text-[11px]">
+                  <span className="text-muted-foreground">Existing capacity: </span>
+                  <span className="font-mono">{appIndonesiaPlayer.pulpCapacity} kt pulp</span>
+                </div>
+                <p className="mt-1 text-[10px] text-muted-foreground italic">
+                  Supplying China market via exports
+                </p>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="flex items-center gap-2 pt-1">
+              <span className="h-px flex-1 bg-border" />
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <span>Competitors</span>
+                <AIBadge size="sm" />
+              </div>
+              <span className="h-px flex-1 bg-border" />
+            </div>
+
+            {/* Competitors - AI Driven */}
             {competitorChanges.map(change => {
               const player = PLAYERS.find(p => p.id === change.playerId)!
               return (
