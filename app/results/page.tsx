@@ -1,41 +1,42 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ValueChainFlow } from './ValueChainFlow'
-import { ResultsPanel } from './results/ResultsPanel'
-import { Play, RotateCcw, Zap, History } from 'lucide-react'
-import { runSimulation } from '@/lib/simulation/mock-simulation'
-import { DEFAULT_SIMULATION_INPUT } from '@/lib/data/initial-data'
-import type { SimulationInput, SimulationResult, SimulationStatus } from '@/lib/types/war-game'
+import { ResultsPanel } from '@/components/war-game/results/ResultsPanel'
+import { Play, RotateCcw, Zap, ArrowLeft, History } from 'lucide-react'
+import { useSimulation } from '@/lib/context/SimulationContext'
 
-export function WarGameDashboard() {
-  const [input, setInput] = useState<SimulationInput>(DEFAULT_SIMULATION_INPUT)
-  const [result, setResult] = useState<SimulationResult | null>(null)
-  const [status, setStatus] = useState<SimulationStatus>('idle')
-  const [history, setHistory] = useState<SimulationResult[]>([])
+export default function ResultsPage() {
+  const router = useRouter()
+  const { input, result, status, history, runSimulationAsync, reset } = useSimulation()
 
-  const handleRunSimulation = useCallback(async () => {
-    setStatus('running')
-    try {
-      const newResult = await runSimulation(input)
-      setResult(newResult)
-      setHistory(prev => [newResult, ...prev].slice(0, 10))
-      setStatus('completed')
-    } catch (error) {
-      console.error('Simulation error:', error)
-      setStatus('error')
+  // Redirect to input page if no results
+  useEffect(() => {
+    if (!result && status !== 'running') {
+      router.push('/')
     }
-  }, [input])
+  }, [result, status, router])
 
-  const handleReset = useCallback(() => {
-    setInput(DEFAULT_SIMULATION_INPUT)
-    setResult(null)
-    setStatus('idle')
-  }, [])
+  const handleRunSimulation = async () => {
+    await runSimulationAsync()
+  }
+
+  const handleReset = () => {
+    reset()
+    router.push('/')
+  }
+
+  const handleBackToInput = () => {
+    router.push('/')
+  }
 
   const totalNewCapacity = input.appCapacity.guangxi.pulpCapacity + input.appCapacity.jiangsuFujian.pulpCapacity
+
+  if (!result && status !== 'running') {
+    return null
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -48,7 +49,7 @@ export function WarGameDashboard() {
               <h1 className="text-xl font-bold">APP Strategic War-Gaming Tool</h1>
             </div>
             <Badge variant="outline" className="text-xs">
-              AI-Powered Scenario Analysis
+              Simulation Results
             </Badge>
           </div>
 
@@ -105,7 +106,7 @@ export function WarGameDashboard() {
                 ) : (
                   <>
                     <Play className="mr-1.5 h-4 w-4" />
-                    Run Simulation
+                    Re-run Simulation
                   </>
                 )}
               </Button>
@@ -114,33 +115,27 @@ export function WarGameDashboard() {
         </div>
       </header>
 
+      {/* Navigation tabs */}
+      <nav className="border-b border-border/50 bg-background px-6">
+        <div className="flex gap-1">
+          <button
+            onClick={handleBackToInput}
+            className="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-muted-foreground hover:text-foreground hover:border-border flex items-center gap-1.5"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Input Configuration
+          </button>
+          <button
+            className="px-4 py-2.5 text-sm font-medium border-b-2 border-primary text-primary"
+          >
+            Simulation Results
+          </button>
+        </div>
+      </nav>
+
       {/* Main content */}
       <main className="flex-1 overflow-x-auto p-6">
-        {/* Value chain flow */}
-        <section className="mb-6">
-          <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-            <span className="h-px flex-1 bg-border" />
-            Value Chain (Left to Right: Forestry → Pulp → Downstream)
-            <span className="h-px flex-1 bg-border" />
-          </h2>
-          <div className="min-w-[1200px]">
-            <ValueChainFlow
-              input={input}
-              onInputChange={setInput}
-              result={result}
-            />
-          </div>
-        </section>
-
-        {/* Results panel */}
-        <section>
-          <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-            <span className="h-px flex-1 bg-border" />
-            Simulation Results
-            <span className="h-px flex-1 bg-border" />
-          </h2>
-          <ResultsPanel result={result} status={status} />
-        </section>
+        <ResultsPanel result={result} status={status} />
       </main>
 
       {/* Footer */}
@@ -153,11 +148,11 @@ export function WarGameDashboard() {
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+              <span className="h-2 w-2 rounded-full bg-primary" />
               <span>User Input</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-ai-badge animate-pulse" />
+              <span className="h-2 w-2 rounded-full bg-ai-badge" />
               <span>AI-Driven</span>
             </div>
           </div>
