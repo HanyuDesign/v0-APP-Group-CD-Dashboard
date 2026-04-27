@@ -78,12 +78,19 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
           <p className="mb-2 text-xs font-medium text-muted-foreground">Capacity Distribution (kt/year)</p>
           <ResponsiveContainer width="100%" height={140}>
             <BarChart data={capacityData} layout="vertical" margin={{ left: 60, right: 10 }}>
-              <XAxis type="number" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
+              <XAxis 
+                type="number" 
+                tick={{ fontSize: 10, fill: '#f1f5f9' }} 
+                axisLine={{ stroke: '#64748b' }}
+                tickLine={{ stroke: '#64748b' }}
+              />
               <YAxis 
                 type="category" 
                 dataKey="name" 
-                tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
-                width={55}
+                tick={{ fontSize: 10, fill: '#f1f5f9' }}
+                width={70}
+                axisLine={{ stroke: '#64748b' }}
+                tickLine={{ stroke: '#64748b' }}
               />
               <Tooltip
                 contentStyle={{

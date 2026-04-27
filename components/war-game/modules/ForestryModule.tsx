@@ -47,52 +47,51 @@ export function ForestryModule({
       </CardHeader>
       <CardContent className="space-y-5">
         {/* Map visualization */}
-        <div className="relative rounded-lg bg-secondary/30 p-4">
-          <div className="flex items-center justify-between gap-4">
-            {/* South China */}
-            <div className="flex-1 rounded-lg border border-border/50 bg-card/50 p-3 text-center">
-              <TreePine className="mx-auto h-6 w-6 text-success" />
-              <p className="mt-1 text-sm font-medium">South China</p>
-              <p className="text-xs text-muted-foreground">Domestic woodchip supply</p>
+        <div className="relative rounded-lg bg-secondary/30 p-3">
+          <div className="flex flex-col gap-3">
+            {/* Top row: South China and Vietnam */}
+            <div className="grid grid-cols-2 gap-3">
+              {/* South China */}
+              <div className="rounded-lg border border-border/50 bg-card/50 p-2.5 text-center">
+                <TreePine className="mx-auto h-5 w-5 text-success" />
+                <p className="mt-1 text-xs font-medium">South China</p>
+                <p className="text-[10px] text-muted-foreground leading-tight">Domestic supply</p>
+              </div>
+              
+              {/* Vietnam */}
+              <div className="rounded-lg border border-border/50 bg-card/50 p-2.5 text-center">
+                <Ship className="mx-auto h-5 w-5 text-chart-2" />
+                <p className="mt-1 text-xs font-medium">Vietnam</p>
+                <p className="text-[10px] text-muted-foreground leading-tight">Exports (~30%)</p>
+              </div>
             </div>
             
-            {/* Arrow */}
-            <div className="flex flex-col items-center">
-              <ArrowRight className="h-5 w-5 text-muted-foreground" />
-              <ArrowRight className="h-5 w-5 text-muted-foreground" />
+            {/* Arrows pointing down */}
+            <div className="flex justify-center gap-8">
+              <ArrowRight className="h-4 w-4 text-muted-foreground rotate-90" />
+              <ArrowRight className="h-4 w-4 text-muted-foreground rotate-90" />
             </div>
             
             {/* Woodchip pool */}
-            <div className="flex-1 rounded-lg border-2 border-primary/50 bg-primary/10 p-3 text-center">
-              <p className="text-sm font-semibold text-primary">China Woodchip Pool</p>
-              {woodchipAvailability && (
-                <p className={cn(
-                  'mt-1 text-xs font-medium',
-                  woodchipAvailability === 'high' && 'text-success',
-                  woodchipAvailability === 'medium' && 'text-warning',
-                  woodchipAvailability === 'low' && 'text-destructive'
-                )}>
-                  Availability: {woodchipAvailability === 'high' ? 'Abundant' : woodchipAvailability === 'medium' ? 'Moderate' : 'Tight'}
-                </p>
-              )}
-              {woodchipPrice && (
-                <p className="text-xs text-muted-foreground">
-                  Price: {POLICY_LABELS.priceLevel[woodchipPrice]}
-                </p>
-              )}
-            </div>
-            
-            {/* Arrow */}
-            <div className="flex flex-col items-center">
-              <ArrowRight className="h-5 w-5 text-muted-foreground rotate-180" />
-              <ArrowRight className="h-5 w-5 text-muted-foreground rotate-180" />
-            </div>
-            
-            {/* Vietnam */}
-            <div className="flex-1 rounded-lg border border-border/50 bg-card/50 p-3 text-center">
-              <Ship className="mx-auto h-6 w-6 text-chart-2" />
-              <p className="mt-1 text-sm font-medium">Vietnam</p>
-              <p className="text-xs text-muted-foreground">Woodchip exports (~30%)</p>
+            <div className="rounded-lg border-2 border-primary/50 bg-primary/10 p-2.5 text-center">
+              <p className="text-xs font-semibold text-primary">China Woodchip Pool</p>
+              <div className="mt-1 flex items-center justify-center gap-3">
+                {woodchipAvailability && (
+                  <span className={cn(
+                    'text-[10px] font-medium',
+                    woodchipAvailability === 'high' && 'text-success',
+                    woodchipAvailability === 'medium' && 'text-warning',
+                    woodchipAvailability === 'low' && 'text-destructive'
+                  )}>
+                    {woodchipAvailability === 'high' ? 'Abundant' : woodchipAvailability === 'medium' ? 'Moderate' : 'Tight'}
+                  </span>
+                )}
+                {woodchipPrice && (
+                  <span className="text-[10px] text-muted-foreground">
+                    Price: {POLICY_LABELS.priceLevel[woodchipPrice]}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
