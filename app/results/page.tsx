@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ResultsPanel } from '@/components/war-game/results/ResultsPanel'
-import { Play, RotateCcw, Zap, ArrowLeft, History } from 'lucide-react'
+import { Play, RotateCcw, Zap, ArrowLeft, History, Download, Share2 } from 'lucide-react'
 import { useSimulation } from '@/lib/context/SimulationContext'
 
 export default function ResultsPage() {
@@ -30,6 +30,60 @@ export default function ResultsPage() {
 
   const handleBackToInput = () => {
     router.push('/')
+  }
+
+  const handleExportReport = () => {
+    if (!result) return
+    
+    // Generate report data
+    const reportData = {
+      timestamp: new Date().toISOString(),
+      input: input,
+      result: result,
+    }
+    
+    // Create and download JSON file
+    const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `app-simulation-report-${new Date().toISOString().split('T')[0]}.json`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  const handleShareReport = async () => {
+    if (!result) return
+    
+    // Create shareable summary text
+    const totalPulp = input.appCapacity.guangxi.pulpCapacity + input.appCapacity.jiangsuFujian.pulpCapacity
+    const summaryText = `APP Strategic Simulation Results\n\n` +
+      `New Pulp Capacity: ${totalPulp} kt\n` +
+      `- Guangxi: ${input.appCapacity.guangxi.pulpCapacity} kt (${input.appCapacity.guangxi.startYear})\n` +
+      `- Jiangsu/Fujian: ${input.appCapacity.jiangsuFujian.pulpCapacity} kt (${input.appCapacity.jiangsuFujian.startYear})\n\n` +
+      `Simulation Date: ${new Date().toLocaleDateString()}`
+    
+    // Try native share API first, fallback to clipboard
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'APP Strategic Simulation Report',
+          text: summaryText,
+        })
+      } catch {
+        // User cancelled or share failed
+      }
+    } else {
+      // Fallback to clipboard
+      try {
+        await navigator.clipboard.writeText(summaryText)
+        alert('Report summary copied to clipboard!')
+      } catch {
+        alert('Unable to share report')
+      }
+    }
   }
 
   const totalNewCapacity = input.appCapacity.guangxi.pulpCapacity + input.appCapacity.jiangsuFujian.pulpCapacity
@@ -83,6 +137,25 @@ export default function ResultsPage() {
 
             {/* Control buttons */}
             <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExportReport}
+                disabled={status === 'running' || !result}
+              >
+                <Download className="mr-1.5 h-4 w-4" />
+                Export Report
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleShareReport}
+                disabled={status === 'running' || !result}
+              >
+                <Share2 className="mr-1.5 h-4 w-4" />
+                Share Report
+              </Button>
+              <div className="h-6 w-px bg-border" />
               <Button
                 variant="outline"
                 size="sm"
