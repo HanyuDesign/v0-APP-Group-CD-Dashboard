@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import { FileText, Package, Bath, Bot, Building2 } from 'lucide-react'
+import { FileText, Package, Bath, Bot, Building2, Lightbulb, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { AIBadge } from '../shared/AIBadge'
 import { TrafficLight } from '../shared/TrafficLight'
 import type { SimulationResult } from '@/lib/types/war-game'
@@ -29,6 +29,61 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
     (input.appCapacity.jiangsuFujian.includeTissue ? input.appCapacity.jiangsuFujian.tissueCapacity : 0)
   const appChinaDownstreamAdd = appChinaBoardAdd + appChinaTissueAdd
 
+  // Calculate competitor response summary
+  const competitorsExpanding = competitorChanges.filter(c => c.action === 'add').length
+  const competitorsDelaying = competitorChanges.filter(c => c.action === 'delay').length
+  const competitorsMaintaining = competitorChanges.filter(c => c.action === 'maintain').length
+  const totalCompetitorPulpChange = competitorChanges.reduce((sum, c) => sum + c.pulpChange, 0)
+  const totalCompetitorDownstreamChange = competitorChanges.reduce((sum, c) => sum + c.downstreamChange, 0)
+
+  // Calculate exporter allocation summary
+  const avgChinaShare = exporterAllocations.length > 0 
+    ? exporterAllocations.reduce((sum, e) => sum + e.chinaShare, 0) / exporterAllocations.length 
+    : 0
+  const totalChinaExports = exporterAllocations.reduce((sum, e) => sum + e.chinaVolume, 0)
+
+  // Generate AI insights
+  const generateInsights = () => {
+    const insights: string[] = []
+    
+    // APP strategy insight
+    if (appChinaPulpAdd > 200) {
+      insights.push(`APP's aggressive expansion (+${appChinaPulpAdd} kt pulp) signals strong market confidence and aims to capture dominant position in China.`)
+    } else if (appChinaPulpAdd > 0) {
+      insights.push(`APP's moderate capacity addition (+${appChinaPulpAdd} kt pulp) positions for growth while managing risk.`)
+    }
+
+    // Competitor response insight
+    if (competitorsDelaying > competitorsExpanding) {
+      insights.push(`Competitors are largely defensive: ${competitorsDelaying} players delaying vs ${competitorsExpanding} expanding, suggesting APP's move creates market uncertainty.`)
+    } else if (competitorsExpanding > competitorsDelaying) {
+      insights.push(`Market sees growth opportunity: ${competitorsExpanding} competitors also expanding, indicating potential oversupply risk.`)
+    } else {
+      insights.push(`Mixed competitor response: market participants are cautiously watching APP's moves before committing.`)
+    }
+
+    // Exporter allocation insight
+    if (avgChinaShare > 0.5) {
+      insights.push(`Exporters prioritizing China market (${Math.round(avgChinaShare * 100)}% avg allocation), indicating attractive pricing vs other regions.`)
+    } else {
+      insights.push(`Exporters diversifying away from China (${Math.round(avgChinaShare * 100)}% avg allocation), potentially due to local capacity additions pressuring prices.`)
+    }
+
+    // Market balance insight
+    const tightSegments = segmentOutcomes.filter(s => s.supplyDemandBalance < -20).length
+    const oversuppliedSegments = segmentOutcomes.filter(s => s.supplyDemandBalance > 50).length
+    if (tightSegments > 0) {
+      insights.push(`${tightSegments} downstream segment(s) showing supply shortage, creating pricing power opportunity.`)
+    }
+    if (oversuppliedSegments > 0) {
+      insights.push(`${oversuppliedSegments} downstream segment(s) facing oversupply pressure, margin compression expected.`)
+    }
+
+    return insights
+  }
+
+  const insights = generateInsights()
+
   // Segment icons mapping
   const segmentIcons: Record<string, React.ReactNode> = {
     paper: <FileText className="h-4 w-4 text-muted-foreground" />,
@@ -54,6 +109,90 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
           </p>
         </div>
       </div>
+
+      {/* AI Insights Overview */}
+      <Card className="border-primary/30 bg-gradient-to-r from-primary/5 to-transparent">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-sm">
+            <Lightbulb className="h-4 w-4 text-primary" />
+            AI Strategic Insights
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-4 gap-4 mb-4">
+            {/* APP Strategy Summary */}
+            <div className="rounded-lg bg-primary/10 p-3">
+              <p className="text-xs text-muted-foreground mb-1">APP Expansion</p>
+              <p className="text-lg font-bold text-primary">+{appChinaPulpAdd} kt</p>
+              <p className="text-[10px] text-muted-foreground">Pulp capacity</p>
+            </div>
+            
+            {/* Competitor Response Summary */}
+            <div className="rounded-lg bg-secondary p-3">
+              <p className="text-xs text-muted-foreground mb-1">Competitor Response</p>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
+                  <TrendingUp className="h-3 w-3 text-success" />
+                  <span className="text-sm font-semibold">{competitorsExpanding}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Minus className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-sm font-semibold">{competitorsMaintaining}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <TrendingDown className="h-3 w-3 text-warning" />
+                  <span className="text-sm font-semibold">{competitorsDelaying}</span>
+                </div>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-1">
+                Net: {totalCompetitorPulpChange > 0 ? '+' : ''}{totalCompetitorPulpChange} kt pulp
+              </p>
+            </div>
+            
+            {/* Exporter Summary */}
+            <div className="rounded-lg bg-secondary p-3">
+              <p className="text-xs text-muted-foreground mb-1">Exporter China Focus</p>
+              <p className="text-lg font-bold">{Math.round(avgChinaShare * 100)}%</p>
+              <p className="text-[10px] text-muted-foreground">{totalChinaExports} kt to China</p>
+            </div>
+            
+            {/* Market Balance Summary */}
+            <div className="rounded-lg bg-secondary p-3">
+              <p className="text-xs text-muted-foreground mb-1">Downstream Health</p>
+              <div className="flex items-center gap-1">
+                {segmentOutcomes.map(s => (
+                  <div
+                    key={s.segment}
+                    className={cn(
+                      'h-4 w-4 rounded-full flex items-center justify-center',
+                      s.utilization >= 90 && 'bg-success',
+                      s.utilization >= 80 && s.utilization < 90 && 'bg-warning',
+                      s.utilization < 80 && 'bg-destructive'
+                    )}
+                  >
+                    <span className="text-[8px] text-white font-bold">
+                      {s.segment.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-1">
+                Avg util: {Math.round(segmentOutcomes.reduce((s, o) => s + o.utilization, 0) / segmentOutcomes.length)}%
+              </p>
+            </div>
+          </div>
+          
+          {/* Insight bullets */}
+          <div className="space-y-2">
+            {insights.map((insight, index) => (
+              <div key={index} className="flex items-start gap-2 text-sm">
+                <span className="text-primary font-bold mt-0.5">•</span>
+                <p className="text-foreground">{insight}</p>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-3 gap-4">
         {/* Capacity Decisions - APP (Focused) + Competitors */}
