@@ -117,7 +117,7 @@ export default function InputPage() {
         <section>
           <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-muted-foreground">
             <span className="h-px flex-1 bg-border" />
-            Value Chain (Left to Right: Forestry → Pulp → Downstream)
+            Value Chain Strategy Setup
             <span className="h-px flex-1 bg-border" />
           </h2>
           <div className="min-w-[1200px]">
