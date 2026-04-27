@@ -93,10 +93,10 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
               <YAxis 
                 type="category" 
                 dataKey="name" 
-                tick={{ fontSize: 10, fill: '#1a1a1a' }}
-                width={70}
-                axisLine={{ stroke: '#666666' }}
-                tickLine={{ stroke: '#666666' }}
+                tick={{ fontSize: 11, fill: '#000000', fontWeight: 500 }}
+                width={75}
+                axisLine={{ stroke: '#333333' }}
+                tickLine={{ stroke: '#333333' }}
               />
               <Tooltip
                 contentStyle={{
