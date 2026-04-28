@@ -156,8 +156,8 @@ export const PLAYERS: Player[] = [
 // Default forestry settings
 export const DEFAULT_FORESTRY_SETTINGS: ForestrySettings = {
   chinaLoggingPolicy: 'baseline',
+  chinaRealEstateCondition: 'stable',
   vietnamExportPolicy: 'baseline',
-  vietnamExportPrice: 'medium',
 }
 
 // Default APP capacity settings
@@ -200,6 +200,11 @@ export const POLICY_LABELS = {
     tight: 'Tight',
     baseline: 'Baseline',
     relaxed: 'Relaxed',
+  },
+  chinaRealEstateCondition: {
+    downturn: 'Downturn',
+    stable: 'Stable',
+    recovery: 'Recovery',
   },
   vietnamExportPolicy: {
     restricted: 'Restricted',

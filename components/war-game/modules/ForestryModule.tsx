@@ -4,38 +4,76 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
 import { cn } from '@/lib/utils'
-import { TreePine, Ship, ArrowRight } from 'lucide-react'
-import type { ForestrySettings, PolicyLevel, ExportPolicyLevel, PriceLevel } from '@/lib/types/war-game'
+import { TreePine, Ship, TrendingUp } from 'lucide-react'
+import type { ForestrySettings, PolicyLevel, ExportPolicyLevel, RealEstateCondition } from '@/lib/types/war-game'
 import { POLICY_LABELS } from '@/lib/data/initial-data'
 
 interface ForestryModuleProps {
   settings: ForestrySettings
   onChange: (settings: ForestrySettings) => void
-  woodchipAvailability?: 'low' | 'medium' | 'high'
-  woodchipPrice?: PriceLevel
 }
 
 const policyValues: PolicyLevel[] = ['tight', 'baseline', 'relaxed']
 const exportPolicyValues: ExportPolicyLevel[] = ['restricted', 'baseline', 'expanded']
-const priceValues: PriceLevel[] = ['low', 'medium', 'high']
+const realEstateValues: RealEstateCondition[] = ['downturn', 'stable', 'recovery']
+
+// Calculate China woodchip supply based on inputs
+function calculateChinaSupply(loggingPolicy: PolicyLevel, realEstateCondition: RealEstateCondition): { supply: number; level: 'low' | 'medium' | 'high' } {
+  // Base supply: 800 kt
+  let supply = 800
+  
+  // Logging policy impact
+  if (loggingPolicy === 'tight') supply -= 150
+  else if (loggingPolicy === 'relaxed') supply += 150
+  
+  // Real estate impact (construction waste wood recycling)
+  if (realEstateCondition === 'downturn') supply -= 100
+  else if (realEstateCondition === 'recovery') supply += 100
+  
+  // Determine level
+  let level: 'low' | 'medium' | 'high' = 'medium'
+  if (supply <= 650) level = 'low'
+  else if (supply >= 900) level = 'high'
+  
+  return { supply, level }
+}
+
+// Calculate Vietnam woodchip supply based on export policy
+function calculateVietnamSupply(exportPolicy: ExportPolicyLevel): { supply: number; level: 'low' | 'medium' | 'high' } {
+  // Base supply to China: 400 kt
+  let supply = 400
+  
+  // Export policy impact
+  if (exportPolicy === 'restricted') supply -= 120
+  else if (exportPolicy === 'expanded') supply += 120
+  
+  // Determine level
+  let level: 'low' | 'medium' | 'high' = 'medium'
+  if (supply <= 320) level = 'low'
+  else if (supply >= 480) level = 'high'
+  
+  return { supply, level }
+}
 
 export function ForestryModule({
   settings,
   onChange,
-  woodchipAvailability,
-  woodchipPrice,
 }: ForestryModuleProps) {
   const handleChinaPolicyChange = (value: number[]) => {
     onChange({ ...settings, chinaLoggingPolicy: policyValues[value[0]] })
+  }
+
+  const handleRealEstateChange = (value: number[]) => {
+    onChange({ ...settings, chinaRealEstateCondition: realEstateValues[value[0]] })
   }
 
   const handleVietnamPolicyChange = (value: number[]) => {
     onChange({ ...settings, vietnamExportPolicy: exportPolicyValues[value[0]] })
   }
 
-  const handleVietnamPriceChange = (value: number[]) => {
-    onChange({ ...settings, vietnamExportPrice: priceValues[value[0]] })
-  }
+  // Calculate outputs
+  const chinaOutput = calculateChinaSupply(settings.chinaLoggingPolicy, settings.chinaRealEstateCondition)
+  const vietnamOutput = calculateVietnamSupply(settings.vietnamExportPolicy)
 
   return (
     <Card className="h-full border-border/50 bg-card/80">
@@ -46,126 +84,144 @@ export function ForestryModule({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-5">
-        {/* Map visualization */}
-        <div className="relative rounded-lg bg-secondary/30 p-3">
-          <div className="flex flex-col gap-3">
-            {/* Top row: South China and Vietnam */}
-            <div className="grid grid-cols-2 gap-3">
-              {/* South China */}
-              <div className="rounded-lg border border-border/50 bg-card/50 p-2.5 text-center">
-                <TreePine className="mx-auto h-5 w-5 text-success" />
-                <p className="mt-1 text-xs font-medium">South China</p>
-                <p className="text-[10px] text-muted-foreground leading-tight">Domestic supply</p>
+        {/* China Block */}
+        <div className="rounded-lg border border-border/50 bg-secondary/20 p-4">
+          <div className="flex items-center gap-2 mb-4">
+            <TreePine className="h-4 w-4 text-success" />
+            <h3 className="font-semibold text-sm">China Domestic Supply</h3>
+          </div>
+          
+          <div className="space-y-4">
+            {/* China Logging Policy Slider */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm">China Logging Policy</Label>
+                <span className="text-sm font-medium text-primary">
+                  {POLICY_LABELS.chinaLoggingPolicy[settings.chinaLoggingPolicy]}
+                </span>
               </div>
-              
-              {/* Vietnam */}
-              <div className="rounded-lg border border-border/50 bg-card/50 p-2.5 text-center">
-                <Ship className="mx-auto h-5 w-5 text-chart-2" />
-                <p className="mt-1 text-xs font-medium">Vietnam</p>
-                <p className="text-[10px] text-muted-foreground leading-tight">Exports (~30%)</p>
+              <Slider
+                value={[policyValues.indexOf(settings.chinaLoggingPolicy)]}
+                onValueChange={handleChinaPolicyChange}
+                max={2}
+                step={1}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Tight</span>
+                <span>Baseline</span>
+                <span>Relaxed</span>
               </div>
             </div>
-            
-            {/* Arrows pointing down */}
-            <div className="flex justify-center gap-8">
-              <ArrowRight className="h-4 w-4 text-muted-foreground rotate-90" />
-              <ArrowRight className="h-4 w-4 text-muted-foreground rotate-90" />
+
+            {/* Real Estate Condition Slider */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm">Real Estate Market Condition</Label>
+                <span className="text-sm font-medium text-primary">
+                  {POLICY_LABELS.chinaRealEstateCondition[settings.chinaRealEstateCondition]}
+                </span>
+              </div>
+              <Slider
+                value={[realEstateValues.indexOf(settings.chinaRealEstateCondition)]}
+                onValueChange={handleRealEstateChange}
+                max={2}
+                step={1}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Downturn</span>
+                <span>Stable</span>
+                <span>Recovery</span>
+              </div>
             </div>
-            
-            {/* Woodchip pool - Simulation Result */}
-            <div className="rounded-lg border-2 border-primary/50 bg-primary/10 p-3 text-center">
-              <p className="text-sm font-bold text-primary">China Woodchip Pool</p>
-              <div className="mt-2 flex flex-col items-center gap-1">
-                {woodchipAvailability && (
+
+            {/* Output: China Woodchip Supply */}
+            <div className="rounded-lg border-2 border-primary/40 bg-primary/5 p-3 mt-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">China Woodchip Supply</span>
+                </div>
+                <div className="text-right">
                   <span className={cn(
-                    'text-base font-bold',
-                    woodchipAvailability === 'high' && 'text-success',
-                    woodchipAvailability === 'medium' && 'text-warning',
-                    woodchipAvailability === 'low' && 'text-destructive'
+                    'text-lg font-bold',
+                    chinaOutput.level === 'high' && 'text-success',
+                    chinaOutput.level === 'medium' && 'text-warning',
+                    chinaOutput.level === 'low' && 'text-destructive'
                   )}>
-                    {woodchipAvailability === 'high' ? 'Abundant' : woodchipAvailability === 'medium' ? 'Moderate' : 'Tight'}
+                    {chinaOutput.supply} kt
                   </span>
-                )}
-                {woodchipPrice && (
                   <span className={cn(
-                    'text-sm font-semibold',
-                    woodchipPrice === 'low' && 'text-success',
-                    woodchipPrice === 'medium' && 'text-warning',
-                    woodchipPrice === 'high' && 'text-destructive'
+                    'ml-2 text-xs px-1.5 py-0.5 rounded',
+                    chinaOutput.level === 'high' && 'bg-success/20 text-success',
+                    chinaOutput.level === 'medium' && 'bg-warning/20 text-warning',
+                    chinaOutput.level === 'low' && 'bg-destructive/20 text-destructive'
                   )}>
-                    Price: {POLICY_LABELS.priceLevel[woodchipPrice]}
+                    {chinaOutput.level === 'high' ? 'Abundant' : chinaOutput.level === 'medium' ? 'Moderate' : 'Tight'}
                   </span>
-                )}
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Policy controls */}
-        <div className="space-y-4">
-          {/* China logging policy */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label className="text-sm">China Logging Policy</Label>
-              <span className="text-sm font-medium text-primary">
-                {POLICY_LABELS.chinaLoggingPolicy[settings.chinaLoggingPolicy]}
-              </span>
-            </div>
-            <Slider
-              value={[policyValues.indexOf(settings.chinaLoggingPolicy)]}
-              onValueChange={handleChinaPolicyChange}
-              max={2}
-              step={1}
-              className="w-full"
-            />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Tight</span>
-              <span>Baseline</span>
-              <span>Relaxed</span>
-            </div>
+        {/* Vietnam Block */}
+        <div className="rounded-lg border border-border/50 bg-secondary/20 p-4">
+          <div className="flex items-center gap-2 mb-4">
+            <Ship className="h-4 w-4 text-chart-2" />
+            <h3 className="font-semibold text-sm">Vietnam Exports to China</h3>
           </div>
+          
+          <div className="space-y-4">
+            {/* Vietnam Export Policy Slider */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm">Vietnam Export Policy</Label>
+                <span className="text-sm font-medium text-primary">
+                  {POLICY_LABELS.vietnamExportPolicy[settings.vietnamExportPolicy]}
+                </span>
+              </div>
+              <Slider
+                value={[exportPolicyValues.indexOf(settings.vietnamExportPolicy)]}
+                onValueChange={handleVietnamPolicyChange}
+                max={2}
+                step={1}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Restricted</span>
+                <span>Baseline</span>
+                <span>Expanded</span>
+              </div>
+            </div>
 
-          {/* Vietnam export policy */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label className="text-sm">Vietnam Export Policy</Label>
-              <span className="text-sm font-medium text-primary">
-                {POLICY_LABELS.vietnamExportPolicy[settings.vietnamExportPolicy]}
-              </span>
-            </div>
-            <Slider
-              value={[exportPolicyValues.indexOf(settings.vietnamExportPolicy)]}
-              onValueChange={handleVietnamPolicyChange}
-              max={2}
-              step={1}
-              className="w-full"
-            />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Restricted</span>
-              <span>Baseline</span>
-              <span>Expanded</span>
-            </div>
-          </div>
-
-          {/* Vietnam export price */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label className="text-sm">Vietnam Export Price</Label>
-              <span className="text-sm font-medium text-primary">
-                {POLICY_LABELS.priceLevel[settings.vietnamExportPrice]}
-              </span>
-            </div>
-            <Slider
-              value={[priceValues.indexOf(settings.vietnamExportPrice)]}
-              onValueChange={handleVietnamPriceChange}
-              max={2}
-              step={1}
-              className="w-full"
-            />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Low</span>
-              <span>Medium</span>
-              <span>High</span>
+            {/* Output: Vietnam Woodchip Supply */}
+            <div className="rounded-lg border-2 border-primary/40 bg-primary/5 p-3 mt-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">Vietnam Woodchip Supply</span>
+                </div>
+                <div className="text-right">
+                  <span className={cn(
+                    'text-lg font-bold',
+                    vietnamOutput.level === 'high' && 'text-success',
+                    vietnamOutput.level === 'medium' && 'text-warning',
+                    vietnamOutput.level === 'low' && 'text-destructive'
+                  )}>
+                    {vietnamOutput.supply} kt
+                  </span>
+                  <span className={cn(
+                    'ml-2 text-xs px-1.5 py-0.5 rounded',
+                    vietnamOutput.level === 'high' && 'bg-success/20 text-success',
+                    vietnamOutput.level === 'medium' && 'bg-warning/20 text-warning',
+                    vietnamOutput.level === 'low' && 'bg-destructive/20 text-destructive'
+                  )}>
+                    {vietnamOutput.level === 'high' ? 'Abundant' : vietnamOutput.level === 'medium' ? 'Moderate' : 'Tight'}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

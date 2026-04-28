@@ -19,36 +19,36 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 // Calculate woodchip market outcome
 function calculateWoodchipOutcome(input: SimulationInput): WoodchipOutcome {
-  const { chinaLoggingPolicy, vietnamExportPolicy, vietnamExportPrice } = input.forestry
+  const { chinaLoggingPolicy, chinaRealEstateCondition, vietnamExportPolicy } = input.forestry
   
   let availability: UtilizationLevel = 'medium'
   let priceLevel: PriceLevel = 'medium'
-  let domesticSupply = 100
-  let vietnamImport = 30
   
-  // China logging policy impact
-  if (chinaLoggingPolicy === 'tight') {
-    domesticSupply = 70
-    priceLevel = 'high'
-  } else if (chinaLoggingPolicy === 'relaxed') {
-    domesticSupply = 130
-    priceLevel = 'low'
-  }
+  // Calculate China domestic supply (base 800 kt)
+  let domesticSupply = 800
+  if (chinaLoggingPolicy === 'tight') domesticSupply -= 150
+  else if (chinaLoggingPolicy === 'relaxed') domesticSupply += 150
   
-  // Vietnam export policy impact
-  if (vietnamExportPolicy === 'restricted') {
-    vietnamImport = 15
+  // Real estate impact (construction waste wood recycling)
+  if (chinaRealEstateCondition === 'downturn') domesticSupply -= 100
+  else if (chinaRealEstateCondition === 'recovery') domesticSupply += 100
+  
+  // Calculate Vietnam import (base 400 kt)
+  let vietnamImport = 400
+  if (vietnamExportPolicy === 'restricted') vietnamImport -= 120
+  else if (vietnamExportPolicy === 'expanded') vietnamImport += 120
+  
+  // Total supply and availability assessment
+  const totalSupply = domesticSupply + vietnamImport
+  if (totalSupply <= 950) {
     availability = 'low'
-  } else if (vietnamExportPolicy === 'expanded') {
-    vietnamImport = 45
+    priceLevel = 'high'
+  } else if (totalSupply >= 1250) {
     availability = 'high'
-  }
-  
-  // Price adjustment
-  if (vietnamExportPrice === 'low') {
-    priceLevel = priceLevel === 'high' ? 'medium' : 'low'
-  } else if (vietnamExportPrice === 'high') {
-    priceLevel = priceLevel === 'low' ? 'medium' : 'high'
+    priceLevel = 'low'
+  } else {
+    availability = 'medium'
+    priceLevel = 'medium'
   }
   
   return { availability, priceLevel, domesticSupply, vietnamImport }

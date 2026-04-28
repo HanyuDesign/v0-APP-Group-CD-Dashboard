@@ -184,8 +184,6 @@ export function ValueChainFlow({ input, onInputChange, result }: ValueChainFlowP
           <ForestryModule
             settings={input.forestry}
             onChange={handleForestryChange}
-            woodchipAvailability={result?.woodchip.availability}
-            woodchipPrice={result?.woodchip.priceLevel}
           />
         )}
         {activeTab === 'pulp' && (

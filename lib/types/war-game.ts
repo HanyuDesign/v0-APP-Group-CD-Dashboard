@@ -6,6 +6,7 @@ export type ExportPolicyLevel = 'restricted' | 'baseline' | 'expanded'
 export type PriceLevel = 'low' | 'medium' | 'high'
 export type DemandScenario = 'low' | 'base' | 'high'
 export type UtilizationLevel = 'low' | 'medium' | 'high'
+export type RealEstateCondition = 'downturn' | 'stable' | 'recovery'
 
 // 玩家类型
 export type PlayerType = 'app' | 'competitor' | 'exporter'
@@ -29,8 +30,8 @@ export interface Player {
 // 林业与木片政策设置
 export interface ForestrySettings {
   chinaLoggingPolicy: PolicyLevel
+  chinaRealEstateCondition: RealEstateCondition
   vietnamExportPolicy: ExportPolicyLevel
-  vietnamExportPrice: PriceLevel
 }
 
 // APP产能设置
