@@ -23,7 +23,6 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  Cell,
   Legend,
   Area,
   AreaChart,
@@ -233,44 +232,7 @@ function PlayerPLSection({ playerFinancials }: { playerFinancials: PlayerFinanci
           </Tabs>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Bar chart */}
-        <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={chartData} layout="vertical" margin={{ left: 80, right: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={true} vertical={false} />
-            <XAxis 
-              type="number" 
-              tick={{ fontSize: 10, fill: '#1a1a1a' }}
-              axisLine={{ stroke: '#666666' }}
-              tickLine={{ stroke: '#666666' }}
-            />
-            <YAxis
-              type="category"
-              dataKey="name"
-              tick={{ fontSize: 11, fill: '#000000' }}
-              width={75}
-              axisLine={{ stroke: '#666666' }}
-              tickLine={{ stroke: '#666666' }}
-              interval={0}
-            />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: '#ffffff',
-                border: '1px solid #e0e0e0',
-                borderRadius: '4px',
-                fontSize: '12px',
-                color: '#1a1a1a',
-              }}
-              formatter={(value: number) => [value, getValueLabel()]}
-            />
-            <Bar dataKey="value" radius={[0, 4, 4, 0]} name={getValueLabel()}>
-              {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-
+      <CardContent>
         {/* Detailed metrics table */}
         <Table>
           <TableHeader>
