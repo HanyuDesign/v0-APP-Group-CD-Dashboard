@@ -180,7 +180,7 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange }: S
                       type="number"
                       value={appSupply[year] || ''}
                       onChange={(e) => onAppSupplyChange(year, parseInt(e.target.value) || 0)}
-                      className="h-6 w-12 text-xs text-center px-1 mx-auto"
+                      className="h-7 w-14 text-xs text-center px-1 mx-auto bg-white border-2 border-[#cc0000]/40 focus:border-[#cc0000] font-mono"
                       min={0}
                       max={200}
                     />
@@ -224,10 +224,11 @@ export function DownstreamModule({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Demand Block */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-semibold flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-primary" />
+        {/* PART 1: Demand Block */}
+        <div className="rounded-lg border-2 border-blue-200 bg-blue-50/50 p-4">
+          <h3 className="text-base font-bold flex items-center gap-2 mb-4 text-blue-800">
+            <span className="flex items-center justify-center h-6 w-6 rounded-full bg-blue-600 text-white text-xs font-bold">1</span>
+            <TrendingUp className="h-4 w-4" />
             Demand Scenarios
           </h3>
           <div className="grid grid-cols-3 gap-3">
@@ -258,10 +259,11 @@ export function DownstreamModule({
           </div>
         </div>
 
-        {/* Supply Block */}
-        <div className="space-y-4">
-          <h3 className="text-sm font-semibold flex items-center gap-2">
-            <Factory className="h-4 w-4 text-primary" />
+        {/* PART 2: Supply Block */}
+        <div className="rounded-lg border-2 border-emerald-200 bg-emerald-50/50 p-4">
+          <h3 className="text-base font-bold flex items-center gap-2 mb-4 text-emerald-800">
+            <span className="flex items-center justify-center h-6 w-6 rounded-full bg-emerald-600 text-white text-xs font-bold">2</span>
+            <Factory className="h-4 w-4" />
             Supply Capacity Additions (kt)
           </h3>
           
