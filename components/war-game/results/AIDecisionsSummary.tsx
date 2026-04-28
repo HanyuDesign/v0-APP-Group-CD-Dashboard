@@ -3,7 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
-import { FileText, Package, Bath, Bot, Building2, Lightbulb, TrendingUp, TrendingDown, Minus, Globe, Factory, BarChart3 } from 'lucide-react'
+import { FileText, Package, Bath, Bot, Building2, Lightbulb, TrendingUp, TrendingDown, Minus, Globe, Factory, BarChart3, ArrowUp, ArrowDown, ArrowRight, ChevronUp, ChevronDown } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { AIBadge } from '../shared/AIBadge'
 import { TrafficLight } from '../shared/TrafficLight'
 import type { SimulationResult } from '@/lib/types/war-game'
@@ -15,6 +16,9 @@ interface AIDecisionsSummaryProps {
 
 export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
   const { competitorChanges, exporterAllocations, segmentOutcomes, input } = result
+
+  // Years constant
+  const years = [2026, 2027, 2028, 2029, 2030, 2031] as const
 
   // Calculate APP's capacity decisions from input
   const appChinaPlayer = PLAYERS.find(p => p.id === 'app-china')!
@@ -208,294 +212,500 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
           </TabsTrigger>
         </TabsList>
 
-        {/* Tab 1: Pulp Capacity Decisions */}
+        {/* Tab 1: Pulp Capacity Decisions - Redesigned as Results View */}
         <TabsContent value="pulp">
-          <div className="grid grid-cols-2 gap-4">
-            {/* Capacity Decisions - APP (Focused) + Competitors */}
-            <Card className="border-border/50 bg-card/80">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Capacity Decisions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 max-h-[420px] overflow-y-auto">
-                {/* APP Group - Focused */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-primary">
-                    <Building2 className="h-3.5 w-3.5" />
-                    APP Group (Your Strategy)
+          <TooltipProvider>
+            <div className="space-y-4">
+              {/* SECTION 1: APP Capacity Outcome */}
+              <Card className="border-2 border-[#cc0000]/30 bg-red-50/30">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Building2 className="h-4 w-4 text-[#cc0000]" />
+                      APP Capacity Outcome
+                    </CardTitle>
+                    {/* Strategy Label */}
+                    <span className={cn(
+                      'px-3 py-1 rounded-full text-xs font-semibold',
+                      appChinaPulpAdd > 250 && 'bg-red-100 text-red-700',
+                      appChinaPulpAdd > 100 && appChinaPulpAdd <= 250 && 'bg-amber-100 text-amber-700',
+                      appChinaPulpAdd <= 100 && 'bg-blue-100 text-blue-700'
+                    )}>
+                      {appChinaPulpAdd > 250 ? 'Aggressive' : appChinaPulpAdd > 100 ? 'Balanced' : 'Defensive'}
+                    </span>
                   </div>
-                  
-                  {/* APP China */}
-                  <div className="rounded-lg border-2 border-primary/50 bg-primary/5 p-2.5">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className="h-2 w-2 rounded-full"
-                          style={{ backgroundColor: appChinaPlayer.color }}
-                        />
-                        <span className="text-sm font-medium">{appChinaPlayer.nameCn}</span>
-                      </div>
-                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-primary/20 text-primary">
-                        Expand
-                      </span>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex gap-4">
+                    {/* Main Table */}
+                    <div className="flex-1 overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-[#cc0000]/20">
+                            <th className="text-left py-2 px-3 font-medium text-muted-foreground w-48">Metric</th>
+                            {years.map(year => (
+                              <th key={year} className="text-center py-2 px-3 font-medium text-muted-foreground">{year}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {/* Row 1: APP China Capacity */}
+                          <tr className="border-b border-[#cc0000]/10 bg-red-50">
+                            <td className="py-2.5 px-3">
+                              <div className="flex items-center gap-2">
+                                <span className="h-3 w-3 rounded-full bg-[#cc0000]" />
+                                <span className="font-semibold text-[#cc0000]">APP China Capacity</span>
+                              </div>
+                            </td>
+                            {years.map(year => {
+                              const value = input.appCapacity.appChina[year]
+                              const isNew = year !== 2026 && value > 0
+                              return (
+                                <td key={year} className="text-center py-2.5 px-3">
+                                  <span className={cn(
+                                    'font-mono font-bold',
+                                    year === 2026 ? 'text-[#cc0000]' : isNew ? 'text-emerald-600' : 'text-muted-foreground'
+                                  )}>
+                                    {year === 2026 ? value : isNew ? `+${value}` : '-'}
+                                  </span>
+                                  {isNew && <span className="text-[10px] text-muted-foreground ml-1">kt</span>}
+                                </td>
+                              )
+                            })}
+                          </tr>
+                          {/* Row 2: Market Release (External pulp) */}
+                          <tr className="border-b border-[#cc0000]/10">
+                            <td className="py-2.5 px-3">
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="flex items-center gap-2 cursor-help">
+                                    <ArrowRight className="h-3 w-3 text-[#cc0000]/70" />
+                                    <span className="text-[#cc0000]/80">Market Release</span>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p className="text-xs">Pulp sold externally = Capacity x (1 - Internal Use)</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </td>
+                            {years.map(year => {
+                              const capacity = input.appCapacity.appChina[year]
+                              const internalRate = 0.3 // 30% internal use assumption
+                              const external = year === 2026 ? Math.round(capacity * (1 - internalRate)) : Math.round(capacity * (1 - internalRate))
+                              return (
+                                <td key={year} className="text-center py-2.5 px-3">
+                                  <span className="font-mono text-[#cc0000]/70">
+                                    {year === 2026 ? external : external > 0 ? `+${external}` : '-'}
+                                  </span>
+                                  {external > 0 && year !== 2026 && <span className="text-[10px] text-muted-foreground ml-1">kt</span>}
+                                </td>
+                              )
+                            })}
+                          </tr>
+                          {/* Row 3: Cumulative Market Impact */}
+                          <tr className="bg-red-100/50">
+                            <td className="py-2.5 px-3">
+                              <div className="flex items-center gap-2">
+                                <TrendingUp className="h-3 w-3 text-[#cc0000]" />
+                                <span className="font-medium text-[#cc0000]">Cumulative Impact</span>
+                              </div>
+                            </td>
+                            {(() => {
+                              let cumulative = 0
+                              const internalRate = 0.3
+                              return years.map(year => {
+                                const capacity = input.appCapacity.appChina[year]
+                                if (year === 2026) {
+                                  cumulative = Math.round(capacity * (1 - internalRate))
+                                } else {
+                                  cumulative += Math.round(capacity * (1 - internalRate))
+                                }
+                                return (
+                                  <td key={year} className="text-center py-2.5 px-3">
+                                    <span className="font-mono font-bold text-[#cc0000]">{cumulative}</span>
+                                    <span className="text-[10px] text-muted-foreground ml-1">kt</span>
+                                  </td>
+                                )
+                              })
+                            })()}
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
-                    <div className="mt-1.5 flex gap-4 text-[11px]">
-                      <div>
-                        <span className="text-muted-foreground">Pulp: </span>
-                        <span className="font-mono text-primary">+{appChinaPulpAdd} kt</span>
+                    {/* Right Summary Panel */}
+                    <div className="w-48 space-y-2 border-l border-[#cc0000]/20 pl-4">
+                      <div className="rounded-lg bg-white p-3 border border-[#cc0000]/20">
+                        <p className="text-[10px] text-muted-foreground">Total Added</p>
+                        <p className="text-xl font-bold text-[#cc0000]">+{appChinaPulpAdd} kt</p>
                       </div>
-                      <div>
-                        <span className="text-muted-foreground">Downstream: </span>
-                        <span className="font-mono text-primary">+{appChinaDownstreamAdd} kt</span>
+                      <div className="rounded-lg bg-white p-3 border border-[#cc0000]/20">
+                        <p className="text-[10px] text-muted-foreground">Market Release</p>
+                        <p className="text-xl font-bold text-[#cc0000]/80">+{Math.round(appChinaPulpAdd * 0.7)} kt</p>
+                      </div>
+                      <div className="rounded-lg bg-white p-3 border border-[#cc0000]/20">
+                        <p className="text-[10px] text-muted-foreground">Downstream</p>
+                        <p className="text-lg font-bold text-[#cc0000]/70">+{appChinaDownstreamAdd} kt</p>
                       </div>
                     </div>
-                    <p className="mt-1 text-[10px] text-muted-foreground">
-                      Guangxi: {input.appCapacity.guangxi.pulpCapacity} kt pulp ({input.appCapacity.guangxi.startYear})
-                      {input.appCapacity.guangxi.includeBoard && `, ${input.appCapacity.guangxi.boardCapacity} kt board`}
-                      {input.appCapacity.guangxi.includeTissue && `, ${input.appCapacity.guangxi.tissueCapacity} kt tissue`}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground">
-                      Jiangsu/Fujian: {input.appCapacity.jiangsuFujian.pulpCapacity} kt pulp ({input.appCapacity.jiangsuFujian.startYear})
-                      {input.appCapacity.jiangsuFujian.includeBoard && `, ${input.appCapacity.jiangsuFujian.boardCapacity} kt board`}
-                      {input.appCapacity.jiangsuFujian.includeTissue && `, ${input.appCapacity.jiangsuFujian.tissueCapacity} kt tissue`}
-                    </p>
                   </div>
-                  
-                  {/* APP Indonesia */}
-                  <div className="rounded-lg border-2 border-primary/30 bg-primary/5 p-2.5">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className="h-2 w-2 rounded-full"
-                          style={{ backgroundColor: appIndonesiaPlayer.color }}
-                        />
-                        <span className="text-sm font-medium">{appIndonesiaPlayer.nameCn}</span>
-                      </div>
-                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                        Maintain
-                      </span>
-                    </div>
-                    <div className="mt-1.5 text-[11px]">
-                      <span className="text-muted-foreground">Existing capacity: </span>
-                      <span className="font-mono">{appIndonesiaPlayer.pulpCapacity} kt pulp</span>
-                    </div>
-                    <p className="mt-1 text-[10px] text-muted-foreground italic">
-                      Supplying China market via exports
-                    </p>
-                  </div>
-                </div>
+                </CardContent>
+              </Card>
 
-                {/* Divider */}
-                <div className="flex items-center gap-2 pt-1">
-                  <span className="h-px flex-1 bg-border" />
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <span>Competitors</span>
+              {/* SECTION 2: Competitor Response Table */}
+              <Card className="border-border/50 bg-card/80">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Globe className="h-4 w-4" />
+                      Competitor Response
+                    </CardTitle>
                     <AIBadge size="sm" />
                   </div>
-                  <span className="h-px flex-1 bg-border" />
-                </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border/50">
+                          <th className="text-left py-2 px-3 font-medium text-muted-foreground w-36">Player</th>
+                          {years.map(year => (
+                            <th key={year} className="text-center py-2 px-3 font-medium text-muted-foreground">{year}</th>
+                          ))}
+                          <th className="text-left py-2 px-3 font-medium text-muted-foreground w-56">Reaction Summary</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {competitorChanges.map(change => {
+                          const player = PLAYERS.find(p => p.id === change.playerId)!
+                          // Distribute the pulpChange across years (simplified)
+                          const yearlyChange = {
+                            2026: player.pulpCapacity || 100,
+                            2027: change.action === 'add' ? Math.round(change.pulpChange * 0.2) : change.action === 'delay' ? -Math.round(change.pulpChange * 0.3) : 0,
+                            2028: change.action === 'add' ? Math.round(change.pulpChange * 0.3) : change.action === 'delay' ? -Math.round(change.pulpChange * 0.2) : 0,
+                            2029: change.action === 'add' ? Math.round(change.pulpChange * 0.25) : 0,
+                            2030: change.action === 'add' ? Math.round(change.pulpChange * 0.15) : change.action === 'delay' ? Math.round(change.pulpChange * 0.3) : 0,
+                            2031: change.action === 'add' ? Math.round(change.pulpChange * 0.1) : change.action === 'delay' ? Math.round(change.pulpChange * 0.2) : 0,
+                          }
+                          return (
+                            <tr key={change.playerId} className={cn(
+                              'border-b border-border/30',
+                              change.action === 'delay' && 'bg-amber-50/50',
+                              change.action === 'add' && 'bg-emerald-50/50'
+                            )}>
+                              <td className="py-2.5 px-3">
+                                <div className="flex items-center gap-2">
+                                  <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: player.color }} />
+                                  <span className="font-medium">{player.nameCn}</span>
+                                </div>
+                              </td>
+                              {years.map(year => {
+                                const val = yearlyChange[year]
+                                const isBase = year === 2026
+                                return (
+                                  <td key={year} className="text-center py-2.5 px-3">
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div className="cursor-help">
+                                          <span className={cn(
+                                            'font-mono block',
+                                            isBase ? 'text-muted-foreground' : val > 0 ? 'text-emerald-600 font-semibold' : val < 0 ? 'text-amber-600 font-semibold' : 'text-muted-foreground'
+                                          )}>
+                                            {isBase ? val : val > 0 ? `+${val}` : val < 0 ? val : '-'}
+                                          </span>
+                                          {!isBase && val !== 0 && (
+                                            <span className={cn(
+                                              'text-[9px] flex items-center justify-center gap-0.5 mt-0.5',
+                                              val > 0 ? 'text-emerald-500' : 'text-amber-500'
+                                            )}>
+                                              {val > 0 ? <ChevronUp className="h-2.5 w-2.5" /> : <ChevronDown className="h-2.5 w-2.5" />}
+                                              {val > 0 ? 'Expand' : 'Delay'}
+                                            </span>
+                                          )}
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p className="text-xs max-w-48">{change.reasoning}</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </td>
+                                )
+                              })}
+                              <td className="py-2.5 px-3">
+                                <p className="text-xs text-muted-foreground line-clamp-2 italic">
+                                  {change.reasoning}
+                                </p>
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
 
-                {/* Competitors - AI Driven */}
-                {competitorChanges.map(change => {
-                  const player = PLAYERS.find(p => p.id === change.playerId)!
-                  return (
-                    <div
-                      key={change.playerId}
-                      className={cn(
-                        'rounded-lg border p-2.5',
-                        change.action === 'delay' && 'border-warning/50 bg-warning/5',
-                        change.action === 'add' && 'border-success/50 bg-success/5',
-                        change.action === 'maintain' && 'border-border/50 bg-card/50'
-                      )}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className="h-2 w-2 rounded-full"
-                            style={{ backgroundColor: player.color }}
-                          />
-                          <span className="text-sm font-medium">{player.nameCn}</span>
-                        </div>
-                        <span className={cn(
-                          'text-[10px] font-medium px-1.5 py-0.5 rounded',
-                          change.action === 'delay' && 'bg-warning/20 text-warning',
-                          change.action === 'add' && 'bg-success/20 text-success',
-                          change.action === 'maintain' && 'bg-muted text-muted-foreground'
-                        )}>
-                          {change.action === 'delay' ? 'Delay' : change.action === 'add' ? 'Expand' : 'Maintain'}
-                        </span>
-                      </div>
-                      <div className="mt-1.5 flex gap-4 text-[11px]">
-                        <div>
-                          <span className="text-muted-foreground">Pulp: </span>
-                          <span className={cn(
-                            'font-mono',
-                            change.pulpChange > 0 && 'text-success',
-                            change.pulpChange < 0 && 'text-destructive',
-                            change.pulpChange === 0 && 'text-muted-foreground'
-                          )}>
-                            {change.pulpChange > 0 ? '+' : ''}{change.pulpChange} kt
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Downstream: </span>
-                          <span className={cn(
-                            'font-mono',
-                            change.downstreamChange > 0 && 'text-success',
-                            change.downstreamChange < 0 && 'text-destructive',
-                            change.downstreamChange === 0 && 'text-muted-foreground'
-                          )}>
-                            {change.downstreamChange > 0 ? '+' : ''}{change.downstreamChange} kt
-                          </span>
-                        </div>
-                      </div>
-                      <p className="mt-1 text-[10px] text-muted-foreground italic line-clamp-2">
-                        {change.reasoning}
-                      </p>
-                    </div>
-                  )
-                })}
-              </CardContent>
-            </Card>
+              {/* SECTION 3: Market Impact Overlay */}
+              <Card className="border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm flex items-center gap-2 text-blue-800">
+                    <BarChart3 className="h-4 w-4" />
+                    Market Impact Summary
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Net Supply Change Row */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-blue-200">
+                          <th className="text-left py-2 px-3 font-medium text-blue-700 w-48">Metric</th>
+                          {years.map(year => (
+                            <th key={year} className="text-center py-2 px-3 font-medium text-blue-700">{year}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {/* Net Supply Change */}
+                        <tr className="border-b border-blue-100">
+                          <td className="py-2.5 px-3 font-medium text-blue-800">Net Supply Change</td>
+                          {years.map(year => {
+                            const appExternal = year === 2026 ? 0 : Math.round(input.appCapacity.appChina[year] * 0.7)
+                            const competitorNet = competitorChanges.reduce((sum, c) => {
+                              const yearFactor = year === 2026 ? 0 : year === 2027 ? 0.2 : year === 2028 ? 0.3 : year === 2029 ? 0.25 : year === 2030 ? 0.15 : 0.1
+                              return sum + Math.round(c.pulpChange * yearFactor)
+                            }, 0)
+                            const net = appExternal + competitorNet
+                            return (
+                              <td key={year} className="text-center py-2.5 px-3">
+                                <span className={cn(
+                                  'font-mono font-semibold',
+                                  net > 50 ? 'text-red-600' : net < -20 ? 'text-emerald-600' : 'text-blue-600'
+                                )}>
+                                  {year === 2026 ? '-' : net > 0 ? `+${net}` : net < 0 ? net : '0'}
+                                </span>
+                                {year !== 2026 && <span className="text-[10px] text-muted-foreground ml-1">kt</span>}
+                              </td>
+                            )
+                          })}
+                        </tr>
+                        {/* Price Signal */}
+                        <tr className="bg-blue-100/50">
+                          <td className="py-2.5 px-3 font-medium text-blue-800">Price Signal</td>
+                          {years.map(year => {
+                            const appExternal = year === 2026 ? 0 : Math.round(input.appCapacity.appChina[year] * 0.7)
+                            const competitorNet = competitorChanges.reduce((sum, c) => {
+                              const yearFactor = year === 2026 ? 0 : year === 2027 ? 0.2 : year === 2028 ? 0.3 : year === 2029 ? 0.25 : year === 2030 ? 0.15 : 0.1
+                              return sum + Math.round(c.pulpChange * yearFactor)
+                            }, 0)
+                            const net = appExternal + competitorNet
+                            const signal = net > 50 ? 'down' : net < -20 ? 'up' : 'stable'
+                            return (
+                              <td key={year} className="text-center py-2.5 px-3">
+                                {year === 2026 ? (
+                                  <span className="text-muted-foreground">-</span>
+                                ) : (
+                                  <div className={cn(
+                                    'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium',
+                                    signal === 'down' && 'bg-red-100 text-red-700',
+                                    signal === 'up' && 'bg-emerald-100 text-emerald-700',
+                                    signal === 'stable' && 'bg-gray-100 text-gray-600'
+                                  )}>
+                                    {signal === 'down' && <ArrowDown className="h-3 w-3" />}
+                                    {signal === 'up' && <ArrowUp className="h-3 w-3" />}
+                                    {signal === 'stable' && <ArrowRight className="h-3 w-3" />}
+                                    {signal === 'down' ? 'Down' : signal === 'up' ? 'Up' : 'Stable'}
+                                  </div>
+                                )}
+                              </td>
+                            )
+                          })}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
 
-            {/* Exporter Allocation Decisions */}
-            <Card className="border-border/50 bg-card/80">
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm">Exporter Allocation Decisions</CardTitle>
-                  <AIBadge size="sm" />
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3 max-h-[420px] overflow-y-auto">
-                {/* LatAm Exporters */}
-                {exporterAllocations.filter(a => {
-                  const player = PLAYERS.find(p => p.id === a.playerId)!
-                  return player.region === 'latam'
-                }).length > 0 && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-xs font-semibold text-[#264653]">
-                      <Globe className="h-3.5 w-3.5" />
-                      LatAm Exporters
+                  {/* Bottom KPI Strip */}
+                  <div className="grid grid-cols-3 gap-4 pt-2 border-t border-blue-200">
+                    {/* Total Net Supply Change */}
+                    <div className="rounded-lg bg-white p-3 border border-blue-200">
+                      <p className="text-xs text-blue-600 mb-1">5-Year Net Supply</p>
+                      {(() => {
+                        const totalNet = years.slice(1).reduce((total, year) => {
+                          const appExternal = Math.round(input.appCapacity.appChina[year] * 0.7)
+                          const competitorNet = competitorChanges.reduce((sum, c) => {
+                            const yearFactor = year === 2027 ? 0.2 : year === 2028 ? 0.3 : year === 2029 ? 0.25 : year === 2030 ? 0.15 : 0.1
+                            return sum + Math.round(c.pulpChange * yearFactor)
+                          }, 0)
+                          return total + appExternal + competitorNet
+                        }, 0)
+                        return (
+                          <p className={cn(
+                            'text-2xl font-bold',
+                            totalNet > 200 ? 'text-red-600' : totalNet > 0 ? 'text-amber-600' : 'text-emerald-600'
+                          )}>
+                            {totalNet > 0 ? '+' : ''}{totalNet} kt
+                          </p>
+                        )
+                      })()}
                     </div>
+                    {/* Market Balance */}
+                    <div className="rounded-lg bg-white p-3 border border-blue-200">
+                      <p className="text-xs text-blue-600 mb-1">Market Balance</p>
+                      {(() => {
+                        const totalNet = years.slice(1).reduce((total, year) => {
+                          const appExternal = Math.round(input.appCapacity.appChina[year] * 0.7)
+                          const competitorNet = competitorChanges.reduce((sum, c) => {
+                            const yearFactor = year === 2027 ? 0.2 : year === 2028 ? 0.3 : year === 2029 ? 0.25 : year === 2030 ? 0.15 : 0.1
+                            return sum + Math.round(c.pulpChange * yearFactor)
+                          }, 0)
+                          return total + appExternal + competitorNet
+                        }, 0)
+                        const balance = totalNet > 150 ? 'Surplus' : totalNet < -50 ? 'Tight' : 'Balanced'
+                        return (
+                          <div className={cn(
+                            'inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold',
+                            balance === 'Surplus' && 'bg-red-100 text-red-700',
+                            balance === 'Tight' && 'bg-emerald-100 text-emerald-700',
+                            balance === 'Balanced' && 'bg-amber-100 text-amber-700'
+                          )}>
+                            {balance}
+                          </div>
+                        )
+                      })()}
+                    </div>
+                    {/* Price Trend */}
+                    <div className="rounded-lg bg-white p-3 border border-blue-200">
+                      <p className="text-xs text-blue-600 mb-1">Price Trend</p>
+                      {(() => {
+                        const totalNet = years.slice(1).reduce((total, year) => {
+                          const appExternal = Math.round(input.appCapacity.appChina[year] * 0.7)
+                          const competitorNet = competitorChanges.reduce((sum, c) => {
+                            const yearFactor = year === 2027 ? 0.2 : year === 2028 ? 0.3 : year === 2029 ? 0.25 : year === 2030 ? 0.15 : 0.1
+                            return sum + Math.round(c.pulpChange * yearFactor)
+                          }, 0)
+                          return total + appExternal + competitorNet
+                        }, 0)
+                        const trend = totalNet > 150 ? 'Down' : totalNet < -50 ? 'Up' : 'Stable'
+                        return (
+                          <div className={cn(
+                            'inline-flex items-center gap-2 text-xl font-bold',
+                            trend === 'Down' && 'text-red-600',
+                            trend === 'Up' && 'text-emerald-600',
+                            trend === 'Stable' && 'text-gray-600'
+                          )}>
+                            {trend === 'Down' && <ArrowDown className="h-5 w-5" />}
+                            {trend === 'Up' && <ArrowUp className="h-5 w-5" />}
+                            {trend === 'Stable' && <ArrowRight className="h-5 w-5" />}
+                            {trend}
+                          </div>
+                        )
+                      })()}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Exporter Allocation Section (Kept but streamlined) */}
+              <Card className="border-border/50 bg-card/80">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Globe className="h-4 w-4" />
+                      Exporter Allocation Decisions
+                    </CardTitle>
+                    <AIBadge size="sm" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* LatAm Exporters */}
                     {exporterAllocations.filter(a => {
                       const player = PLAYERS.find(p => p.id === a.playerId)!
                       return player.region === 'latam'
-                    }).map(allocation => {
-                      const player = PLAYERS.find(p => p.id === allocation.playerId)!
-                      return (
-                        <div
-                          key={allocation.playerId}
-                          className="rounded-lg border border-[#264653]/30 bg-[#264653]/5 p-2.5"
-                        >
-                          <div className="flex items-center gap-2">
-                            <span
-                              className="h-2 w-2 rounded-full"
-                              style={{ backgroundColor: player.color }}
-                            />
-                            <span className="text-sm font-medium">{player.nameCn}</span>
-                            <span className="text-[9px] text-muted-foreground ml-auto">{player.pulpCapacity} kt capacity</span>
-                          </div>
-                          <div className="mt-2 space-y-1 text-[11px]">
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">China Exports</span>
-                              <span className="font-mono font-semibold text-[#cc0000]">
-                                {allocation.chinaVolume} kt ({Math.round(allocation.chinaShare * 100)}%)
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Other Regions</span>
-                              <span className="font-mono">{allocation.otherRegionsVolume} kt</span>
-                            </div>
-                            {/* Visual bar */}
-                            <div className="mt-1.5 h-2 rounded-full bg-secondary overflow-hidden flex">
-                              <div 
-                                className="h-full bg-[#cc0000]"
-                                style={{ width: `${allocation.chinaShare * 100}%` }}
-                              />
-                              <div 
-                                className="h-full bg-[#264653]/30"
-                                style={{ width: `${(1 - allocation.chinaShare) * 100}%` }}
-                              />
-                            </div>
-                            <div className="flex justify-between text-[10px] text-muted-foreground">
-                              <span>China</span>
-                              <span>Other (EU, NA, Asia)</span>
-                            </div>
-                            <p className="mt-1 text-[10px] text-muted-foreground italic line-clamp-2">
-                              {allocation.reasoning}
-                            </p>
-                          </div>
+                    }).length > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-xs font-semibold text-[#264653]">
+                          <Globe className="h-3.5 w-3.5" />
+                          LatAm Exporters
                         </div>
-                      )
-                    })}
-                  </div>
-                )}
+                        {exporterAllocations.filter(a => {
+                          const player = PLAYERS.find(p => p.id === a.playerId)!
+                          return player.region === 'latam'
+                        }).map(allocation => {
+                          const player = PLAYERS.find(p => p.id === allocation.playerId)!
+                          return (
+                            <div
+                              key={allocation.playerId}
+                              className="rounded-lg border border-[#264653]/30 bg-[#264653]/5 p-2.5"
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: player.color }} />
+                                  <span className="text-sm font-medium">{player.nameCn}</span>
+                                </div>
+                                <span className="font-mono font-semibold text-[#cc0000]">
+                                  {Math.round(allocation.chinaShare * 100)}% China
+                                </span>
+                              </div>
+                              <div className="mt-2 h-2 rounded-full bg-secondary overflow-hidden flex">
+                                <div className="h-full bg-[#cc0000]" style={{ width: `${allocation.chinaShare * 100}%` }} />
+                                <div className="h-full bg-[#264653]/30" style={{ width: `${(1 - allocation.chinaShare) * 100}%` }} />
+                              </div>
+                              <p className="mt-1.5 text-[10px] text-muted-foreground italic line-clamp-1">
+                                {allocation.reasoning}
+                              </p>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
 
-                {/* Indonesia Exporters */}
-                {exporterAllocations.filter(a => {
-                  const player = PLAYERS.find(p => p.id === a.playerId)!
-                  return player.region === 'indonesia'
-                }).length > 0 && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-xs font-semibold text-[#f4a261]">
-                      <Globe className="h-3.5 w-3.5" />
-                      Indonesia Exporters
-                    </div>
+                    {/* Indonesia Exporters */}
                     {exporterAllocations.filter(a => {
                       const player = PLAYERS.find(p => p.id === a.playerId)!
                       return player.region === 'indonesia'
-                    }).map(allocation => {
-                      const player = PLAYERS.find(p => p.id === allocation.playerId)!
-                      return (
-                        <div
-                          key={allocation.playerId}
-                          className="rounded-lg border border-[#f4a261]/30 bg-[#f4a261]/5 p-2.5"
-                        >
-                          <div className="flex items-center gap-2">
-                            <span
-                              className="h-2 w-2 rounded-full"
-                              style={{ backgroundColor: player.color }}
-                            />
-                            <span className="text-sm font-medium">{player.nameCn}</span>
-                            <span className="text-[9px] text-muted-foreground ml-auto">{player.pulpCapacity} kt capacity</span>
-                          </div>
-                          <div className="mt-2 space-y-1 text-[11px]">
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">China Exports</span>
-                              <span className="font-mono font-semibold text-[#cc0000]">
-                                {allocation.chinaVolume} kt ({Math.round(allocation.chinaShare * 100)}%)
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Other Regions</span>
-                              <span className="font-mono">{allocation.otherRegionsVolume} kt</span>
-                            </div>
-                            {/* Visual bar */}
-                            <div className="mt-1.5 h-2 rounded-full bg-secondary overflow-hidden flex">
-                              <div 
-                                className="h-full bg-[#cc0000]"
-                                style={{ width: `${allocation.chinaShare * 100}%` }}
-                              />
-                              <div 
-                                className="h-full bg-[#f4a261]/30"
-                                style={{ width: `${(1 - allocation.chinaShare) * 100}%` }}
-                              />
-                            </div>
-                            <div className="flex justify-between text-[10px] text-muted-foreground">
-                              <span>China</span>
-                              <span>Other Asia</span>
-                            </div>
-                            <p className="mt-1 text-[10px] text-muted-foreground italic line-clamp-2">
-                              {allocation.reasoning}
-                            </p>
-                          </div>
+                    }).length > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-xs font-semibold text-[#f4a261]">
+                          <Globe className="h-3.5 w-3.5" />
+                          Indonesia Exporters
                         </div>
-                      )
-                    })}
+                        {exporterAllocations.filter(a => {
+                          const player = PLAYERS.find(p => p.id === a.playerId)!
+                          return player.region === 'indonesia'
+                        }).map(allocation => {
+                          const player = PLAYERS.find(p => p.id === allocation.playerId)!
+                          return (
+                            <div
+                              key={allocation.playerId}
+                              className="rounded-lg border border-[#f4a261]/30 bg-[#f4a261]/5 p-2.5"
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: player.color }} />
+                                  <span className="text-sm font-medium">{player.nameCn}</span>
+                                </div>
+                                <span className="font-mono font-semibold text-[#cc0000]">
+                                  {Math.round(allocation.chinaShare * 100)}% China
+                                </span>
+                              </div>
+                              <div className="mt-2 h-2 rounded-full bg-secondary overflow-hidden flex">
+                                <div className="h-full bg-[#cc0000]" style={{ width: `${allocation.chinaShare * 100}%` }} />
+                                <div className="h-full bg-[#f4a261]/30" style={{ width: `${(1 - allocation.chinaShare) * 100}%` }} />
+                              </div>
+                              <p className="mt-1.5 text-[10px] text-muted-foreground italic line-clamp-1">
+                                {allocation.reasoning}
+                              </p>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TooltipProvider>
         </TabsContent>
 
         {/* Tab 2: Downstream Outcomes */}
