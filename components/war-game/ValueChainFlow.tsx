@@ -246,7 +246,7 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
               'flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors h-10',
               currentTabIndex === TABS.length - 1
                 ? 'bg-secondary/30 text-muted-foreground cursor-not-allowed'
-                : 'bg-primary hover:bg-primary/90 text-primary-foreground'
+                : 'bg-red-100 hover:bg-red-200 text-red-700 border border-red-200'
             )}
           >
             Next
