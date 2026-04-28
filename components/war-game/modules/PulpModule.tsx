@@ -1,6 +1,7 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
@@ -171,33 +172,57 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
               />
             </div>
             
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="guangxi-board"
-                  checked={settings.guangxi.includeBoard}
-                  onCheckedChange={(v) => updateGuangxi({ includeBoard: v })}
-                />
-                <Label htmlFor="guangxi-board" className="text-xs">Board</Label>
-                {settings.guangxi.includeBoard && (
-                  <span className="text-xs text-muted-foreground">
-                    {settings.guangxi.boardCapacity}kt
-                  </span>
-                )}
+            <div className="space-y-2">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="guangxi-board"
+                    checked={settings.guangxi.includeBoard}
+                    onCheckedChange={(v) => updateGuangxi({ includeBoard: v })}
+                  />
+                  <Label htmlFor="guangxi-board" className="text-xs">Board</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="guangxi-tissue"
+                    checked={settings.guangxi.includeTissue}
+                    onCheckedChange={(v) => updateGuangxi({ includeTissue: v })}
+                  />
+                  <Label htmlFor="guangxi-tissue" className="text-xs">Tissue</Label>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="guangxi-tissue"
-                  checked={settings.guangxi.includeTissue}
-                  onCheckedChange={(v) => updateGuangxi({ includeTissue: v })}
-                />
-                <Label htmlFor="guangxi-tissue" className="text-xs">Tissue</Label>
-                {settings.guangxi.includeTissue && (
-                  <span className="text-xs text-muted-foreground">
-                    {settings.guangxi.tissueCapacity}kt
-                  </span>
-                )}
-              </div>
+              {(settings.guangxi.includeBoard || settings.guangxi.includeTissue) && (
+                <div className="flex items-center gap-3 pt-1">
+                  {settings.guangxi.includeBoard && (
+                    <div className="flex items-center gap-1.5">
+                      <Label className="text-[10px] text-muted-foreground whitespace-nowrap">Board:</Label>
+                      <Input
+                        type="number"
+                        value={settings.guangxi.boardCapacity}
+                        onChange={(e) => updateGuangxi({ boardCapacity: Math.max(0, parseInt(e.target.value) || 0) })}
+                        className="h-6 w-16 text-xs px-1.5"
+                        min={0}
+                        max={500}
+                      />
+                      <span className="text-[10px] text-muted-foreground">kt</span>
+                    </div>
+                  )}
+                  {settings.guangxi.includeTissue && (
+                    <div className="flex items-center gap-1.5">
+                      <Label className="text-[10px] text-muted-foreground whitespace-nowrap">Tissue:</Label>
+                      <Input
+                        type="number"
+                        value={settings.guangxi.tissueCapacity}
+                        onChange={(e) => updateGuangxi({ tissueCapacity: Math.max(0, parseInt(e.target.value) || 0) })}
+                        className="h-6 w-16 text-xs px-1.5"
+                        min={0}
+                        max={300}
+                      />
+                      <span className="text-[10px] text-muted-foreground">kt</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
           
@@ -234,33 +259,57 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
               />
             </div>
             
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="jf-board"
-                  checked={settings.jiangsuFujian.includeBoard}
-                  onCheckedChange={(v) => updateJiangsuFujian({ includeBoard: v })}
-                />
-                <Label htmlFor="jf-board" className="text-xs">Board</Label>
-                {settings.jiangsuFujian.includeBoard && (
-                  <span className="text-xs text-muted-foreground">
-                    {settings.jiangsuFujian.boardCapacity}kt
-                  </span>
-                )}
+            <div className="space-y-2">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="jf-board"
+                    checked={settings.jiangsuFujian.includeBoard}
+                    onCheckedChange={(v) => updateJiangsuFujian({ includeBoard: v })}
+                  />
+                  <Label htmlFor="jf-board" className="text-xs">Board</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="jf-tissue"
+                    checked={settings.jiangsuFujian.includeTissue}
+                    onCheckedChange={(v) => updateJiangsuFujian({ includeTissue: v })}
+                  />
+                  <Label htmlFor="jf-tissue" className="text-xs">Tissue</Label>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="jf-tissue"
-                  checked={settings.jiangsuFujian.includeTissue}
-                  onCheckedChange={(v) => updateJiangsuFujian({ includeTissue: v })}
-                />
-                <Label htmlFor="jf-tissue" className="text-xs">Tissue</Label>
-                {settings.jiangsuFujian.includeTissue && (
-                  <span className="text-xs text-muted-foreground">
-                    {settings.jiangsuFujian.tissueCapacity}kt
-                  </span>
-                )}
-              </div>
+              {(settings.jiangsuFujian.includeBoard || settings.jiangsuFujian.includeTissue) && (
+                <div className="flex items-center gap-3 pt-1">
+                  {settings.jiangsuFujian.includeBoard && (
+                    <div className="flex items-center gap-1.5">
+                      <Label className="text-[10px] text-muted-foreground whitespace-nowrap">Board:</Label>
+                      <Input
+                        type="number"
+                        value={settings.jiangsuFujian.boardCapacity}
+                        onChange={(e) => updateJiangsuFujian({ boardCapacity: Math.max(0, parseInt(e.target.value) || 0) })}
+                        className="h-6 w-16 text-xs px-1.5"
+                        min={0}
+                        max={500}
+                      />
+                      <span className="text-[10px] text-muted-foreground">kt</span>
+                    </div>
+                  )}
+                  {settings.jiangsuFujian.includeTissue && (
+                    <div className="flex items-center gap-1.5">
+                      <Label className="text-[10px] text-muted-foreground whitespace-nowrap">Tissue:</Label>
+                      <Input
+                        type="number"
+                        value={settings.jiangsuFujian.tissueCapacity}
+                        onChange={(e) => updateJiangsuFujian({ tissueCapacity: Math.max(0, parseInt(e.target.value) || 0) })}
+                        className="h-6 w-16 text-xs px-1.5"
+                        min={0}
+                        max={300}
+                      />
+                      <span className="text-[10px] text-muted-foreground">kt</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
