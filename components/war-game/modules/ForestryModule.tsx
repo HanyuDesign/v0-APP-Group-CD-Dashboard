@@ -118,7 +118,7 @@ export function ForestryModule({
               {/* Real Estate Condition Slider */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm">Real Estate Market</Label>
+                  <Label className="text-sm">China Real Estate Market Condition</Label>
                   <span className="text-sm font-semibold text-primary">
                     {POLICY_LABELS.chinaRealEstateCondition[settings.chinaRealEstateCondition]}
                   </span>
