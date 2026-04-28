@@ -17,8 +17,6 @@ import { TrafficLight } from '../shared/TrafficLight'
 import type { SimulationResult, ProjectIRR, APPSystemPL, PlayerFinancialOutcome } from '@/lib/types/war-game'
 import { PLAYERS, IRR_HURDLE } from '@/lib/data/initial-data'
 import {
-  Bar,
-  BarChart,
   XAxis,
   YAxis,
   Tooltip,
@@ -90,19 +88,6 @@ function IRRCard({ project }: { project: ProjectIRR }) {
 
 // APP system P&L component
 function SystemPLCard({ systemPL }: { systemPL: APPSystemPL }) {
-  const data = [
-    {
-      name: 'China',
-      Pulp: systemPL.chinaPulpProfit,
-      Downstream: systemPL.chinaDownstreamProfit,
-    },
-    {
-      name: 'Indonesia',
-      Pulp: systemPL.indonesiaPulpProfit,
-      Downstream: systemPL.indonesiaDownstreamProfit,
-    },
-  ]
-
   const totalData = [
     { name: 'China', value: systemPL.chinaProfit, share: systemPL.chinaShare },
     { name: 'Indonesia', value: systemPL.indonesiaProfit, share: 100 - systemPL.chinaShare },
@@ -122,36 +107,6 @@ function SystemPLCard({ systemPL }: { systemPL: APPSystemPL }) {
           <p className="text-sm text-muted-foreground">Total System Profit Index</p>
           <p className="text-3xl font-bold text-primary">{systemPL.totalProfit}</p>
         </div>
-
-        {/* Stacked bar chart */}
-        <ResponsiveContainer width="100%" height={160}>
-          <BarChart data={data} margin={{ left: 20, right: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-            <XAxis 
-              dataKey="name" 
-              tick={{ fontSize: 11, fill: '#1a1a1a' }}
-              axisLine={{ stroke: '#666666' }}
-              tickLine={{ stroke: '#666666' }}
-            />
-            <YAxis 
-              tick={{ fontSize: 10, fill: '#1a1a1a' }} 
-              axisLine={{ stroke: '#666666' }}
-              tickLine={{ stroke: '#666666' }}
-            />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: '#ffffff',
-                border: '1px solid #e0e0e0',
-                borderRadius: '4px',
-                fontSize: '12px',
-                color: '#1a1a1a',
-              }}
-            />
-            <Legend wrapperStyle={{ fontSize: '11px' }} />
-            <Bar dataKey="Pulp" stackId="a" fill="#2e7d32" radius={[0, 0, 0, 0]} name="Pulp" />
-            <Bar dataKey="Downstream" stackId="a" fill="#ed6c02" radius={[4, 4, 0, 0]} name="Downstream" />
-          </BarChart>
-        </ResponsiveContainer>
 
         {/* Profit share */}
         <div className="grid grid-cols-2 gap-3">
