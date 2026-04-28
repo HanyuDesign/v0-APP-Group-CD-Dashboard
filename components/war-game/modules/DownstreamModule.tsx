@@ -68,7 +68,7 @@ function DemandCard({
             value={demandValue}
             onValueChange={(v) => onDemandChange(v as DemandScenario)}
           >
-            <SelectTrigger className="h-7 w-28 text-xs">
+            <SelectTrigger className="h-7 w-28 text-xs bg-white border-2">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -225,9 +225,9 @@ export function DownstreamModule({
       </CardHeader>
       <CardContent className="space-y-6">
         {/* PART 1: Demand Block */}
-        <div className="rounded-lg border-2 border-blue-200 bg-blue-50/50 p-4">
-          <h3 className="text-base font-bold flex items-center gap-2 mb-4 text-blue-800">
-            <span className="flex items-center justify-center h-6 w-6 rounded-full bg-blue-600 text-white text-xs font-bold">1</span>
+        <div className="rounded-lg border-2 border-orange-200 bg-orange-50/50 p-4">
+          <h3 className="text-base font-bold flex items-center gap-2 mb-4 text-orange-800">
+            <span className="flex items-center justify-center h-6 w-6 rounded-full bg-orange-500 text-white text-xs font-bold">1</span>
             <TrendingUp className="h-4 w-4" />
             Demand Scenarios
           </h3>
@@ -241,7 +241,7 @@ export function DownstreamModule({
               trend="shrinking"
             />
             <DemandCard
-              title="Board"
+              title="Packaging / Carton Board"
               icon={<Package className="h-4 w-4 text-chart-3" />}
               demandValue={settings.boardDemand}
               onDemandChange={(v) => onChange({ ...settings, boardDemand: v })}
@@ -260,9 +260,9 @@ export function DownstreamModule({
         </div>
 
         {/* PART 2: Supply Block */}
-        <div className="rounded-lg border-2 border-emerald-200 bg-emerald-50/50 p-4">
-          <h3 className="text-base font-bold flex items-center gap-2 mb-4 text-emerald-800">
-            <span className="flex items-center justify-center h-6 w-6 rounded-full bg-emerald-600 text-white text-xs font-bold">2</span>
+        <div className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4">
+          <h3 className="text-base font-bold flex items-center gap-2 mb-4 text-red-800">
+            <span className="flex items-center justify-center h-6 w-6 rounded-full bg-red-600 text-white text-xs font-bold">2</span>
             <Factory className="h-4 w-4" />
             Supply Capacity Additions (kt)
           </h3>
