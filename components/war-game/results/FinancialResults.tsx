@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -9,10 +10,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
-import { DollarSign, TrendingUp, Building2, Globe } from 'lucide-react'
+import { Building2, Globe, Users } from 'lucide-react'
 import { TrafficLight } from '../shared/TrafficLight'
-import type { SimulationResult, ProjectIRR, APPSystemPL } from '@/lib/types/war-game'
+import type { SimulationResult, ProjectIRR, APPSystemPL, PlayerFinancialOutcome } from '@/lib/types/war-game'
 import { PLAYERS, IRR_HURDLE } from '@/lib/data/initial-data'
 import {
   Bar,
@@ -31,6 +33,8 @@ import {
 interface FinancialResultsProps {
   result: SimulationResult
 }
+
+type ViewMode = 'combined' | 'pulp' | 'downstream'
 
 // IRR card component with Bain-style colors
 function IRRCard({ project }: { project: ProjectIRR }) {
@@ -165,23 +169,169 @@ function SystemPLCard({ systemPL }: { systemPL: APPSystemPL }) {
   )
 }
 
+// Player-level P&L component with toggle
+function PlayerPLSection({ playerFinancials }: { playerFinancials: PlayerFinancialOutcome[] }) {
+  const [viewMode, setViewMode] = useState<ViewMode>('combined')
+
+  // Prepare data based on view mode
+  const getChartData = () => {
+    return playerFinancials
+      .filter(p => {
+        if (viewMode === 'combined') return p.ebitda > 0
+        if (viewMode === 'pulp') return p.pulpProfit > 0
+        return p.downstreamProfit > 0
+      })
+      .map(financial => {
+        const player = PLAYERS.find(p => p.id === financial.playerId)!
+        let value = 0
+        if (viewMode === 'combined') value = financial.ebitda
+        else if (viewMode === 'pulp') value = financial.pulpProfit
+        else value = financial.downstreamProfit
+
+        // Calculate capacity index (total capacity normalized)
+        const totalCapacity = player.pulpCapacity + player.boardCapacity + player.tissueCapacity
+        const capacityIndex = Math.round(totalCapacity / 10) // Simplified index
+
+        return {
+          name: player.nameCn,
+          value,
+          revenue: financial.revenue,
+          ebitda: financial.ebitda,
+          margin: financial.ebitdaMargin,
+          pulpProfit: financial.pulpProfit,
+          downstreamProfit: financial.downstreamProfit,
+          capacityIndex,
+          color: player.color,
+        }
+      })
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 10)
+  }
+
+  const chartData = getChartData()
+
+  const getValueLabel = () => {
+    if (viewMode === 'combined') return 'EBITDA'
+    if (viewMode === 'pulp') return 'Pulp Profit'
+    return 'Downstream Profit'
+  }
+
+  return (
+    <Card className="border-border/50 bg-card/80">
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-sm">
+            <Users className="h-4 w-4 text-primary" />
+            Player-Level P&L
+          </CardTitle>
+          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
+            <TabsList className="h-7">
+              <TabsTrigger value="combined" className="text-xs px-2 py-1">Combined</TabsTrigger>
+              <TabsTrigger value="pulp" className="text-xs px-2 py-1">Pulp Only</TabsTrigger>
+              <TabsTrigger value="downstream" className="text-xs px-2 py-1">Downstream</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Bar chart */}
+        <ResponsiveContainer width="100%" height={250}>
+          <BarChart data={chartData} layout="vertical" margin={{ left: 80, right: 20 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={true} vertical={false} />
+            <XAxis 
+              type="number" 
+              tick={{ fontSize: 10, fill: '#1a1a1a' }}
+              axisLine={{ stroke: '#666666' }}
+              tickLine={{ stroke: '#666666' }}
+            />
+            <YAxis
+              type="category"
+              dataKey="name"
+              tick={{ fontSize: 11, fill: '#000000' }}
+              width={75}
+              axisLine={{ stroke: '#666666' }}
+              tickLine={{ stroke: '#666666' }}
+              interval={0}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: '#ffffff',
+                border: '1px solid #e0e0e0',
+                borderRadius: '4px',
+                fontSize: '12px',
+                color: '#1a1a1a',
+              }}
+              formatter={(value: number) => [value, getValueLabel()]}
+            />
+            <Bar dataKey="value" radius={[0, 4, 4, 0]} name={getValueLabel()}>
+              {chartData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+
+        {/* Detailed metrics table */}
+        <Table>
+          <TableHeader>
+            <TableRow className="border-border/50">
+              <TableHead className="text-xs">Player</TableHead>
+              <TableHead className="text-right text-xs">Revenue Index</TableHead>
+              <TableHead className="text-right text-xs">EBITDA</TableHead>
+              <TableHead className="text-right text-xs">EBITDA Margin</TableHead>
+              <TableHead className="text-right text-xs">Capacity Index</TableHead>
+              {viewMode !== 'combined' && (
+                <TableHead className="text-right text-xs">
+                  {viewMode === 'pulp' ? 'Pulp Profit' : 'Downstream Profit'}
+                </TableHead>
+              )}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {chartData.map(item => (
+              <TableRow key={item.name} className="border-border/30">
+                <TableCell className="text-xs">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="h-2.5 w-2.5 rounded-full"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className="font-medium">{item.name}</span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-right font-mono text-xs">
+                  {item.revenue}
+                </TableCell>
+                <TableCell className="text-right font-mono text-xs font-semibold">
+                  {item.ebitda}
+                </TableCell>
+                <TableCell className="text-right font-mono text-xs">
+                  <span className={cn(
+                    item.margin >= 20 ? 'text-[#2e7d32]' :
+                    item.margin >= 15 ? 'text-[#ed6c02]' : 'text-muted-foreground'
+                  )}>
+                    {item.margin}%
+                  </span>
+                </TableCell>
+                <TableCell className="text-right font-mono text-xs">
+                  {item.capacityIndex}
+                </TableCell>
+                {viewMode !== 'combined' && (
+                  <TableCell className="text-right font-mono text-xs font-semibold">
+                    {viewMode === 'pulp' ? item.pulpProfit : item.downstreamProfit}
+                  </TableCell>
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  )
+}
+
 export function FinancialResults({ result }: FinancialResultsProps) {
   const { playerFinancials, projectIRRs, appSystemPL } = result
-
-  // Prepare EBITDA bar chart data
-  const ebitdaData = playerFinancials
-    .filter(p => p.ebitda > 0)
-    .map(financial => {
-      const player = PLAYERS.find(p => p.id === financial.playerId)!
-      return {
-        name: player.nameCn,
-        ebitda: financial.ebitda,
-        margin: financial.ebitdaMargin,
-        color: player.color,
-      }
-    })
-    .sort((a, b) => b.ebitda - a.ebitda)
-    .slice(0, 8)
 
   return (
     <div className="space-y-4">
@@ -200,120 +350,11 @@ export function FinancialResults({ result }: FinancialResultsProps) {
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-4">
-        {/* Player EBITDA comparison */}
-        <Card className="border-border/50 bg-card/80">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <DollarSign className="h-4 w-4" />
-              Player EBITDA Comparison
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={ebitdaData} layout="vertical" margin={{ left: 70 }}>
-                <XAxis 
-                  type="number" 
-                  tick={{ fontSize: 10, fill: '#1a1a1a' }}
-                  axisLine={{ stroke: '#666666' }}
-                  tickLine={{ stroke: '#666666' }}
-                />
-                <YAxis
-                  type="category"
-                  dataKey="name"
-                  tick={{ fontSize: 10, fill: '#1a1a1a' }}
-                  width={65}
-                  axisLine={{ stroke: '#666666' }}
-                  tickLine={{ stroke: '#666666' }}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#ffffff',
-                    border: '1px solid #e0e0e0',
-                    borderRadius: '4px',
-                    fontSize: '12px',
-                    color: '#1a1a1a',
-                  }}
-                  formatter={(value: number, name: string, props: { payload: { margin: number } }) => [
-                    `${value} (Margin: ${props.payload.margin}%)`,
-                    'EBITDA'
-                  ]}
-                />
-                <Bar dataKey="ebitda" radius={[0, 4, 4, 0]}>
-                  {ebitdaData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+      {/* APP System P&L */}
+      <SystemPLCard systemPL={appSystemPL} />
 
-        {/* APP System P&L */}
-        <SystemPLCard systemPL={appSystemPL} />
-      </div>
-
-      {/* Player financial details table */}
-      <Card className="border-border/50 bg-card/80">
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-sm">
-            <TrendingUp className="h-4 w-4" />
-            Player Financial Details
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow className="border-border/50">
-                <TableHead className="text-xs">Player</TableHead>
-                <TableHead className="text-right text-xs">Revenue Index</TableHead>
-                <TableHead className="text-right text-xs">EBITDA</TableHead>
-                <TableHead className="text-right text-xs">EBITDA Margin</TableHead>
-                <TableHead className="text-right text-xs">Pulp Profit</TableHead>
-                <TableHead className="text-right text-xs">Downstream Profit</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {playerFinancials.map(financial => {
-                const player = PLAYERS.find(p => p.id === financial.playerId)!
-                return (
-                  <TableRow key={financial.playerId} className="border-border/30">
-                    <TableCell className="text-xs">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className="h-2 w-2 rounded-full"
-                          style={{ backgroundColor: player.color }}
-                        />
-                        <span>{player.nameCn}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right font-mono text-xs">
-                      {financial.revenue}
-                    </TableCell>
-                    <TableCell className="text-right font-mono text-xs">
-                      {financial.ebitda}
-                    </TableCell>
-                    <TableCell className="text-right font-mono text-xs">
-                      <span className={cn(
-                        financial.ebitdaMargin >= 20 ? 'text-success' :
-                        financial.ebitdaMargin >= 15 ? 'text-warning' : 'text-muted-foreground'
-                      )}>
-                        {financial.ebitdaMargin}%
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right font-mono text-xs">
-                      {financial.pulpProfit}
-                    </TableCell>
-                    <TableCell className="text-right font-mono text-xs">
-                      {financial.downstreamProfit}
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      {/* Player-Level P&L with toggle */}
+      <PlayerPLSection playerFinancials={playerFinancials} />
     </div>
   )
 }
