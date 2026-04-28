@@ -228,10 +228,10 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
             }}
             disabled={currentTabIndex === 0}
             className={cn(
-              'flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors h-10',
+              'flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors h-10 border',
               currentTabIndex === 0
-                ? 'bg-secondary/30 text-muted-foreground cursor-not-allowed'
-                : 'bg-secondary hover:bg-secondary/80 text-foreground'
+                ? 'bg-secondary/30 text-muted-foreground cursor-not-allowed border-transparent'
+                : 'bg-white hover:bg-secondary/50 text-foreground border-border'
             )}
           >
             Previous
