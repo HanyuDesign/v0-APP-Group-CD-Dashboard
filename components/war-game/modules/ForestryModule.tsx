@@ -137,31 +137,29 @@ export function ForestryModule({
                 </div>
               </div>
 
-              {/* Output: China Woodchip Supply */}
-              <div className="rounded-lg border-2 border-primary/40 bg-primary/5 p-3 mt-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-primary" />
-                    <span className="text-xs font-medium">Output: China Supply</span>
-                  </div>
-                  <div className="text-right">
-                    <span className={cn(
-                      'text-base font-bold',
-                      chinaOutput.level === 'high' && 'text-success',
-                      chinaOutput.level === 'medium' && 'text-warning',
-                      chinaOutput.level === 'low' && 'text-destructive'
-                    )}>
-                      {chinaOutput.supply} kt
-                    </span>
-                    <span className={cn(
-                      'ml-1.5 text-[10px] px-1.5 py-0.5 rounded',
-                      chinaOutput.level === 'high' && 'bg-success/20 text-success',
-                      chinaOutput.level === 'medium' && 'bg-warning/20 text-warning',
-                      chinaOutput.level === 'low' && 'bg-destructive/20 text-destructive'
-                    )}>
-                      {chinaOutput.level === 'high' ? 'Abundant' : chinaOutput.level === 'medium' ? 'Moderate' : 'Tight'}
-                    </span>
-                  </div>
+              {/* China Woodchip Supply */}
+              <div className="rounded-lg border-2 border-primary/40 bg-primary/5 p-3 mt-2 h-14 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                  <span className="text-xs font-medium">China Supply</span>
+                </div>
+                <div className="text-right">
+                  <span className={cn(
+                    'text-base font-bold',
+                    chinaOutput.level === 'high' && 'text-success',
+                    chinaOutput.level === 'medium' && 'text-warning',
+                    chinaOutput.level === 'low' && 'text-destructive'
+                  )}>
+                    {chinaOutput.supply} kt
+                  </span>
+                  <span className={cn(
+                    'ml-1.5 text-[10px] px-1.5 py-0.5 rounded',
+                    chinaOutput.level === 'high' && 'bg-success/20 text-success',
+                    chinaOutput.level === 'medium' && 'bg-warning/20 text-warning',
+                    chinaOutput.level === 'low' && 'bg-destructive/20 text-destructive'
+                  )}>
+                    {chinaOutput.level === 'high' ? 'Abundant' : chinaOutput.level === 'medium' ? 'Moderate' : 'Tight'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -197,31 +195,29 @@ export function ForestryModule({
                 </div>
               </div>
 
-              {/* Output: Vietnam Woodchip Supply */}
-              <div className="rounded-lg border-2 border-primary/40 bg-primary/5 p-3 mt-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-primary" />
-                    <span className="text-xs font-medium">Output: Vietnam Supply</span>
-                  </div>
-                  <div className="text-right">
-                    <span className={cn(
-                      'text-base font-bold',
-                      vietnamOutput.level === 'high' && 'text-success',
-                      vietnamOutput.level === 'medium' && 'text-warning',
-                      vietnamOutput.level === 'low' && 'text-destructive'
-                    )}>
-                      {vietnamOutput.supply} kt
-                    </span>
-                    <span className={cn(
-                      'ml-1.5 text-[10px] px-1.5 py-0.5 rounded',
-                      vietnamOutput.level === 'high' && 'bg-success/20 text-success',
-                      vietnamOutput.level === 'medium' && 'bg-warning/20 text-warning',
-                      vietnamOutput.level === 'low' && 'bg-destructive/20 text-destructive'
-                    )}>
-                      {vietnamOutput.level === 'high' ? 'Abundant' : vietnamOutput.level === 'medium' ? 'Moderate' : 'Tight'}
-                    </span>
-                  </div>
+              {/* Vietnam Woodchip Supply */}
+              <div className="rounded-lg border-2 border-primary/40 bg-primary/5 p-3 mt-2 h-14 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                  <span className="text-xs font-medium">Vietnam Supply</span>
+                </div>
+                <div className="text-right">
+                  <span className={cn(
+                    'text-base font-bold',
+                    vietnamOutput.level === 'high' && 'text-success',
+                    vietnamOutput.level === 'medium' && 'text-warning',
+                    vietnamOutput.level === 'low' && 'text-destructive'
+                  )}>
+                    {vietnamOutput.supply} kt
+                  </span>
+                  <span className={cn(
+                    'ml-1.5 text-[10px] px-1.5 py-0.5 rounded',
+                    vietnamOutput.level === 'high' && 'bg-success/20 text-success',
+                    vietnamOutput.level === 'medium' && 'bg-warning/20 text-warning',
+                    vietnamOutput.level === 'low' && 'bg-destructive/20 text-destructive'
+                  )}>
+                    {vietnamOutput.level === 'high' ? 'Abundant' : vietnamOutput.level === 'medium' ? 'Moderate' : 'Tight'}
+                  </span>
                 </div>
               </div>
             </div>
