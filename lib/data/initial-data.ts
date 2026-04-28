@@ -162,6 +162,14 @@ export const DEFAULT_FORESTRY_SETTINGS: ForestrySettings = {
 
 // Default APP capacity settings
 export const DEFAULT_APP_CAPACITY_SETTINGS: APPCapacitySettings = {
+  appChina: {
+    2026: 350, // Existing capacity
+    2027: 0,
+    2028: 0,
+    2029: 0,
+    2030: 0,
+    2031: 0,
+  },
   guangxi: {
     pulpCapacity: 200,
     startYear: 2026,
@@ -179,6 +187,30 @@ export const DEFAULT_APP_CAPACITY_SETTINGS: APPCapacitySettings = {
     tissueCapacity: 60,
   },
 }
+
+// Competitor capacity additions by year (AI-driven projections)
+export const COMPETITOR_CAPACITY_PROJECTIONS = [
+  {
+    playerId: 'sun-paper',
+    playerName: 'Sun Paper',
+    capacity: { 2026: 180, 2027: 50, 2028: 80, 2029: 0, 2030: 100, 2031: 0 },
+  },
+  {
+    playerId: 'chenming',
+    playerName: 'Chenming',
+    capacity: { 2026: 120, 2027: 0, 2028: 60, 2029: 40, 2030: 0, 2031: 50 },
+  },
+  {
+    playerId: 'liansheng',
+    playerName: 'Liansheng',
+    capacity: { 2026: 80, 2027: 30, 2028: 0, 2029: 50, 2030: 0, 2031: 0 },
+  },
+  {
+    playerId: 'others-china',
+    playerName: 'Others China',
+    capacity: { 2026: 150, 2027: 20, 2028: 30, 2029: 40, 2030: 25, 2031: 35 },
+  },
+]
 
 // Default downstream settings
 export const DEFAULT_DOWNSTREAM_SETTINGS: DownstreamSettings = {

@@ -2,28 +2,18 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Slider } from '@/components/ui/slider'
-import { Switch } from '@/components/ui/switch'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Factory, Package } from 'lucide-react'
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { Factory, Package, Users } from 'lucide-react'
 import type { APPCapacitySettings, PlayerCapacityChange } from '@/lib/types/war-game'
-import { PLAYERS, CAPACITY_RANGE, YEAR_OPTIONS } from '@/lib/data/initial-data'
-import {
-  Bar,
-  BarChart,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from 'recharts'
+import { PLAYERS, COMPETITOR_CAPACITY_PROJECTIONS } from '@/lib/data/initial-data'
+import { cn } from '@/lib/utils'
 
 interface PulpModuleProps {
   settings: APPCapacitySettings
@@ -31,44 +21,29 @@ interface PulpModuleProps {
   competitorChanges?: PlayerCapacityChange[]
 }
 
-export function PulpModule({ settings, onChange, competitorChanges }: PulpModuleProps) {
-  // Get APP players first, then China-based competitors and exporters
-  const appPlayers = PLAYERS.filter(p => p.type === 'app')
-  const otherPlayers = PLAYERS.filter(p => 
-    p.type !== 'app' && (p.region === 'china' || p.type === 'exporter')
-  )
-  const allPlayers = [...appPlayers, ...otherPlayers]
-  
-  // Prepare capacity data for chart - APP at top
-  const capacityData = allPlayers.map(player => {
-    const change = competitorChanges?.find(c => c.playerId === player.id)
-    let capacity = player.pulpCapacity
-    let capacityChange = 0
-    
-    if (player.id === 'app-china') {
-      capacityChange = settings.guangxi.pulpCapacity + settings.jiangsuFujian.pulpCapacity
-      capacity += capacityChange
-    } else if (change) {
-      capacityChange = change.pulpChange
-      capacity += capacityChange
-    }
-    
-    return {
-      name: player.nameCn,
-      capacity,
-      isAPP: player.type === 'app',
-      isAIDriven: player.isAIDriven,
-      color: player.color,
-      change: capacityChange,
-    }
-  })
+const YEARS = [2026, 2027, 2028, 2029, 2030, 2031] as const
+type Year = typeof YEARS[number]
 
-  const updateGuangxi = (updates: Partial<typeof settings.guangxi>) => {
-    onChange({ ...settings, guangxi: { ...settings.guangxi, ...updates } })
+export function PulpModule({ settings, onChange }: PulpModuleProps) {
+  // Get APP China player for color
+  const appChina = PLAYERS.find(p => p.id === 'app-china')!
+
+  // Handle APP capacity input change
+  const handleAPPCapacityChange = (year: Year, value: string) => {
+    const numValue = Math.max(0, parseInt(value) || 0)
+    onChange({
+      ...settings,
+      appChina: {
+        ...settings.appChina,
+        [year]: numValue,
+      },
+    })
   }
 
-  const updateJiangsuFujian = (updates: Partial<typeof settings.jiangsuFujian>) => {
-    onChange({ ...settings, jiangsuFujian: { ...settings.jiangsuFujian, ...updates } })
+  // Get competitor color by playerId
+  const getCompetitorColor = (playerId: string) => {
+    const player = PLAYERS.find(p => p.id === playerId)
+    return player?.color || '#6c757d'
   }
 
   return (
@@ -79,242 +54,127 @@ export function PulpModule({ settings, onChange, competitorChanges }: PulpModule
           Pulp Capacity & Players
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-5">
-        {/* Capacity chart */}
-        <div className="rounded-lg bg-secondary/30 p-3">
-          <p className="mb-2 text-xs font-medium text-muted-foreground">Capacity Distribution (kt/year)</p>
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={capacityData} layout="vertical" margin={{ left: 5, right: 10, top: 5, bottom: 5 }}>
-              <XAxis 
-                type="number" 
-                tick={{ fontSize: 10, fill: '#000000' }} 
-                axisLine={{ stroke: '#333333' }}
-                tickLine={{ stroke: '#333333' }}
-              />
-              <YAxis 
-                type="category" 
-                dataKey="name" 
-                tick={{ fontSize: 10, fill: '#000000' }}
-                width={90}
-                axisLine={{ stroke: '#333333' }}
-                tickLine={{ stroke: '#333333' }}
-                interval={0}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #e0e0e0',
-                  borderRadius: '4px',
-                  fontSize: '12px',
-                  color: '#1a1a1a',
-                }}
-                labelStyle={{
-                  color: '#1a1a1a',
-                  fontWeight: 500,
-                }}
-                itemStyle={{
-                  color: '#1a1a1a',
-                }}
-                formatter={(value: number, name: string, props: { payload: { change: number } }) => {
-                  const change = props.payload.change
-                  return [
-                    `${value} kt${change ? ` (${change > 0 ? '+' : ''}${change})` : ''}`,
-                    'Capacity'
-                  ]
-                }}
-              />
-              <Bar dataKey="capacity" radius={[0, 4, 4, 0]}>
-                {capacityData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* APP new capacity decisions */}
-        <div className="rounded-lg border-2 border-primary/30 bg-primary/5 p-4">
-          <div className="mb-3 flex items-center gap-2">
+      <CardContent className="space-y-6">
+        {/* APP Capacity Decisions - Highlight Table */}
+        <div className="rounded-lg border-2 border-primary/40 bg-primary/5 p-4">
+          <div className="mb-4 flex items-center gap-2">
             <Package className="h-4 w-4 text-primary" />
             <span className="font-semibold text-primary">APP Capacity Decisions</span>
           </div>
           
-          {/* Guangxi project */}
-          <div className="space-y-3 rounded-lg bg-card/50 p-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Guangxi Project</span>
-              <Select
-                value={settings.guangxi.startYear.toString()}
-                onValueChange={(v) => updateGuangxi({ startYear: parseInt(v) })}
-              >
-                <SelectTrigger className="h-7 w-20 text-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {YEAR_OPTIONS.map(year => (
-                    <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-xs">
-                <Label>Pulp Capacity</Label>
-                <span className="font-mono text-primary">{settings.guangxi.pulpCapacity} kt</span>
-              </div>
-              <Slider
-                value={[settings.guangxi.pulpCapacity]}
-                onValueChange={([v]) => updateGuangxi({ pulpCapacity: v })}
-                min={CAPACITY_RANGE.pulp.min}
-                max={CAPACITY_RANGE.pulp.max}
-                step={CAPACITY_RANGE.pulp.step}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="guangxi-board"
-                    checked={settings.guangxi.includeBoard}
-                    onCheckedChange={(v) => updateGuangxi({ includeBoard: v })}
-                  />
-                  <Label htmlFor="guangxi-board" className="text-xs">Board</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="guangxi-tissue"
-                    checked={settings.guangxi.includeTissue}
-                    onCheckedChange={(v) => updateGuangxi({ includeTissue: v })}
-                  />
-                  <Label htmlFor="guangxi-tissue" className="text-xs">Tissue</Label>
-                </div>
-              </div>
-              {(settings.guangxi.includeBoard || settings.guangxi.includeTissue) && (
-                <div className="flex items-center gap-3 pt-1">
-                  {settings.guangxi.includeBoard && (
-                    <div className="flex items-center gap-1.5">
-                      <Label className="text-[10px] text-muted-foreground whitespace-nowrap">Board:</Label>
-                      <Input
-                        type="number"
-                        value={settings.guangxi.boardCapacity}
-                        onChange={(e) => updateGuangxi({ boardCapacity: Math.max(0, parseInt(e.target.value) || 0) })}
-                        className="h-6 w-16 text-xs px-1.5"
-                        min={0}
-                        max={500}
-                      />
-                      <span className="text-[10px] text-muted-foreground">kt</span>
-                    </div>
-                  )}
-                  {settings.guangxi.includeTissue && (
-                    <div className="flex items-center gap-1.5">
-                      <Label className="text-[10px] text-muted-foreground whitespace-nowrap">Tissue:</Label>
-                      <Input
-                        type="number"
-                        value={settings.guangxi.tissueCapacity}
-                        onChange={(e) => updateGuangxi({ tissueCapacity: Math.max(0, parseInt(e.target.value) || 0) })}
-                        className="h-6 w-16 text-xs px-1.5"
-                        min={0}
-                        max={300}
-                      />
-                      <span className="text-[10px] text-muted-foreground">kt</span>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
+          <Table>
+            <TableHeader>
+              <TableRow className="border-primary/20">
+                <TableHead className="text-sm font-semibold w-32">Player</TableHead>
+                {YEARS.map(year => (
+                  <TableHead key={year} className="text-center text-sm font-semibold">
+                    {year}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow className="border-primary/20 bg-primary/10">
+                <TableCell className="font-medium">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="h-3 w-3 rounded-full"
+                      style={{ backgroundColor: appChina.color }}
+                    />
+                    <span className="text-sm">APP China</span>
+                  </div>
+                </TableCell>
+                {YEARS.map((year, index) => (
+                  <TableCell key={year} className="text-center p-1.5">
+                    {index === 0 ? (
+                      // 2026 - pre-filled, read-only display
+                      <div className="flex items-center justify-center">
+                        <span className="text-sm font-semibold text-primary bg-primary/20 px-3 py-1.5 rounded">
+                          {settings.appChina[year]} kt
+                        </span>
+                      </div>
+                    ) : (
+                      // 2027-2031 - input fields
+                      <div className="flex items-center justify-center gap-1">
+                        <Input
+                          type="number"
+                          value={settings.appChina[year] || ''}
+                          onChange={(e) => handleAPPCapacityChange(year, e.target.value)}
+                          className="h-8 w-20 text-center text-sm font-mono"
+                          placeholder="0"
+                          min={0}
+                          max={500}
+                        />
+                        <span className="text-xs text-muted-foreground">kt</span>
+                      </div>
+                    )}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableBody>
+          </Table>
           
-          {/* Jiangsu/Fujian project */}
-          <div className="mt-3 space-y-3 rounded-lg bg-card/50 p-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Jiangsu/Fujian Project</span>
-              <Select
-                value={settings.jiangsuFujian.startYear.toString()}
-                onValueChange={(v) => updateJiangsuFujian({ startYear: parseInt(v) })}
-              >
-                <SelectTrigger className="h-7 w-20 text-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {YEAR_OPTIONS.map(year => (
-                    <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-xs">
-                <Label>Pulp Capacity</Label>
-                <span className="font-mono text-primary">{settings.jiangsuFujian.pulpCapacity} kt</span>
-              </div>
-              <Slider
-                value={[settings.jiangsuFujian.pulpCapacity]}
-                onValueChange={([v]) => updateJiangsuFujian({ pulpCapacity: v })}
-                min={CAPACITY_RANGE.pulp.min}
-                max={CAPACITY_RANGE.pulp.max}
-                step={CAPACITY_RANGE.pulp.step}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="jf-board"
-                    checked={settings.jiangsuFujian.includeBoard}
-                    onCheckedChange={(v) => updateJiangsuFujian({ includeBoard: v })}
-                  />
-                  <Label htmlFor="jf-board" className="text-xs">Board</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="jf-tissue"
-                    checked={settings.jiangsuFujian.includeTissue}
-                    onCheckedChange={(v) => updateJiangsuFujian({ includeTissue: v })}
-                  />
-                  <Label htmlFor="jf-tissue" className="text-xs">Tissue</Label>
-                </div>
-              </div>
-              {(settings.jiangsuFujian.includeBoard || settings.jiangsuFujian.includeTissue) && (
-                <div className="flex items-center gap-3 pt-1">
-                  {settings.jiangsuFujian.includeBoard && (
-                    <div className="flex items-center gap-1.5">
-                      <Label className="text-[10px] text-muted-foreground whitespace-nowrap">Board:</Label>
-                      <Input
-                        type="number"
-                        value={settings.jiangsuFujian.boardCapacity}
-                        onChange={(e) => updateJiangsuFujian({ boardCapacity: Math.max(0, parseInt(e.target.value) || 0) })}
-                        className="h-6 w-16 text-xs px-1.5"
-                        min={0}
-                        max={500}
-                      />
-                      <span className="text-[10px] text-muted-foreground">kt</span>
-                    </div>
-                  )}
-                  {settings.jiangsuFujian.includeTissue && (
-                    <div className="flex items-center gap-1.5">
-                      <Label className="text-[10px] text-muted-foreground whitespace-nowrap">Tissue:</Label>
-                      <Input
-                        type="number"
-                        value={settings.jiangsuFujian.tissueCapacity}
-                        onChange={(e) => updateJiangsuFujian({ tissueCapacity: Math.max(0, parseInt(e.target.value) || 0) })}
-                        className="h-6 w-16 text-xs px-1.5"
-                        min={0}
-                        max={300}
-                      />
-                      <span className="text-[10px] text-muted-foreground">kt</span>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            Enter planned capacity additions for each year (kt/year). 2026 shows existing capacity.
+          </p>
         </div>
 
-
+        {/* Competitor Capacity Distribution - Table */}
+        <div className="rounded-lg bg-secondary/30 p-4">
+          <div className="mb-4 flex items-center gap-2">
+            <Users className="h-4 w-4 text-muted-foreground" />
+            <span className="font-semibold text-sm">Competitor Capacity Distribution</span>
+            <span className="ml-auto text-xs text-muted-foreground">(AI Projected)</span>
+          </div>
+          
+          <Table>
+            <TableHeader>
+              <TableRow className="border-border/50">
+                <TableHead className="text-sm font-semibold w-32">Competitor</TableHead>
+                {YEARS.map(year => (
+                  <TableHead key={year} className="text-center text-sm font-semibold">
+                    {year}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {COMPETITOR_CAPACITY_PROJECTIONS.map((competitor) => (
+                <TableRow key={competitor.playerId} className="border-border/30">
+                  <TableCell className="font-medium">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="h-3 w-3 rounded-full"
+                        style={{ backgroundColor: getCompetitorColor(competitor.playerId) }}
+                      />
+                      <span className="text-sm">{competitor.playerName}</span>
+                    </div>
+                  </TableCell>
+                  {YEARS.map((year, index) => {
+                    const value = competitor.capacity[year]
+                    const isBase = index === 0
+                    return (
+                      <TableCell key={year} className="text-center">
+                        <span className={cn(
+                          'text-sm font-mono',
+                          isBase && 'font-semibold',
+                          !isBase && value > 0 && 'text-success font-medium',
+                          !isBase && value === 0 && 'text-muted-foreground'
+                        )}>
+                          {isBase ? value : (value > 0 ? `+${value}` : '-')}
+                        </span>
+                      </TableCell>
+                    )
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          
+          <p className="mt-3 text-xs text-muted-foreground">
+            2026 shows base capacity. Subsequent years show projected capacity additions based on AI analysis.
+          </p>
+        </div>
       </CardContent>
     </Card>
   )

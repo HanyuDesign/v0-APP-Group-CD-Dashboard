@@ -34,8 +34,20 @@ export interface ForestrySettings {
   vietnamExportPolicy: ExportPolicyLevel
 }
 
-// APP产能设置
+// Yearly capacity by player
+export interface YearlyCapacity {
+  2026: number
+  2027: number
+  2028: number
+  2029: number
+  2030: number
+  2031: number
+}
+
+// APP产能设置 - now with yearly inputs
 export interface APPCapacitySettings {
+  appChina: YearlyCapacity
+  // Legacy fields for backward compatibility
   guangxi: {
     pulpCapacity: number // 万吨/年
     startYear: number
@@ -52,6 +64,13 @@ export interface APPCapacitySettings {
     includeTissue: boolean
     tissueCapacity: number
   }
+}
+
+// Competitor yearly capacity additions
+export interface CompetitorYearlyCapacity {
+  playerId: string
+  playerName: string
+  capacity: YearlyCapacity
 }
 
 // 下游需求设置
