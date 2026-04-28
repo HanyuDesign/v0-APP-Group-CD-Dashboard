@@ -856,94 +856,296 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
           </TooltipProvider>
         </TabsContent>
 
-        {/* Tab 2: Downstream Outcomes */}
+        {/* Tab 2: Downstream Outcomes - Comprehensive 3-Column Layout */}
         <TabsContent value="downstream">
-          <Card className="border-border/50 bg-card/80">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm">Downstream Segment Outcomes</CardTitle>
-                <AIBadge size="sm" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-3 gap-4">
-                {segmentOutcomes.map(outcome => (
-                  <div
-                    key={outcome.segment}
-                    className="rounded-lg border border-border/50 bg-card/50 p-3"
+          <TooltipProvider>
+            <div className="grid grid-cols-3 gap-4">
+              {segmentOutcomes.map(outcome => {
+                // Calculate supply breakdown per segment
+                const segmentConfig = {
+                  paper: { 
+                    demand: 1800, 
+                    appExisting: 450, 
+                    color: '#1e40af',
+                    bgColor: 'bg-blue-50',
+                    borderColor: 'border-blue-200',
+                    exportRegions: { sea: 45, europe: 35, na: 20 }
+                  },
+                  board: { 
+                    demand: 2200, 
+                    appExisting: 380, 
+                    color: '#7c3aed',
+                    bgColor: 'bg-violet-50',
+                    borderColor: 'border-violet-200',
+                    exportRegions: { sea: 50, europe: 30, na: 20 }
+                  },
+                  tissue: { 
+                    demand: 1400, 
+                    appExisting: 320, 
+                    color: '#0891b2',
+                    bgColor: 'bg-cyan-50',
+                    borderColor: 'border-cyan-200',
+                    exportRegions: { sea: 55, europe: 25, na: 20 }
+                  },
+                }[outcome.segment]!
+
+                // Calculate APP new capacity from inputs
+                const appNewCapacity = outcome.segment === 'paper' 
+                  ? 0 
+                  : outcome.segment === 'board'
+                    ? (input.appCapacity.guangxi.includeBoard ? input.appCapacity.guangxi.boardCapacity : 0) +
+                      (input.appCapacity.jiangsuFujian.includeBoard ? input.appCapacity.jiangsuFujian.boardCapacity : 0)
+                    : (input.appCapacity.guangxi.includeTissue ? input.appCapacity.guangxi.tissueCapacity : 0) +
+                      (input.appCapacity.jiangsuFujian.includeTissue ? input.appCapacity.jiangsuFujian.tissueCapacity : 0)
+
+                // Calculate competitor supply
+                const competitorSupply = Math.round(segmentConfig.demand * 0.55) // ~55% market
+                const totalSupply = segmentConfig.appExisting + appNewCapacity + competitorSupply
+                const gap = totalSupply - segmentConfig.demand
+                const hasExcess = gap > 50
+
+                // Cannibalization risk based on APP new capacity relative to market
+                const cannibalizationRisk = appNewCapacity > segmentConfig.demand * 0.1 
+                  ? 'High' 
+                  : appNewCapacity > segmentConfig.demand * 0.05 
+                    ? 'Medium' 
+                    : 'Low'
+
+                // Competitor reactions for this segment
+                const segmentReactions = competitorChanges.slice(0, 3).map(change => {
+                  const player = PLAYERS.find(p => p.id === change.playerId)!
+                  const segmentAction = change.action === 'delay' 
+                    ? 'Delay' 
+                    : change.action === 'add' 
+                      ? 'Expand' 
+                      : 'Maintain'
+                  const volumeChange = Math.round(change.downstreamChange * (outcome.segment === 'board' ? 0.5 : outcome.segment === 'tissue' ? 0.3 : 0.2))
+                  return {
+                    name: player.nameCn,
+                    action: segmentAction,
+                    volumeChange,
+                    reason: change.reasoning.slice(0, 60) + '...',
+                  }
+                })
+
+                // Price and profitability
+                const priceDirection = gap > 100 ? 'down' : gap < -50 ? 'up' : 'stable'
+                const profitability = gap > 100 ? 'Compression' : gap < -50 ? 'Expansion' : 'Stable'
+
+                return (
+                  <Card 
+                    key={outcome.segment} 
+                    className={cn('border-2', segmentConfig.borderColor, segmentConfig.bgColor)}
                   >
-                    <div className="flex items-center gap-2 mb-3">
-                      {segmentIcons[outcome.segment]}
-                      <span className="text-sm font-medium">{segmentLabels[outcome.segment]}</span>
-                    </div>
-                    
-                    {/* Supply-demand balance - max 600 kt (-300 to +300) */}
-                    <div className="space-y-1 mb-3">
-                      <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-muted-foreground">Supply-Demand</span>
-                        <span className={cn(
-                          'font-mono',
-                          outcome.supplyDemandBalance > 100 && 'text-destructive',
-                          outcome.supplyDemandBalance < -50 && 'text-success',
-                          Math.abs(outcome.supplyDemandBalance) <= 100 && 'text-warning'
-                        )}>
-                          {outcome.supplyDemandBalance > 0 ? 'Surplus ' : 'Shortage '}
-                          {Math.abs(Math.round(outcome.supplyDemandBalance))} kt
-                        </span>
+                    {/* Header with Cannibalization Risk Tag */}
+                    <CardHeader className="pb-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {segmentIcons[outcome.segment]}
+                          <CardTitle className="text-sm">{segmentLabels[outcome.segment]}</CardTitle>
+                        </div>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className={cn(
+                              'px-2 py-0.5 rounded-full text-[10px] font-semibold cursor-help',
+                              cannibalizationRisk === 'High' && 'bg-red-100 text-red-700',
+                              cannibalizationRisk === 'Medium' && 'bg-amber-100 text-amber-700',
+                              cannibalizationRisk === 'Low' && 'bg-emerald-100 text-emerald-700'
+                            )}>
+                              Cannibalization: {cannibalizationRisk}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">Risk of APP new capacity cannibalizing existing market share</p>
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
-                      <div className="h-2 rounded-full bg-secondary relative overflow-hidden">
-                        {/* Center line at 0 */}
-                        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-muted-foreground/50 z-10" />
-                        {/* Bar starting from center - scale to 600 total (-300 to +300) */}
-                        <div
-                          className={cn(
-                            'absolute top-0 bottom-0 transition-all',
-                            outcome.supplyDemandBalance > 100 && 'bg-destructive',
-                            outcome.supplyDemandBalance < -50 && 'bg-success',
-                            Math.abs(outcome.supplyDemandBalance) <= 100 && 'bg-warning'
-                          )}
-                          style={{
-                            left: outcome.supplyDemandBalance >= 0 ? '50%' : `${50 + (outcome.supplyDemandBalance / 300) * 50}%`,
-                            width: `${Math.min(50, Math.abs(outcome.supplyDemandBalance / 300) * 50)}%`
-                          }}
-                        />
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {/* SECTION 1: Supply vs Demand */}
+                      <div className="rounded-lg border border-border/50 bg-white/50 p-3">
+                        <p className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wide">Supply vs Demand</p>
+                        <div className="space-y-1.5 text-xs">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Demand</span>
+                            <span className="font-mono font-semibold">{segmentConfig.demand} kt</span>
+                          </div>
+                          <div className="border-t border-dashed border-border/50 pt-1.5">
+                            <p className="text-[10px] text-muted-foreground mb-1">Supply Breakdown:</p>
+                            <div className="flex justify-between pl-2">
+                              <span className="text-muted-foreground">APP (existing)</span>
+                              <span className="font-mono">{segmentConfig.appExisting} kt</span>
+                            </div>
+                            <div className="flex justify-between pl-2">
+                              <span className="text-[#cc0000]">APP (new)</span>
+                              <span className="font-mono text-[#cc0000] font-semibold">+{appNewCapacity} kt</span>
+                            </div>
+                            <div className="flex justify-between pl-2">
+                              <span className="text-muted-foreground">Competitors</span>
+                              <span className="font-mono">{competitorSupply} kt</span>
+                            </div>
+                          </div>
+                          <div className="flex justify-between border-t border-border/50 pt-1.5 font-semibold">
+                            <span>Total Supply</span>
+                            <span className="font-mono">{totalSupply} kt</span>
+                          </div>
+                          <div className={cn(
+                            'flex justify-between rounded-md px-2 py-1 mt-1',
+                            gap > 50 && 'bg-red-100 text-red-700',
+                            gap < -50 && 'bg-emerald-100 text-emerald-700',
+                            Math.abs(gap) <= 50 && 'bg-amber-100 text-amber-700'
+                          )}>
+                            <span className="font-semibold">Gap</span>
+                            <span className="font-mono font-bold">
+                              {gap > 0 ? '+' : ''}{gap} kt
+                              <span className="ml-1 text-[10px]">
+                                ({gap > 50 ? 'Surplus' : gap < -50 ? 'Shortage' : 'Balanced'})
+                              </span>
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    
-                    {/* Utilization */}
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[11px] text-muted-foreground">Utilization</span>
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-[11px]">
-                          {Math.round(outcome.utilization)}%
-                        </span>
-                        <TrafficLight
-                          status={
-                            outcome.utilization >= 90 ? 'green' :
-                            outcome.utilization >= 80 ? 'amber' : 'red'
-                          }
-                        />
+
+                      {/* SECTION 2: Competitor Reaction */}
+                      <div className="rounded-lg border border-border/50 bg-white/50 p-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Competitor Reaction</p>
+                          <AIBadge size="sm" />
+                        </div>
+                        <table className="w-full text-[11px]">
+                          <thead>
+                            <tr className="border-b border-border/30">
+                              <th className="text-left py-1 font-medium text-muted-foreground">Name</th>
+                              <th className="text-center py-1 font-medium text-muted-foreground">Action</th>
+                              <th className="text-right py-1 font-medium text-muted-foreground">Vol</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {segmentReactions.map((reaction, idx) => (
+                              <Tooltip key={idx}>
+                                <TooltipTrigger asChild>
+                                  <tr className="border-b border-border/20 cursor-help hover:bg-white/50">
+                                    <td className="py-1.5">{reaction.name}</td>
+                                    <td className="py-1.5 text-center">
+                                      <span className={cn(
+                                        'inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium',
+                                        reaction.action === 'Delay' && 'bg-amber-100 text-amber-700',
+                                        reaction.action === 'Expand' && 'bg-emerald-100 text-emerald-700',
+                                        reaction.action === 'Maintain' && 'bg-gray-100 text-gray-600'
+                                      )}>
+                                        {reaction.action === 'Delay' && <ChevronDown className="h-3 w-3" />}
+                                        {reaction.action === 'Expand' && <ChevronUp className="h-3 w-3" />}
+                                        {reaction.action === 'Maintain' && <ArrowRight className="h-3 w-3" />}
+                                        {reaction.action}
+                                      </span>
+                                    </td>
+                                    <td className={cn(
+                                      'py-1.5 text-right font-mono',
+                                      reaction.volumeChange > 0 && 'text-emerald-600',
+                                      reaction.volumeChange < 0 && 'text-amber-600'
+                                    )}>
+                                      {reaction.volumeChange > 0 ? '+' : ''}{reaction.volumeChange}
+                                    </td>
+                                  </tr>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p className="text-xs max-w-48">{reaction.reason}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
-                    </div>
-                    
-                    {/* Margin pressure */}
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] text-muted-foreground">Margin Pressure</span>
-                      <span className={cn(
-                        'text-[11px] font-medium',
-                        outcome.marginPressure === 'high' && 'text-success',
-                        outcome.marginPressure === 'medium' && 'text-warning',
-                        outcome.marginPressure === 'low' && 'text-destructive'
-                      )}>
-                        {outcome.marginPressure === 'high' ? 'Low' : 
-                         outcome.marginPressure === 'medium' ? 'Medium' : 'High'}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+
+                      {/* SECTION 3: Market Outcome */}
+                      <div className="rounded-lg border border-border/50 bg-white/50 p-3">
+                        <p className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wide">Market Outcome</p>
+                        <div className="grid grid-cols-3 gap-2 text-center">
+                          <div>
+                            <p className="text-[10px] text-muted-foreground mb-1">Price</p>
+                            <div className={cn(
+                              'inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold',
+                              priceDirection === 'down' && 'bg-red-100 text-red-700',
+                              priceDirection === 'up' && 'bg-emerald-100 text-emerald-700',
+                              priceDirection === 'stable' && 'bg-gray-100 text-gray-600'
+                            )}>
+                              {priceDirection === 'down' && <ArrowDown className="h-3 w-3" />}
+                              {priceDirection === 'up' && <ArrowUp className="h-3 w-3" />}
+                              {priceDirection === 'stable' && <ArrowRight className="h-3 w-3" />}
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-[10px] text-muted-foreground mb-1">Utilization</p>
+                            <div className="flex items-center justify-center gap-1">
+                              <span className="font-mono text-sm font-bold">{Math.round(outcome.utilization)}%</span>
+                              <TrafficLight
+                                status={
+                                  outcome.utilization >= 90 ? 'green' :
+                                  outcome.utilization >= 80 ? 'amber' : 'red'
+                                }
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-[10px] text-muted-foreground mb-1">Profit</p>
+                            <span className={cn(
+                              'text-xs font-semibold',
+                              profitability === 'Compression' && 'text-red-600',
+                              profitability === 'Expansion' && 'text-emerald-600',
+                              profitability === 'Stable' && 'text-gray-600'
+                            )}>
+                              {profitability}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* SECTION 4: Export Allocation (conditional) */}
+                      {hasExcess && (
+                        <div className="rounded-lg border border-orange-200 bg-orange-50 p-3">
+                          <p className="text-[10px] font-semibold text-orange-700 mb-2 uppercase tracking-wide">Export Allocation</p>
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-xs">
+                              <span className="text-orange-600">Excess Volume</span>
+                              <span className="font-mono font-bold text-orange-700">{gap} kt</span>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-[10px] text-orange-600">Regional Distribution:</p>
+                              <div className="flex gap-1">
+                                <div 
+                                  className="h-3 rounded-l bg-teal-500 flex items-center justify-center"
+                                  style={{ width: `${segmentConfig.exportRegions.sea}%` }}
+                                >
+                                  <span className="text-[8px] text-white font-medium">SEA</span>
+                                </div>
+                                <div 
+                                  className="h-3 bg-blue-500 flex items-center justify-center"
+                                  style={{ width: `${segmentConfig.exportRegions.europe}%` }}
+                                >
+                                  <span className="text-[8px] text-white font-medium">EU</span>
+                                </div>
+                                <div 
+                                  className="h-3 rounded-r bg-indigo-500 flex items-center justify-center"
+                                  style={{ width: `${segmentConfig.exportRegions.na}%` }}
+                                >
+                                  <span className="text-[8px] text-white font-medium">NA</span>
+                                </div>
+                              </div>
+                              <div className="flex justify-between text-[10px] text-orange-600">
+                                <span>SEA: {segmentConfig.exportRegions.sea}%</span>
+                                <span>Europe: {segmentConfig.exportRegions.europe}%</span>
+                                <span>NA: {segmentConfig.exportRegions.na}%</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )
+              })}
+            </div>
+          </TooltipProvider>
         </TabsContent>
       </Tabs>
     </div>
