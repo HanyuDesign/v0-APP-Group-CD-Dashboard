@@ -1,10 +1,9 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ValueChainFlow } from '@/components/war-game/ValueChainFlow'
-import { Play, RotateCcw, Zap, ArrowRight } from 'lucide-react'
+import { Zap } from 'lucide-react'
 import { useSimulation } from '@/lib/context/SimulationContext'
 
 export default function InputPage() {
@@ -15,8 +14,6 @@ export default function InputPage() {
     await runSimulationAsync()
     router.push('/results')
   }
-
-  const totalNewCapacity = input.appCapacity.guangxi.pulpCapacity + input.appCapacity.jiangsuFujian.pulpCapacity
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -33,58 +30,7 @@ export default function InputPage() {
             </Badge>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* Current settings summary */}
-            <div className="flex items-center gap-3 rounded-lg bg-secondary/50 px-4 py-2 text-sm">
-              <div>
-                <span className="text-muted-foreground">New Pulp Capacity:</span>
-                <span className="ml-1 font-mono font-semibold text-primary">
-                  {totalNewCapacity} kt
-                </span>
-              </div>
-              <div className="h-4 w-px bg-border" />
-              <div>
-                <span className="text-muted-foreground">Guangxi:</span>
-                <span className="ml-1 font-mono">{input.appCapacity.guangxi.pulpCapacity}</span>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Jiangsu/Fujian:</span>
-                <span className="ml-1 font-mono">{input.appCapacity.jiangsuFujian.pulpCapacity}</span>
-              </div>
-            </div>
 
-            {/* Control buttons */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={reset}
-                disabled={status === 'running'}
-              >
-                <RotateCcw className="mr-1.5 h-4 w-4" />
-                Reset
-              </Button>
-              <Button
-                size="sm"
-                onClick={handleRunSimulation}
-                disabled={status === 'running'}
-                className="min-w-[160px] bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                {status === 'running' ? (
-                  <>
-                    <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                    Running...
-                  </>
-                ) : (
-                  <>
-                    <Play className="mr-1.5 h-4 w-4" />
-                    Run Simulation
-                    <ArrowRight className="ml-1.5 h-4 w-4" />
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
         </div>
       </header>
 
@@ -119,6 +65,9 @@ export default function InputPage() {
             input={input}
             onInputChange={setInput}
             result={result}
+            onRunSimulation={handleRunSimulation}
+            onReset={reset}
+            isRunning={status === 'running'}
           />
         </section>
       </main>

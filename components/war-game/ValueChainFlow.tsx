@@ -5,7 +5,8 @@ import { ForestryModule } from './modules/ForestryModule'
 import { PulpModule } from './modules/PulpModule'
 import { DownstreamModule } from './modules/DownstreamModule'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Trees, Factory, Package, ChevronRight, ClipboardList, TrendingUp, TrendingDown } from 'lucide-react'
+import { Trees, Factory, Package, ChevronRight, ClipboardList, TrendingUp, TrendingDown, Play, RotateCcw, ArrowRight } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { POLICY_LABELS } from '@/lib/data/initial-data'
 import type { 
@@ -20,6 +21,9 @@ interface ValueChainFlowProps {
   input: SimulationInput
   onInputChange: (input: SimulationInput) => void
   result: SimulationResult | null
+  onRunSimulation?: () => void
+  onReset?: () => void
+  isRunning?: boolean
 }
 
 type TabKey = 'forestry' | 'pulp' | 'downstream' | 'overview'
@@ -51,7 +55,7 @@ const TABS: { key: TabKey; label: string; icon: React.ReactNode; description: st
   },
 ]
 
-export function ValueChainFlow({ input, onInputChange, result }: ValueChainFlowProps) {
+export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, onReset, isRunning }: ValueChainFlowProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('forestry')
 
   const handleForestryChange = (forestry: ForestrySettings) => {
@@ -183,6 +187,44 @@ export function ValueChainFlow({ input, onInputChange, result }: ValueChainFlowP
           >
             Next
           </button>
+        </div>
+
+        {/* Reset & Run Simulation buttons */}
+        <div className="flex gap-2 mt-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onReset}
+            disabled={isRunning}
+            className="flex-1"
+          >
+            <RotateCcw className="mr-1.5 h-4 w-4" />
+            Reset
+          </Button>
+          <Button
+            size="sm"
+            onClick={onRunSimulation}
+            disabled={isRunning || activeTab !== 'overview'}
+            className={cn(
+              'flex-1',
+              activeTab === 'overview'
+                ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                : 'bg-secondary/50 text-muted-foreground cursor-not-allowed'
+            )}
+          >
+            {isRunning ? (
+              <>
+                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                Running...
+              </>
+            ) : (
+              <>
+                <Play className="mr-1.5 h-4 w-4" />
+                Run Simulation
+                <ArrowRight className="ml-1.5 h-4 w-4" />
+              </>
+            )}
+          </Button>
         </div>
       </div>
 
