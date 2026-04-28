@@ -122,7 +122,7 @@ export function MarketResults({ result }: MarketResultsProps) {
                   tick={{ fontSize: 10, fill: '#1a1a1a' }}
                   axisLine={{ stroke: '#666666' }}
                   tickLine={{ stroke: '#666666' }}
-                  domain={['dataMin', 'dataMax']}
+                  domain={[0, 'dataMax']}
                 />
                 <YAxis
                   type="category"
