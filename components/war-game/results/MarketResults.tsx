@@ -46,9 +46,8 @@ export function MarketResults({ result }: MarketResultsProps) {
     })
     .sort((a, b) => b.value - a.value)
 
-  // Prepare capacity change bar chart data
+  // Prepare capacity change bar chart data - include all competitors with their colors
   const capacityChangeData = competitorChanges
-    .filter(c => c.pulpChange !== 0)
     .map(change => {
       const player = PLAYERS.find(p => p.id === change.playerId)!
       return {
@@ -58,6 +57,7 @@ export function MarketResults({ result }: MarketResultsProps) {
         action: change.action,
       }
     })
+    .sort((a, b) => b.change - a.change)
 
   return (
     <div className="space-y-4">
