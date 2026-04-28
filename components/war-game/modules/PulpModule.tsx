@@ -100,10 +100,10 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
                           type="number"
                           value={settings.appChina[year] || ''}
                           onChange={(e) => handleAPPCapacityChange(year, e.target.value)}
-                          className="h-7 w-14 text-center text-xs font-mono bg-white border-2 border-[#cc0000]/40 focus:border-[#cc0000]"
+                          className="h-7 w-20 text-center text-xs font-mono bg-white border-2 border-[#cc0000]/40 focus:border-[#cc0000]"
                           placeholder="0"
                           min={0}
-                          max={500}
+                          max={99999}
                         />
                         <span className="text-xs text-muted-foreground">kt</span>
                       </div>

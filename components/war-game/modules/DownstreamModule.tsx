@@ -180,9 +180,9 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange }: S
                       type="number"
                       value={appSupply[year] || ''}
                       onChange={(e) => onAppSupplyChange(year, parseInt(e.target.value) || 0)}
-                      className="h-7 w-14 text-xs text-center px-1 mx-auto bg-white border-2 border-[#cc0000]/40 focus:border-[#cc0000] font-mono"
+                      className="h-7 w-20 text-xs text-center px-1 mx-auto bg-white border-2 border-[#cc0000]/40 focus:border-[#cc0000] font-mono"
                       min={0}
-                      max={200}
+                      max={99999}
                     />
                   )}
                 </TableCell>
