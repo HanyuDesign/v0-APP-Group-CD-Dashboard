@@ -168,20 +168,21 @@ function SystemPLCard({ systemPL }: { systemPL: APPSystemPL }) {
   )
 }
 
+// Define the specific players to show in order
+const DISPLAY_PLAYERS_PL = ['sun-paper', 'chenming', 'liansheng', 'others-china', 'app-china']
+
 // Player-level P&L component with toggle
 function PlayerPLSection({ playerFinancials }: { playerFinancials: PlayerFinancialOutcome[] }) {
   const [viewMode, setViewMode] = useState<ViewMode>('combined')
 
-  // Prepare data based on view mode
+  // Prepare data based on view mode - filter to specific players only
   const getChartData = () => {
-    return playerFinancials
-      .filter(p => {
-        if (viewMode === 'combined') return p.ebitda > 0
-        if (viewMode === 'pulp') return p.pulpProfit > 0
-        return p.downstreamProfit > 0
-      })
-      .map(financial => {
-        const player = PLAYERS.find(p => p.id === financial.playerId)!
+    return DISPLAY_PLAYERS_PL
+      .map(playerId => {
+        const financial = playerFinancials.find(p => p.playerId === playerId)
+        if (!financial) return null
+        
+        const player = PLAYERS.find(p => p.id === playerId)!
         let value = 0
         if (viewMode === 'combined') value = financial.ebitda
         else if (viewMode === 'pulp') value = financial.pulpProfit
@@ -192,6 +193,7 @@ function PlayerPLSection({ playerFinancials }: { playerFinancials: PlayerFinanci
         const capacityIndex = Math.round(totalCapacity / 10) // Simplified index
 
         return {
+          playerId,
           name: player.nameCn,
           value,
           revenue: financial.revenue,
@@ -203,8 +205,18 @@ function PlayerPLSection({ playerFinancials }: { playerFinancials: PlayerFinanci
           color: player.color,
         }
       })
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 10)
+      .filter(Boolean) as Array<{
+        playerId: string
+        name: string
+        value: number
+        revenue: number
+        ebitda: number
+        margin: number
+        pulpProfit: number
+        downstreamProfit: number
+        capacityIndex: number
+        color: string
+      }>
   }
 
   const chartData = getChartData()
@@ -250,41 +262,51 @@ function PlayerPLSection({ playerFinancials }: { playerFinancials: PlayerFinanci
             </TableRow>
           </TableHeader>
           <TableBody>
-            {chartData.map(item => (
-              <TableRow key={item.name} className="border-border/30">
-                <TableCell className="text-xs">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="h-2.5 w-2.5 rounded-full"
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <span className="font-medium">{item.name}</span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right font-mono text-xs">
-                  {item.revenue}
-                </TableCell>
-                <TableCell className="text-right font-mono text-xs font-semibold">
-                  {item.ebitda}
-                </TableCell>
-                <TableCell className="text-right font-mono text-xs">
-                  <span className={cn(
-                    item.margin >= 20 ? 'text-[#2e7d32]' :
-                    item.margin >= 15 ? 'text-[#ed6c02]' : 'text-muted-foreground'
-                  )}>
-                    {item.margin}%
-                  </span>
-                </TableCell>
-                <TableCell className="text-right font-mono text-xs">
-                  {item.capacityIndex}
-                </TableCell>
-                {viewMode !== 'combined' && (
-                  <TableCell className="text-right font-mono text-xs font-semibold">
-                    {viewMode === 'pulp' ? item.pulpProfit : item.downstreamProfit}
+            {chartData.map(item => {
+              const isAppChina = item.playerId === 'app-china'
+              return (
+                <TableRow 
+                  key={item.name} 
+                  className={cn(
+                    'border-border/30',
+                    isAppChina && 'bg-[#cc0000]/5 border-l-2 border-l-[#cc0000]'
+                  )}
+                >
+                  <TableCell className="text-xs">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="h-2.5 w-2.5 rounded-full"
+                        style={{ backgroundColor: item.color }}
+                      />
+                      <span className={cn('font-medium', isAppChina && 'text-[#cc0000]')}>{item.name}</span>
+                    </div>
                   </TableCell>
-                )}
-              </TableRow>
-            ))}
+                  <TableCell className={cn('text-right font-mono text-xs', isAppChina && 'font-semibold')}>
+                    {item.revenue}
+                  </TableCell>
+                  <TableCell className={cn('text-right font-mono text-xs font-semibold', isAppChina && 'text-[#cc0000]')}>
+                    {item.ebitda}
+                  </TableCell>
+                  <TableCell className="text-right font-mono text-xs">
+                    <span className={cn(
+                      item.margin >= 20 ? 'text-[#2e7d32]' :
+                      item.margin >= 15 ? 'text-[#ed6c02]' : 'text-muted-foreground',
+                      isAppChina && 'font-semibold'
+                    )}>
+                      {item.margin}%
+                    </span>
+                  </TableCell>
+                  <TableCell className={cn('text-right font-mono text-xs', isAppChina && 'font-semibold')}>
+                    {item.capacityIndex}
+                  </TableCell>
+                  {viewMode !== 'combined' && (
+                    <TableCell className={cn('text-right font-mono text-xs font-semibold', isAppChina && 'text-[#cc0000]')}>
+                      {viewMode === 'pulp' ? item.pulpProfit : item.downstreamProfit}
+                    </TableCell>
+                  )}
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
       </CardContent>

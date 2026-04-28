@@ -18,8 +18,16 @@ interface MarketResultsProps {
   result: SimulationResult
 }
 
+// Define the specific players to show in order
+const DISPLAY_PLAYERS = ['sun-paper', 'chenming', 'liansheng', 'others-china', 'app-china']
+
 export function MarketResults({ result }: MarketResultsProps) {
   const { playerMarketOutcomes } = result
+
+  // Filter and sort outcomes to show only specific players
+  const filteredOutcomes = DISPLAY_PLAYERS
+    .map(playerId => playerMarketOutcomes.find(o => o.playerId === playerId))
+    .filter(Boolean) as typeof playerMarketOutcomes
 
   return (
     <div className="space-y-4">
@@ -41,38 +49,46 @@ export function MarketResults({ result }: MarketResultsProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {playerMarketOutcomes.map(outcome => {
+              {filteredOutcomes.map(outcome => {
                 const player = PLAYERS.find(p => p.id === outcome.playerId)!
+                const isAppChina = outcome.playerId === 'app-china'
                 return (
-                  <TableRow key={outcome.playerId} className="border-border/30">
+                  <TableRow 
+                    key={outcome.playerId} 
+                    className={cn(
+                      'border-border/30',
+                      isAppChina && 'bg-[#cc0000]/5 border-l-2 border-l-[#cc0000]'
+                    )}
+                  >
                     <TableCell className="text-xs">
                       <div className="flex items-center gap-2">
                         <span
                           className="h-2 w-2 rounded-full"
                           style={{ backgroundColor: player.color }}
                         />
-                        <span>{player.nameCn}</span>
+                        <span className={cn(isAppChina && 'font-semibold text-[#cc0000]')}>{player.nameCn}</span>
                         {player.isAIDriven && <AIBadge size="sm" />}
                       </div>
                     </TableCell>
-                    <TableCell className="text-right font-mono text-xs">
+                    <TableCell className={cn('text-right font-mono text-xs', isAppChina && 'font-semibold')}>
                       {outcome.pulpCapacity} kt
                     </TableCell>
-                    <TableCell className="text-right font-mono text-xs">
+                    <TableCell className={cn('text-right font-mono text-xs', isAppChina && 'font-semibold')}>
                       {outcome.pulpVolume} kt
                     </TableCell>
                     <TableCell className="text-right font-mono text-xs">
                       <span className={cn(
                         outcome.pulpUtilization >= 85 ? 'text-success' :
-                        outcome.pulpUtilization >= 75 ? 'text-warning' : 'text-destructive'
+                        outcome.pulpUtilization >= 75 ? 'text-warning' : 'text-destructive',
+                        isAppChina && 'font-semibold'
                       )}>
                         {outcome.pulpUtilization}%
                       </span>
                     </TableCell>
-                    <TableCell className="text-right font-mono text-xs">
+                    <TableCell className={cn('text-right font-mono text-xs', isAppChina && 'font-semibold')}>
                       {Math.round(outcome.pulpMarketShare)}%
                     </TableCell>
-                    <TableCell className="text-right font-mono text-xs">
+                    <TableCell className={cn('text-right font-mono text-xs', isAppChina && 'font-semibold')}>
                       ${Math.round(350 + Math.random() * 100)} /t
                     </TableCell>
                   </TableRow>
