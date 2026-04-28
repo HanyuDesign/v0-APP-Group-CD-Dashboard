@@ -108,9 +108,9 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange }: S
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/30">
-              <TableHead className="text-xs font-semibold w-28">Competitor</TableHead>
+              <TableHead className="text-sm font-semibold w-32">Competitor</TableHead>
               {years.map(year => (
-                <TableHead key={year} className="text-xs text-center font-semibold w-16">{year}</TableHead>
+                <TableHead key={year} className="text-sm text-center font-semibold">{year}</TableHead>
               ))}
             </TableRow>
           </TableHeader>
@@ -119,21 +119,21 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange }: S
               const player = PLAYERS.find(p => p.id === comp.playerId)
               return (
                 <TableRow key={comp.playerId} className="border-border/30">
-                  <TableCell className="text-xs py-1.5">
-                    <div className="flex items-center gap-1.5">
+                  <TableCell className="font-medium">
+                    <div className="flex items-center gap-2">
                       <span
-                        className="h-2 w-2 rounded-full flex-shrink-0"
+                        className="h-3 w-3 rounded-full flex-shrink-0"
                         style={{ backgroundColor: player?.color || '#6c757d' }}
                       />
-                      <span className="truncate">{comp.playerName}</span>
+                      <span className="text-sm">{comp.playerName}</span>
                     </div>
                   </TableCell>
                   {years.map(year => {
                     const value = comp.capacity[year]
                     return (
-                      <TableCell key={year} className="text-center py-1.5">
+                      <TableCell key={year} className="text-center">
                         <span className={cn(
-                          'text-xs font-mono',
+                          'text-sm font-mono',
                           value > 0 && 'text-success',
                           value < 0 && 'text-destructive',
                           value === 0 && 'text-muted-foreground'
@@ -155,24 +155,24 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange }: S
         <Table>
           <TableHeader>
             <TableRow className="bg-[#cc0000]/10">
-              <TableHead className="text-xs font-semibold w-28">
-                <div className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-[#cc0000]" />
+              <TableHead className="text-sm font-semibold w-32">
+                <div className="flex items-center gap-2">
+                  <span className="h-3 w-3 rounded-full bg-[#cc0000]" />
                   APP China
                 </div>
               </TableHead>
               {years.map(year => (
-                <TableHead key={year} className="text-xs text-center font-semibold w-16">{year}</TableHead>
+                <TableHead key={year} className="text-sm text-center font-semibold">{year}</TableHead>
               ))}
             </TableRow>
           </TableHeader>
           <TableBody>
             <TableRow className="border-border/30">
-              <TableCell className="text-xs py-1.5 font-medium">Capacity (kt)</TableCell>
+              <TableCell className="text-sm font-medium">Capacity (kt)</TableCell>
               {years.map(year => (
-                <TableCell key={year} className="text-center py-1.5 px-1">
+                <TableCell key={year} className="text-center px-1">
                   {year === 2026 ? (
-                    <span className="text-xs font-mono font-semibold text-[#cc0000]">
+                    <span className="text-sm font-mono font-semibold text-[#cc0000]">
                       {appSupply[year]}
                     </span>
                   ) : (
@@ -180,7 +180,7 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange }: S
                       type="number"
                       value={appSupply[year] || ''}
                       onChange={(e) => onAppSupplyChange(year, parseInt(e.target.value) || 0)}
-                      className="h-7 w-20 text-xs text-left p-0 pl-1 mx-auto bg-white border-2 border-[#cc0000]/40 focus:border-[#cc0000] font-mono"
+                      className="h-7 w-20 text-sm text-left p-0 pl-1 mx-auto bg-white border-2 border-[#cc0000]/40 focus:border-[#cc0000] font-mono"
                       min={0}
                       max={99999}
                     />
