@@ -267,32 +267,34 @@ export function DownstreamModule({
             Supply Capacity Additions (kt)
           </h3>
           
-          {/* Paper Supply */}
-          <SupplySection
-            segment="paper"
-            title="Paper"
-            icon={<FileText className="h-4 w-4 text-muted-foreground" />}
-            appSupply={settings.supply.paper.appChina}
-            onAppSupplyChange={(year, value) => handleAppSupplyChange('paper', year, value)}
-          />
+          <div className="space-y-6">
+            {/* Paper Supply */}
+            <SupplySection
+              segment="paper"
+              title="Paper"
+              icon={<FileText className="h-4 w-4 text-muted-foreground" />}
+              appSupply={settings.supply.paper.appChina}
+              onAppSupplyChange={(year, value) => handleAppSupplyChange('paper', year, value)}
+            />
 
-          {/* Board Supply */}
-          <SupplySection
-            segment="board"
-            title="Packaging / Carton Board"
-            icon={<Package className="h-4 w-4 text-chart-3" />}
-            appSupply={settings.supply.board.appChina}
-            onAppSupplyChange={(year, value) => handleAppSupplyChange('board', year, value)}
-          />
+            {/* Board Supply */}
+            <SupplySection
+              segment="board"
+              title="Packaging / Carton Board"
+              icon={<Package className="h-4 w-4 text-chart-3" />}
+              appSupply={settings.supply.board.appChina}
+              onAppSupplyChange={(year, value) => handleAppSupplyChange('board', year, value)}
+            />
 
-          {/* Tissue Supply */}
-          <SupplySection
-            segment="tissue"
-            title="Tissue"
-            icon={<Bath className="h-4 w-4 text-chart-2" />}
-            appSupply={settings.supply.tissue.appChina}
-            onAppSupplyChange={(year, value) => handleAppSupplyChange('tissue', year, value)}
-          />
+            {/* Tissue Supply */}
+            <SupplySection
+              segment="tissue"
+              title="Tissue"
+              icon={<Bath className="h-4 w-4 text-chart-2" />}
+              appSupply={settings.supply.tissue.appChina}
+              onAppSupplyChange={(year, value) => handleAppSupplyChange('tissue', year, value)}
+            />
+          </div>
         </div>
       </CardContent>
     </Card>
