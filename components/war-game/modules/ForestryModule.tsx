@@ -96,8 +96,8 @@ export function ForestryModule({
               {/* China Logging Policy Slider */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-xs">China Logging Policy</Label>
-                  <span className="text-xs font-medium text-primary">
+                  <Label className="text-sm">China Logging Policy</Label>
+                  <span className="text-sm font-semibold text-primary">
                     {POLICY_LABELS.chinaLoggingPolicy[settings.chinaLoggingPolicy]}
                   </span>
                 </div>
@@ -108,7 +108,7 @@ export function ForestryModule({
                   step={1}
                   className="w-full"
                 />
-                <div className="flex justify-between text-[10px] text-muted-foreground">
+                <div className="flex justify-between text-xs text-muted-foreground">
                   <span>Tight</span>
                   <span>Baseline</span>
                   <span>Relaxed</span>
@@ -118,8 +118,8 @@ export function ForestryModule({
               {/* Real Estate Condition Slider */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-xs">Real Estate Market</Label>
-                  <span className="text-xs font-medium text-primary">
+                  <Label className="text-sm">Real Estate Market</Label>
+                  <span className="text-sm font-semibold text-primary">
                     {POLICY_LABELS.chinaRealEstateCondition[settings.chinaRealEstateCondition]}
                   </span>
                 </div>
@@ -130,7 +130,7 @@ export function ForestryModule({
                   step={1}
                   className="w-full"
                 />
-                <div className="flex justify-between text-[10px] text-muted-foreground">
+                <div className="flex justify-between text-xs text-muted-foreground">
                   <span>Downturn</span>
                   <span>Stable</span>
                   <span>Recovery</span>
@@ -176,8 +176,8 @@ export function ForestryModule({
               {/* Vietnam Export Policy Slider */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-xs">Vietnam Export Policy</Label>
-                  <span className="text-xs font-medium text-primary">
+                  <Label className="text-sm">Vietnam Export Policy</Label>
+                  <span className="text-sm font-semibold text-primary">
                     {POLICY_LABELS.vietnamExportPolicy[settings.vietnamExportPolicy]}
                   </span>
                 </div>
@@ -188,7 +188,7 @@ export function ForestryModule({
                   step={1}
                   className="w-full"
                 />
-                <div className="flex justify-between text-[10px] text-muted-foreground">
+                <div className="flex justify-between text-xs text-muted-foreground">
                   <span>Restricted</span>
                   <span>Baseline</span>
                   <span>Expanded</span>
