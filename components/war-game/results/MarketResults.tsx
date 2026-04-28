@@ -116,13 +116,14 @@ export function MarketResults({ result }: MarketResultsProps) {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={capacityChangeData} layout="vertical" margin={{ left: 70 }}>
+              <BarChart data={capacityChangeData} layout="vertical" margin={{ left: 70, right: 10 }}>
                 <XAxis 
                   type="number" 
                   tick={{ fontSize: 10, fill: '#1a1a1a' }}
                   axisLine={{ stroke: '#666666' }}
                   tickLine={{ stroke: '#666666' }}
-                  domain={[0, 'dataMax']}
+                  domain={[-50, 0]}
+                  ticks={[-50, -40, -30, -20, -10, 0]}
                 />
                 <YAxis
                   type="category"
