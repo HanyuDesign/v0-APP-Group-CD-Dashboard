@@ -220,7 +220,7 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
         </div>
         
         {/* Navigation buttons - at bottom of right panel */}
-        <div className="flex gap-2 mt-4">
+        <div className="flex justify-end gap-2 mt-4">
           <button
             onClick={() => {
               const prevIndex = Math.max(0, currentTabIndex - 1)
@@ -228,7 +228,7 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
             }}
             disabled={currentTabIndex === 0}
             className={cn(
-              'flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors h-10',
+              'w-1/4 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors h-10',
               currentTabIndex === 0
                 ? 'bg-secondary/30 text-muted-foreground cursor-not-allowed'
                 : 'bg-secondary hover:bg-secondary/80 text-foreground'
@@ -243,7 +243,7 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
             }}
             disabled={currentTabIndex === TABS.length - 1}
             className={cn(
-              'flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors h-10',
+              'w-1/4 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors h-10',
               currentTabIndex === TABS.length - 1
                 ? 'bg-secondary/30 text-muted-foreground cursor-not-allowed'
                 : 'bg-primary hover:bg-primary/90 text-primary-foreground'
