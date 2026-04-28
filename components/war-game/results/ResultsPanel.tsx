@@ -2,9 +2,8 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent } from '@/components/ui/card'
-import { BarChart3, DollarSign, Clock, Factory, Package } from 'lucide-react'
-import { PulpCapacityTab } from './PulpCapacityTab'
-import { DownstreamTab } from './DownstreamTab'
+import { BarChart3, DollarSign, Clock } from 'lucide-react'
+import { AIDecisionsSummary } from './AIDecisionsSummary'
 import { MarketResults } from './MarketResults'
 import { FinancialResults } from './FinancialResults'
 import type { SimulationResult, SimulationStatus } from '@/lib/types/war-game'
@@ -57,27 +56,10 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
 
   return (
     <div className="space-y-6">
-      {/* Main Tabs: Pulp Capacity and Downstream */}
-      <Tabs defaultValue="pulp" className="w-full">
-        <TabsList className="mb-4 grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="pulp" className="gap-2">
-            <Factory className="h-4 w-4" />
-            Pulp Capacity
-          </TabsTrigger>
-          <TabsTrigger value="downstream" className="gap-2">
-            <Package className="h-4 w-4" />
-            Downstream
-          </TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="pulp" className={cn(status === 'running' && 'opacity-50')}>
-          <PulpCapacityTab result={result} />
-        </TabsContent>
-        
-        <TabsContent value="downstream" className={cn(status === 'running' && 'opacity-50')}>
-          <DownstreamTab result={result} />
-        </TabsContent>
-      </Tabs>
+      {/* Section 1: AI Decisions Summary */}
+      <section>
+        <AIDecisionsSummary result={result} />
+      </section>
 
       {/* Section 2: Detailed Market & Financial Results */}
       <section>
