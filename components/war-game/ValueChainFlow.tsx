@@ -440,30 +440,30 @@ function OverviewPanel({ input }: { input: SimulationInput }) {
               </h4>
               <div className="space-y-3">
                 {/* Paper Supply */}
-                <div className="rounded-lg bg-white p-2 border border-red-100">
-                  <div className="text-[10px] font-semibold text-muted-foreground mb-2">Paper</div>
-                  <table className="w-full text-[10px]">
+                <div className="rounded-lg bg-white p-3 border border-red-100">
+                  <div className="text-xs font-semibold text-muted-foreground mb-2">Paper</div>
+                  <table className="w-full text-xs">
                     <thead>
-                      <tr className="border-b border-border/30">
-                        <th className="text-left py-1 px-1 font-medium text-muted-foreground">Player</th>
-                        {years.map(y => <th key={y} className="text-center py-1 px-1 font-medium text-muted-foreground">{y}</th>)}
+                      <tr className="border-b border-border/50">
+                        <th className="text-left py-2 px-2 font-medium text-muted-foreground">Player</th>
+                        {years.map(y => <th key={y} className="text-center py-2 px-2 font-medium text-muted-foreground">{y}</th>)}
                       </tr>
                     </thead>
                     <tbody>
                       {downstreamCompetitorData.paper.map(c => (
-                        <tr key={c.name} className="border-b border-border/20">
-                          <td className="py-1 px-1 text-muted-foreground">{c.name}</td>
+                        <tr key={c.name} className="border-b border-border/30">
+                          <td className="py-2 px-2 text-muted-foreground">{c.name}</td>
                           {years.map(y => (
-                            <td key={y} className={cn('text-center py-1 px-1 font-mono', y !== 2026 && c.capacity[y] > 0 && 'text-green-600', y !== 2026 && c.capacity[y] < 0 && 'text-red-600')}>
+                            <td key={y} className={cn('text-center py-2 px-2 font-mono', y !== 2026 && c.capacity[y] > 0 && 'text-green-600', y !== 2026 && c.capacity[y] < 0 && 'text-red-600')}>
                               {y === 2026 ? c.capacity[y] : c.capacity[y] !== 0 ? (c.capacity[y] > 0 ? `+${c.capacity[y]}` : c.capacity[y]) : '-'}
                             </td>
                           ))}
                         </tr>
                       ))}
                       <tr className="bg-red-100/50 font-semibold">
-                        <td className="py-1 px-1 text-[#cc0000]">APP China</td>
+                        <td className="py-2 px-2 text-[#cc0000]">APP China</td>
                         {years.map(y => (
-                          <td key={y} className={cn('text-center py-1 px-1 font-mono', y !== 2026 && input.downstream.supply.paper.appChina[y] > 0 && 'text-green-600')}>
+                          <td key={y} className={cn('text-center py-2 px-2 font-mono', y !== 2026 && input.downstream.supply.paper.appChina[y] > 0 && 'text-green-600')}>
                             {y === 2026 ? input.downstream.supply.paper.appChina[y] : input.downstream.supply.paper.appChina[y] > 0 ? `+${input.downstream.supply.paper.appChina[y]}` : '-'}
                           </td>
                         ))}
@@ -473,30 +473,30 @@ function OverviewPanel({ input }: { input: SimulationInput }) {
                 </div>
 
                 {/* Board Supply */}
-                <div className="rounded-lg bg-white p-2 border border-red-100">
-                  <div className="text-[10px] font-semibold text-muted-foreground mb-2">Packaging / Carton Board</div>
-                  <table className="w-full text-[10px]">
+                <div className="rounded-lg bg-white p-3 border border-red-100">
+                  <div className="text-xs font-semibold text-muted-foreground mb-2">Packaging / Carton Board</div>
+                  <table className="w-full text-xs">
                     <thead>
-                      <tr className="border-b border-border/30">
-                        <th className="text-left py-1 px-1 font-medium text-muted-foreground">Player</th>
-                        {years.map(y => <th key={y} className="text-center py-1 px-1 font-medium text-muted-foreground">{y}</th>)}
+                      <tr className="border-b border-border/50">
+                        <th className="text-left py-2 px-2 font-medium text-muted-foreground">Player</th>
+                        {years.map(y => <th key={y} className="text-center py-2 px-2 font-medium text-muted-foreground">{y}</th>)}
                       </tr>
                     </thead>
                     <tbody>
                       {downstreamCompetitorData.board.map(c => (
-                        <tr key={c.name} className="border-b border-border/20">
-                          <td className="py-1 px-1 text-muted-foreground">{c.name}</td>
+                        <tr key={c.name} className="border-b border-border/30">
+                          <td className="py-2 px-2 text-muted-foreground">{c.name}</td>
                           {years.map(y => (
-                            <td key={y} className={cn('text-center py-1 px-1 font-mono', y !== 2026 && c.capacity[y] > 0 && 'text-green-600', y !== 2026 && c.capacity[y] < 0 && 'text-red-600')}>
+                            <td key={y} className={cn('text-center py-2 px-2 font-mono', y !== 2026 && c.capacity[y] > 0 && 'text-green-600', y !== 2026 && c.capacity[y] < 0 && 'text-red-600')}>
                               {y === 2026 ? c.capacity[y] : c.capacity[y] !== 0 ? (c.capacity[y] > 0 ? `+${c.capacity[y]}` : c.capacity[y]) : '-'}
                             </td>
                           ))}
                         </tr>
                       ))}
                       <tr className="bg-red-100/50 font-semibold">
-                        <td className="py-1 px-1 text-[#cc0000]">APP China</td>
+                        <td className="py-2 px-2 text-[#cc0000]">APP China</td>
                         {years.map(y => (
-                          <td key={y} className={cn('text-center py-1 px-1 font-mono', y !== 2026 && input.downstream.supply.board.appChina[y] > 0 && 'text-green-600')}>
+                          <td key={y} className={cn('text-center py-2 px-2 font-mono', y !== 2026 && input.downstream.supply.board.appChina[y] > 0 && 'text-green-600')}>
                             {y === 2026 ? input.downstream.supply.board.appChina[y] : input.downstream.supply.board.appChina[y] > 0 ? `+${input.downstream.supply.board.appChina[y]}` : '-'}
                           </td>
                         ))}
@@ -506,30 +506,30 @@ function OverviewPanel({ input }: { input: SimulationInput }) {
                 </div>
 
                 {/* Tissue Supply */}
-                <div className="rounded-lg bg-white p-2 border border-red-100">
-                  <div className="text-[10px] font-semibold text-muted-foreground mb-2">Tissue</div>
-                  <table className="w-full text-[10px]">
+                <div className="rounded-lg bg-white p-3 border border-red-100">
+                  <div className="text-xs font-semibold text-muted-foreground mb-2">Tissue</div>
+                  <table className="w-full text-xs">
                     <thead>
-                      <tr className="border-b border-border/30">
-                        <th className="text-left py-1 px-1 font-medium text-muted-foreground">Player</th>
-                        {years.map(y => <th key={y} className="text-center py-1 px-1 font-medium text-muted-foreground">{y}</th>)}
+                      <tr className="border-b border-border/50">
+                        <th className="text-left py-2 px-2 font-medium text-muted-foreground">Player</th>
+                        {years.map(y => <th key={y} className="text-center py-2 px-2 font-medium text-muted-foreground">{y}</th>)}
                       </tr>
                     </thead>
                     <tbody>
                       {downstreamCompetitorData.tissue.map(c => (
-                        <tr key={c.name} className="border-b border-border/20">
-                          <td className="py-1 px-1 text-muted-foreground">{c.name}</td>
+                        <tr key={c.name} className="border-b border-border/30">
+                          <td className="py-2 px-2 text-muted-foreground">{c.name}</td>
                           {years.map(y => (
-                            <td key={y} className={cn('text-center py-1 px-1 font-mono', y !== 2026 && c.capacity[y] > 0 && 'text-green-600', y !== 2026 && c.capacity[y] < 0 && 'text-red-600')}>
+                            <td key={y} className={cn('text-center py-2 px-2 font-mono', y !== 2026 && c.capacity[y] > 0 && 'text-green-600', y !== 2026 && c.capacity[y] < 0 && 'text-red-600')}>
                               {y === 2026 ? c.capacity[y] : c.capacity[y] !== 0 ? (c.capacity[y] > 0 ? `+${c.capacity[y]}` : c.capacity[y]) : '-'}
                             </td>
                           ))}
                         </tr>
                       ))}
                       <tr className="bg-red-100/50 font-semibold">
-                        <td className="py-1 px-1 text-[#cc0000]">APP China</td>
+                        <td className="py-2 px-2 text-[#cc0000]">APP China</td>
                         {years.map(y => (
-                          <td key={y} className={cn('text-center py-1 px-1 font-mono', y !== 2026 && input.downstream.supply.tissue.appChina[y] > 0 && 'text-green-600')}>
+                          <td key={y} className={cn('text-center py-2 px-2 font-mono', y !== 2026 && input.downstream.supply.tissue.appChina[y] > 0 && 'text-green-600')}>
                             {y === 2026 ? input.downstream.supply.tissue.appChina[y] : input.downstream.supply.tissue.appChina[y] > 0 ? `+${input.downstream.supply.tissue.appChina[y]}` : '-'}
                           </td>
                         ))}
