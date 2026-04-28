@@ -499,7 +499,7 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                   <span className="text-sm font-medium">{segmentLabels[outcome.segment]}</span>
                 </div>
                 
-                {/* Supply-demand balance - max 300 kt */}
+                {/* Supply-demand balance - max 600 kt (-300 to +300) */}
                 <div className="space-y-1 mb-2">
                   <div className="flex items-center justify-between text-[11px]">
                     <span className="text-muted-foreground">Supply-Demand</span>
@@ -513,16 +513,16 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                       {Math.abs(Math.round(outcome.supplyDemandBalance))} kt
                     </span>
                   </div>
-                  <div className="h-3 rounded-full bg-secondary relative overflow-hidden">
+                  <div className="h-4 rounded-full bg-secondary relative overflow-hidden">
                     {/* Scale markers */}
                     <div className="absolute inset-0 flex justify-between items-center px-1 z-10">
-                      <span className="text-[8px] text-muted-foreground/70">-150</span>
+                      <span className="text-[8px] text-muted-foreground/70">-300</span>
                       <span className="text-[8px] text-muted-foreground/70">0</span>
-                      <span className="text-[8px] text-muted-foreground/70">+150</span>
+                      <span className="text-[8px] text-muted-foreground/70">+300</span>
                     </div>
                     {/* Center line at 0 */}
                     <div className="absolute left-1/2 top-0 bottom-0 w-px bg-muted-foreground/50 z-10" />
-                    {/* Bar starting from center - scale to 300 total (-150 to +150) */}
+                    {/* Bar starting from center - scale to 600 total (-300 to +300) */}
                     <div
                       className={cn(
                         'absolute top-0 bottom-0 transition-all',
@@ -531,8 +531,8 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                         Math.abs(outcome.supplyDemandBalance) <= 100 && 'bg-warning'
                       )}
                       style={{
-                        left: outcome.supplyDemandBalance >= 0 ? '50%' : `${50 + (outcome.supplyDemandBalance / 150) * 50}%`,
-                        width: `${Math.min(50, Math.abs(outcome.supplyDemandBalance / 150) * 50)}%`
+                        left: outcome.supplyDemandBalance >= 0 ? '50%' : `${50 + (outcome.supplyDemandBalance / 300) * 50}%`,
+                        width: `${Math.min(50, Math.abs(outcome.supplyDemandBalance / 300) * 50)}%`
                       }}
                     />
                   </div>
