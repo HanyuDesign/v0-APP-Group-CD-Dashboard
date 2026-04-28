@@ -355,7 +355,7 @@ function OverviewPanel({ input }: { input: SimulationInput }) {
           </div>
           <div className="p-4 bg-white">
             <div className="overflow-x-auto">
-              <table className="w-full text-xs">
+              <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border/50">
                     <th className="text-left py-2 px-2 font-medium text-muted-foreground">Player</th>
@@ -369,8 +369,8 @@ function OverviewPanel({ input }: { input: SimulationInput }) {
                   {competitorPulpData.map((competitor) => (
                     <tr key={competitor.name} className="border-b border-border/30">
                       <td className="py-2 px-2">
-                        <div className="flex items-center gap-1.5">
-                          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: competitor.color }} />
+                        <div className="flex items-center gap-2">
+                          <span className="h-3 w-3 rounded-full" style={{ backgroundColor: competitor.color }} />
                           <span className="font-medium text-muted-foreground">{competitor.name}</span>
                         </div>
                       </td>
@@ -392,8 +392,8 @@ function OverviewPanel({ input }: { input: SimulationInput }) {
                   {/* APP China row - highlighted */}
                   <tr className="bg-red-50 border-2 border-[#cc0000]/30">
                     <td className="py-2 px-2">
-                      <div className="flex items-center gap-1.5">
-                        <span className="h-2 w-2 rounded-full bg-[#cc0000]" />
+                      <div className="flex items-center gap-2">
+                        <span className="h-3 w-3 rounded-full bg-[#cc0000]" />
                         <span className="font-bold text-[#cc0000]">APP China</span>
                       </div>
                     </td>
@@ -483,8 +483,8 @@ function OverviewPanel({ input }: { input: SimulationInput }) {
               <div className="space-y-3">
                 {/* Paper Supply */}
                 <div className="rounded-lg bg-white p-3 border border-red-100">
-                  <div className="text-xs font-semibold text-muted-foreground mb-2">Paper</div>
-                  <table className="w-full text-xs">
+                  <div className="text-sm font-semibold text-muted-foreground mb-2">Paper</div>
+                  <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-border/50">
                         <th className="text-left py-2 px-2 font-medium text-muted-foreground">Player</th>
@@ -516,8 +516,8 @@ function OverviewPanel({ input }: { input: SimulationInput }) {
 
                 {/* Board Supply */}
                 <div className="rounded-lg bg-white p-3 border border-red-100">
-                  <div className="text-xs font-semibold text-muted-foreground mb-2">Packaging / Carton Board</div>
-                  <table className="w-full text-xs">
+                  <div className="text-sm font-semibold text-muted-foreground mb-2">Packaging / Carton Board</div>
+                  <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-border/50">
                         <th className="text-left py-2 px-2 font-medium text-muted-foreground">Player</th>
@@ -549,8 +549,8 @@ function OverviewPanel({ input }: { input: SimulationInput }) {
 
                 {/* Tissue Supply */}
                 <div className="rounded-lg bg-white p-3 border border-red-100">
-                  <div className="text-xs font-semibold text-muted-foreground mb-2">Tissue</div>
-                  <table className="w-full text-xs">
+                  <div className="text-sm font-semibold text-muted-foreground mb-2">Tissue</div>
+                  <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-border/50">
                         <th className="text-left py-2 px-2 font-medium text-muted-foreground">Player</th>
