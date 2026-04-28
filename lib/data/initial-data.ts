@@ -100,6 +100,32 @@ export const PLAYERS: Player[] = [
     tissueCapacity: 0,
   },
   {
+    id: 'cmpc',
+    name: 'CMPC',
+    nameCn: 'CMPC',
+    type: 'exporter',
+    region: 'latam',
+    isAIDriven: true,
+    color: '#457b9d', // Steel blue
+    pulpCapacity: 450,
+    paperCapacity: 0,
+    boardCapacity: 0,
+    tissueCapacity: 0,
+  },
+  {
+    id: 'arauco',
+    name: 'Arauco',
+    nameCn: 'Arauco',
+    type: 'exporter',
+    region: 'latam',
+    isAIDriven: true,
+    color: '#588157', // Forest green
+    pulpCapacity: 380,
+    paperCapacity: 0,
+    boardCapacity: 0,
+    tissueCapacity: 0,
+  },
+  {
     id: 'april',
     name: 'APRIL',
     nameCn: 'APRIL',

@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import { FileText, Package, Bath, Bot, Building2, Lightbulb, TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { FileText, Package, Bath, Bot, Building2, Lightbulb, TrendingUp, TrendingDown, Minus, Globe } from 'lucide-react'
 import { AIBadge } from '../shared/AIBadge'
 import { TrafficLight } from '../shared/TrafficLight'
 import type { SimulationResult } from '@/lib/types/war-game'
@@ -349,54 +349,134 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
               <AIBadge size="sm" />
             </div>
           </CardHeader>
-          <CardContent className="space-y-2">
-            {exporterAllocations.map(allocation => {
-              const player = PLAYERS.find(p => p.id === allocation.playerId)!
-              return (
-                <div
-                  key={allocation.playerId}
-                  className="rounded-lg border border-border/50 bg-card/50 p-2.5"
-                >
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="h-2 w-2 rounded-full"
-                      style={{ backgroundColor: player.color }}
-                    />
-                    <span className="text-sm font-medium">{player.nameCn}</span>
-                  </div>
-                  <div className="mt-2 space-y-1 text-[11px]">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">China Exports</span>
-                      <span className="font-mono">
-                        {allocation.chinaVolume} kt ({Math.round(allocation.chinaShare * 100)}%)
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Other Regions</span>
-                      <span className="font-mono">{allocation.otherRegionsVolume} kt</span>
-                    </div>
-                    {/* Visual bar */}
-                    <div className="mt-1.5 h-2 rounded-full bg-secondary overflow-hidden flex">
-                      <div 
-                        className="h-full bg-primary"
-                        style={{ width: `${allocation.chinaShare * 100}%` }}
-                      />
-                      <div 
-                        className="h-full bg-muted-foreground/30"
-                        style={{ width: `${(1 - allocation.chinaShare) * 100}%` }}
-                      />
-                    </div>
-                    <div className="flex justify-between text-[10px] text-muted-foreground">
-                      <span>China</span>
-                      <span>Other</span>
-                    </div>
-                    <p className="mt-1.5 text-[10px] text-primary italic">
-                      {allocation.reasoning}
-                    </p>
-                  </div>
+          <CardContent className="space-y-3 max-h-[420px] overflow-y-auto">
+            {/* LatAm Exporters */}
+            {exporterAllocations.filter(a => {
+              const player = PLAYERS.find(p => p.id === a.playerId)!
+              return player.region === 'latam'
+            }).length > 0 && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-xs font-semibold text-[#264653]">
+                  <Globe className="h-3.5 w-3.5" />
+                  LatAm Exporters
                 </div>
-              )
-            })}
+                {exporterAllocations.filter(a => {
+                  const player = PLAYERS.find(p => p.id === a.playerId)!
+                  return player.region === 'latam'
+                }).map(allocation => {
+                  const player = PLAYERS.find(p => p.id === allocation.playerId)!
+                  return (
+                    <div
+                      key={allocation.playerId}
+                      className="rounded-lg border border-[#264653]/30 bg-[#264653]/5 p-2.5"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="h-2 w-2 rounded-full"
+                          style={{ backgroundColor: player.color }}
+                        />
+                        <span className="text-sm font-medium">{player.nameCn}</span>
+                        <span className="text-[9px] text-muted-foreground ml-auto">{player.pulpCapacity} kt capacity</span>
+                      </div>
+                      <div className="mt-2 space-y-1 text-[11px]">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">China Exports</span>
+                          <span className="font-mono font-semibold text-[#cc0000]">
+                            {allocation.chinaVolume} kt ({Math.round(allocation.chinaShare * 100)}%)
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Other Regions</span>
+                          <span className="font-mono">{allocation.otherRegionsVolume} kt</span>
+                        </div>
+                        {/* Visual bar */}
+                        <div className="mt-1.5 h-2 rounded-full bg-secondary overflow-hidden flex">
+                          <div 
+                            className="h-full bg-[#cc0000]"
+                            style={{ width: `${allocation.chinaShare * 100}%` }}
+                          />
+                          <div 
+                            className="h-full bg-[#264653]/30"
+                            style={{ width: `${(1 - allocation.chinaShare) * 100}%` }}
+                          />
+                        </div>
+                        <div className="flex justify-between text-[10px] text-muted-foreground">
+                          <span>China</span>
+                          <span>Other (EU, NA, Asia)</span>
+                        </div>
+                        <p className="mt-1 text-[10px] text-muted-foreground italic line-clamp-2">
+                          {allocation.reasoning}
+                        </p>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
+            {/* Indonesia Exporters */}
+            {exporterAllocations.filter(a => {
+              const player = PLAYERS.find(p => p.id === a.playerId)!
+              return player.region === 'indonesia'
+            }).length > 0 && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-xs font-semibold text-[#f4a261]">
+                  <Globe className="h-3.5 w-3.5" />
+                  Indonesia Exporters
+                </div>
+                {exporterAllocations.filter(a => {
+                  const player = PLAYERS.find(p => p.id === a.playerId)!
+                  return player.region === 'indonesia'
+                }).map(allocation => {
+                  const player = PLAYERS.find(p => p.id === allocation.playerId)!
+                  return (
+                    <div
+                      key={allocation.playerId}
+                      className="rounded-lg border border-[#f4a261]/30 bg-[#f4a261]/5 p-2.5"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="h-2 w-2 rounded-full"
+                          style={{ backgroundColor: player.color }}
+                        />
+                        <span className="text-sm font-medium">{player.nameCn}</span>
+                        <span className="text-[9px] text-muted-foreground ml-auto">{player.pulpCapacity} kt capacity</span>
+                      </div>
+                      <div className="mt-2 space-y-1 text-[11px]">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">China Exports</span>
+                          <span className="font-mono font-semibold text-[#cc0000]">
+                            {allocation.chinaVolume} kt ({Math.round(allocation.chinaShare * 100)}%)
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Other Regions</span>
+                          <span className="font-mono">{allocation.otherRegionsVolume} kt</span>
+                        </div>
+                        {/* Visual bar */}
+                        <div className="mt-1.5 h-2 rounded-full bg-secondary overflow-hidden flex">
+                          <div 
+                            className="h-full bg-[#cc0000]"
+                            style={{ width: `${allocation.chinaShare * 100}%` }}
+                          />
+                          <div 
+                            className="h-full bg-[#f4a261]/30"
+                            style={{ width: `${(1 - allocation.chinaShare) * 100}%` }}
+                          />
+                        </div>
+                        <div className="flex justify-between text-[10px] text-muted-foreground">
+                          <span>China</span>
+                          <span>Other Asia</span>
+                        </div>
+                        <p className="mt-1 text-[10px] text-muted-foreground italic line-clamp-2">
+                          {allocation.reasoning}
+                        </p>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </CardContent>
         </Card>
 

@@ -136,46 +136,71 @@ function simulateCompetitorChanges(input: SimulationInput): PlayerCapacityChange
 // AI simulate exporter responses
 function simulateExporterAllocations(input: SimulationInput, woodchip: WoodchipOutcome): ExporterAllocation[] {
   const appTotalNewPulp = input.appCapacity.guangxi.pulpCapacity + input.appCapacity.jiangsuFujian.pulpCapacity
+  const allocations: ExporterAllocation[] = []
   
-  // Suzano allocation
-  let suzanoChinaShare = 0.35 // Baseline 35% exports to China
-  if (appTotalNewPulp > 300) {
-    suzanoChinaShare = 0.25 // Large APP expansion, reduce China exports
-  } else if (appTotalNewPulp < 150) {
-    suzanoChinaShare = 0.45 // Conservative APP expansion, increase China exports
-  }
+  // Get all exporters
+  const exporters = PLAYERS.filter(p => p.type === 'exporter')
   
-  if (woodchip.priceLevel === 'high') {
-    suzanoChinaShare += 0.05 // High woodchip price, high pulp price, increase exports
-  }
+  exporters.forEach(exporter => {
+    let chinaShare = 0.35 // Default baseline
+    let reasoning = ''
+    
+    // LatAm exporters (Suzano, CMPC, Arauco)
+    if (exporter.region === 'latam') {
+      chinaShare = 0.35 // Baseline 35% exports to China
+      
+      if (appTotalNewPulp > 300) {
+        chinaShare = 0.25 // Large APP expansion, reduce China exports
+        reasoning = 'Expected China oversupply from APP expansion, shifting to higher-priced regions (Europe, NA)'
+      } else if (appTotalNewPulp < 150) {
+        chinaShare = 0.45 // Conservative APP expansion, increase China exports
+        reasoning = 'Conservative APP expansion maintains China demand, increasing export share'
+      } else {
+        reasoning = 'Stable China demand, maintaining balanced regional allocation'
+      }
+      
+      // Woodchip/pulp price impact
+      if (woodchip.priceLevel === 'high') {
+        chinaShare += 0.05
+        reasoning += '. High pulp prices favor China market.'
+      }
+      
+      // Exporter-specific adjustments
+      if (exporter.id === 'suzano') {
+        // Suzano is the largest, most diversified
+        chinaShare = Math.min(chinaShare, 0.4)
+      } else if (exporter.id === 'cmpc') {
+        // CMPC has strong Europe ties
+        chinaShare -= 0.05
+        reasoning = reasoning.replace('China demand', 'China demand (CMPC prioritizes Europe)')
+      } else if (exporter.id === 'arauco') {
+        // Arauco has US focus
+        chinaShare -= 0.03
+      }
+    }
+    
+    // Indonesia exporter (APRIL)
+    if (exporter.region === 'indonesia') {
+      chinaShare = 0.6 // Baseline 60% exports to China (proximity)
+      
+      if (appTotalNewPulp > 250) {
+        chinaShare = 0.5
+        reasoning = 'Increased competition from APP China, diversifying to other Asian markets'
+      } else {
+        reasoning = 'Maintaining strong China focus due to proximity and logistics advantages'
+      }
+    }
+    
+    allocations.push({
+      playerId: exporter.id,
+      chinaVolume: Math.round(exporter.pulpCapacity * chinaShare),
+      otherRegionsVolume: Math.round(exporter.pulpCapacity * (1 - chinaShare)),
+      chinaShare,
+      reasoning,
+    })
+  })
   
-  // APRIL allocation
-  let aprilChinaShare = 0.6 // Baseline 60% exports to China
-  if (appTotalNewPulp > 250) {
-    aprilChinaShare = 0.5
-  }
-  
-  const suzano = PLAYERS.find(p => p.id === 'suzano')!
-  const april = PLAYERS.find(p => p.id === 'april')!
-  
-  return [
-    {
-      playerId: 'suzano',
-      chinaVolume: Math.round(suzano.pulpCapacity * suzanoChinaShare),
-      otherRegionsVolume: Math.round(suzano.pulpCapacity * (1 - suzanoChinaShare)),
-      chinaShare: suzanoChinaShare,
-      reasoning: appTotalNewPulp > 300 
-        ? 'Expected China oversupply, shifting to higher-priced regions' 
-        : 'Stable China demand, maintaining export share',
-    },
-    {
-      playerId: 'april',
-      chinaVolume: Math.round(april.pulpCapacity * aprilChinaShare),
-      otherRegionsVolume: Math.round(april.pulpCapacity * (1 - aprilChinaShare)),
-      chinaShare: aprilChinaShare,
-      reasoning: 'Adjusting allocation based on China market competition',
-    },
-  ]
+  return allocations
 }
 
 // Calculate segment outcomes
