@@ -499,30 +499,36 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                   <span className="text-sm font-medium">{segmentLabels[outcome.segment]}</span>
                 </div>
                 
-                {/* Supply-demand balance */}
+                {/* Supply-demand balance - max 300 kt */}
                 <div className="space-y-1 mb-2">
                   <div className="flex items-center justify-between text-[11px]">
                     <span className="text-muted-foreground">Supply-Demand</span>
                     <span className={cn(
                       'font-mono',
-                      outcome.supplyDemandBalance > 50 && 'text-destructive',
-                      outcome.supplyDemandBalance < -20 && 'text-success',
-                      Math.abs(outcome.supplyDemandBalance) <= 50 && 'text-warning'
+                      outcome.supplyDemandBalance > 100 && 'text-destructive',
+                      outcome.supplyDemandBalance < -50 && 'text-success',
+                      Math.abs(outcome.supplyDemandBalance) <= 100 && 'text-warning'
                     )}>
                       {outcome.supplyDemandBalance > 0 ? 'Surplus ' : 'Shortage '}
                       {Math.abs(Math.round(outcome.supplyDemandBalance))} kt
                     </span>
                   </div>
-                  <div className="h-1.5 rounded-full bg-secondary">
+                  <div className="h-1.5 rounded-full bg-secondary relative">
+                    {/* Scale markers */}
+                    <div className="absolute inset-0 flex justify-between px-0.5">
+                      <span className="text-[8px] text-muted-foreground/50">-300</span>
+                      <span className="text-[8px] text-muted-foreground/50">0</span>
+                      <span className="text-[8px] text-muted-foreground/50">+300</span>
+                    </div>
                     <div
                       className={cn(
                         'h-full rounded-full transition-all',
-                        outcome.supplyDemandBalance > 50 && 'bg-destructive',
-                        outcome.supplyDemandBalance < -20 && 'bg-success',
-                        Math.abs(outcome.supplyDemandBalance) <= 50 && 'bg-warning'
+                        outcome.supplyDemandBalance > 100 && 'bg-destructive',
+                        outcome.supplyDemandBalance < -50 && 'bg-success',
+                        Math.abs(outcome.supplyDemandBalance) <= 100 && 'bg-warning'
                       )}
                       style={{
-                        width: `${Math.min(100, Math.max(10, 50 + outcome.supplyDemandBalance / 3))}%`
+                        width: `${Math.min(100, Math.max(5, 50 + (outcome.supplyDemandBalance / 300) * 50))}%`
                       }}
                     />
                   </div>
