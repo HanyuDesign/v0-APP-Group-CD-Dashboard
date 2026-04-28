@@ -492,7 +492,10 @@ function OverviewPanel({ input }: { input: SimulationInput }) {
               <div className="space-y-3">
                 {/* Paper Supply */}
                 <div className="rounded-lg bg-white p-3 border border-red-100">
-                  <div className="text-sm font-semibold text-muted-foreground mb-2">Paper</div>
+                  <div className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
+                    <FileText className="h-4 w-4" />
+                    Paper
+                  </div>
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-border/50">
@@ -525,7 +528,10 @@ function OverviewPanel({ input }: { input: SimulationInput }) {
 
                 {/* Board Supply */}
                 <div className="rounded-lg bg-white p-3 border border-red-100">
-                  <div className="text-sm font-semibold text-muted-foreground mb-2">Packaging / Carton Board</div>
+                  <div className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
+                    <Package className="h-4 w-4" />
+                    Packaging / Carton Board
+                  </div>
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-border/50">
@@ -558,7 +564,10 @@ function OverviewPanel({ input }: { input: SimulationInput }) {
 
                 {/* Tissue Supply */}
                 <div className="rounded-lg bg-white p-3 border border-red-100">
-                  <div className="text-sm font-semibold text-muted-foreground mb-2">Tissue</div>
+                  <div className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
+                    <Bath className="h-4 w-4" />
+                    Tissue
+                  </div>
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-border/50">
