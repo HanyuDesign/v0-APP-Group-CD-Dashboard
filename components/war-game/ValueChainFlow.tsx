@@ -155,58 +155,22 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
           </div>
         </div>
 
-        {/* Navigation buttons */}
-        <div className="flex gap-2 mt-3">
-          <button
-            onClick={() => {
-              const prevIndex = Math.max(0, currentTabIndex - 1)
-              setActiveTab(TABS[prevIndex].key)
-            }}
-            disabled={currentTabIndex === 0}
-            className={cn(
-              'flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-              currentTabIndex === 0
-                ? 'bg-secondary/30 text-muted-foreground cursor-not-allowed'
-                : 'bg-secondary hover:bg-secondary/80 text-foreground'
-            )}
-          >
-            Previous
-          </button>
-          <button
-            onClick={() => {
-              const nextIndex = Math.min(TABS.length - 1, currentTabIndex + 1)
-              setActiveTab(TABS[nextIndex].key)
-            }}
-            disabled={currentTabIndex === TABS.length - 1}
-            className={cn(
-              'flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-              currentTabIndex === TABS.length - 1
-                ? 'bg-secondary/30 text-muted-foreground cursor-not-allowed'
-                : 'bg-primary hover:bg-primary/90 text-primary-foreground'
-            )}
-          >
-            Next
-          </button>
-        </div>
-
-        {/* Reset & Run Simulation buttons */}
-        <div className="flex gap-2 mt-3">
+        {/* Reset & Run Simulation buttons - Vertical layout */}
+        <div className="flex flex-col gap-2 mt-3">
           <Button
             variant="outline"
-            size="sm"
             onClick={onReset}
             disabled={isRunning}
-            className="flex-1"
+            className="w-full h-10"
           >
             <RotateCcw className="mr-1.5 h-4 w-4" />
             Reset
           </Button>
           <Button
-            size="sm"
             onClick={onRunSimulation}
             disabled={isRunning || activeTab !== 'overview'}
             className={cn(
-              'flex-1',
+              'w-full h-10',
               activeTab === 'overview'
                 ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                 : 'bg-secondary/50 text-muted-foreground cursor-not-allowed'
@@ -229,29 +193,65 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
       </div>
 
       {/* Right content panel */}
-      <div className="flex-1 min-w-0">
-        {activeTab === 'forestry' && (
-          <ForestryModule
-            settings={input.forestry}
-            onChange={handleForestryChange}
-          />
-        )}
-        {activeTab === 'pulp' && (
-          <PulpModule
-            settings={input.appCapacity}
-            onChange={handleAppCapacityChange}
-            competitorChanges={result?.competitorChanges}
-          />
-        )}
-        {activeTab === 'downstream' && (
-          <DownstreamModule
-            settings={input.downstream}
-            onChange={handleDownstreamChange}
-          />
-        )}
-        {activeTab === 'overview' && (
-          <OverviewPanel input={input} />
-        )}
+      <div className="flex-1 min-w-0 flex flex-col">
+        <div className="flex-1">
+          {activeTab === 'forestry' && (
+            <ForestryModule
+              settings={input.forestry}
+              onChange={handleForestryChange}
+            />
+          )}
+          {activeTab === 'pulp' && (
+            <PulpModule
+              settings={input.appCapacity}
+              onChange={handleAppCapacityChange}
+              competitorChanges={result?.competitorChanges}
+            />
+          )}
+          {activeTab === 'downstream' && (
+            <DownstreamModule
+              settings={input.downstream}
+              onChange={handleDownstreamChange}
+            />
+          )}
+          {activeTab === 'overview' && (
+            <OverviewPanel input={input} />
+          )}
+        </div>
+        
+        {/* Navigation buttons - at bottom of right panel */}
+        <div className="flex gap-2 mt-4">
+          <button
+            onClick={() => {
+              const prevIndex = Math.max(0, currentTabIndex - 1)
+              setActiveTab(TABS[prevIndex].key)
+            }}
+            disabled={currentTabIndex === 0}
+            className={cn(
+              'flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors h-10',
+              currentTabIndex === 0
+                ? 'bg-secondary/30 text-muted-foreground cursor-not-allowed'
+                : 'bg-secondary hover:bg-secondary/80 text-foreground'
+            )}
+          >
+            Previous
+          </button>
+          <button
+            onClick={() => {
+              const nextIndex = Math.min(TABS.length - 1, currentTabIndex + 1)
+              setActiveTab(TABS[nextIndex].key)
+            }}
+            disabled={currentTabIndex === TABS.length - 1}
+            className={cn(
+              'flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors h-10',
+              currentTabIndex === TABS.length - 1
+                ? 'bg-secondary/30 text-muted-foreground cursor-not-allowed'
+                : 'bg-primary hover:bg-primary/90 text-primary-foreground'
+            )}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   )
