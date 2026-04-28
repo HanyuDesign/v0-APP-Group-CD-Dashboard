@@ -513,13 +513,7 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                       {Math.abs(Math.round(outcome.supplyDemandBalance))} kt
                     </span>
                   </div>
-                  <div className="h-4 rounded-full bg-secondary relative overflow-hidden">
-                    {/* Scale markers */}
-                    <div className="absolute inset-0 flex justify-between items-center px-1 z-10">
-                      <span className="text-[8px] text-muted-foreground/70">-300</span>
-                      <span className="text-[8px] text-muted-foreground/70">0</span>
-                      <span className="text-[8px] text-muted-foreground/70">+300</span>
-                    </div>
+                  <div className="h-2 rounded-full bg-secondary relative overflow-hidden">
                     {/* Center line at 0 */}
                     <div className="absolute left-1/2 top-0 bottom-0 w-px bg-muted-foreground/50 z-10" />
                     {/* Bar starting from center - scale to 600 total (-300 to +300) */}
