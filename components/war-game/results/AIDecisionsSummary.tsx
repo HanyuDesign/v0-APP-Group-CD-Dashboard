@@ -938,16 +938,16 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                     className={cn('border-2', segmentConfig.borderColor, segmentConfig.bgColor)}
                   >
                     {/* Header with Cannibalization Risk Tag */}
-                    <CardHeader className="pb-2">
+                    <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           {segmentIcons[outcome.segment]}
-                          <CardTitle className="text-sm">{segmentLabels[outcome.segment]}</CardTitle>
+                          <CardTitle className="text-base">{segmentLabels[outcome.segment]}</CardTitle>
                         </div>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className={cn(
-                              'px-2 py-0.5 rounded-full text-[10px] font-semibold cursor-help',
+                              'px-2.5 py-1 rounded-full text-xs font-semibold cursor-help',
                               cannibalizationRisk === 'High' && 'bg-red-100 text-red-700',
                               cannibalizationRisk === 'Medium' && 'bg-amber-100 text-amber-700',
                               cannibalizationRisk === 'Low' && 'bg-emerald-100 text-emerald-700'
@@ -956,49 +956,49 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                             </span>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p className="text-xs">Risk of APP new capacity cannibalizing existing market share</p>
+                            <p className="text-sm">Risk of APP new capacity cannibalizing existing market share</p>
                           </TooltipContent>
                         </Tooltip>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       {/* SECTION 1: Supply vs Demand */}
-                      <div className="rounded-lg border border-border/50 bg-white/50 p-3">
-                        <p className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wide">Supply vs Demand</p>
-                        <div className="space-y-1.5 text-xs">
+                      <div className="rounded-lg border border-border/50 bg-white/50 p-4">
+                        <p className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Supply vs Demand</p>
+                        <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Demand</span>
-                            <span className="font-mono font-semibold">{segmentConfig.demand} kt</span>
+                            <span className="font-mono font-semibold text-base">{segmentConfig.demand} kt</span>
                           </div>
-                          <div className="border-t border-dashed border-border/50 pt-1.5">
-                            <p className="text-[10px] text-muted-foreground mb-1">Supply Breakdown:</p>
-                            <div className="flex justify-between pl-2">
+                          <div className="border-t border-dashed border-border/50 pt-2">
+                            <p className="text-xs text-muted-foreground mb-1.5">Supply Breakdown:</p>
+                            <div className="flex justify-between pl-3">
                               <span className="text-muted-foreground">APP (existing)</span>
                               <span className="font-mono">{segmentConfig.appExisting} kt</span>
                             </div>
-                            <div className="flex justify-between pl-2">
+                            <div className="flex justify-between pl-3">
                               <span className="text-[#cc0000]">APP (new)</span>
                               <span className="font-mono text-[#cc0000] font-semibold">+{appNewCapacity} kt</span>
                             </div>
-                            <div className="flex justify-between pl-2">
+                            <div className="flex justify-between pl-3">
                               <span className="text-muted-foreground">Competitors</span>
                               <span className="font-mono">{competitorSupply} kt</span>
                             </div>
                           </div>
-                          <div className="flex justify-between border-t border-border/50 pt-1.5 font-semibold">
+                          <div className="flex justify-between border-t border-border/50 pt-2 font-semibold">
                             <span>Total Supply</span>
-                            <span className="font-mono">{totalSupply} kt</span>
+                            <span className="font-mono text-base">{totalSupply} kt</span>
                           </div>
                           <div className={cn(
-                            'flex justify-between rounded-md px-2 py-1 mt-1',
+                            'flex justify-between rounded-md px-3 py-1.5 mt-2',
                             gap > 50 && 'bg-red-100 text-red-700',
                             gap < -50 && 'bg-emerald-100 text-emerald-700',
                             Math.abs(gap) <= 50 && 'bg-amber-100 text-amber-700'
                           )}>
                             <span className="font-semibold">Gap</span>
-                            <span className="font-mono font-bold">
+                            <span className="font-mono font-bold text-base">
                               {gap > 0 ? '+' : ''}{gap} kt
-                              <span className="ml-1 text-[10px]">
+                              <span className="ml-1.5 text-xs">
                                 ({gap > 50 ? 'Surplus' : gap < -50 ? 'Shortage' : 'Balanced'})
                               </span>
                             </span>
@@ -1007,17 +1007,17 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                       </div>
 
                       {/* SECTION 2: Competitor Reaction */}
-                      <div className="rounded-lg border border-border/50 bg-white/50 p-3">
-                        <div className="flex items-center justify-between mb-2">
-                          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Competitor Reaction</p>
+                      <div className="rounded-lg border border-border/50 bg-white/50 p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Competitor Reaction</p>
                           <AIBadge size="sm" />
                         </div>
-                        <table className="w-full text-[11px]">
+                        <table className="w-full text-sm">
                           <thead>
                             <tr className="border-b border-border/30">
-                              <th className="text-left py-1 font-medium text-muted-foreground">Name</th>
-                              <th className="text-center py-1 font-medium text-muted-foreground">Action</th>
-                              <th className="text-right py-1 font-medium text-muted-foreground">Vol</th>
+                              <th className="text-left py-1.5 font-medium text-muted-foreground">Name</th>
+                              <th className="text-center py-1.5 font-medium text-muted-foreground">Action</th>
+                              <th className="text-right py-1.5 font-medium text-muted-foreground">Vol</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -1025,22 +1025,22 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                               <Tooltip key={idx}>
                                 <TooltipTrigger asChild>
                                   <tr className="border-b border-border/20 cursor-help hover:bg-white/50">
-                                    <td className="py-1.5">{reaction.name}</td>
-                                    <td className="py-1.5 text-center">
+                                    <td className="py-2">{reaction.name}</td>
+                                    <td className="py-2 text-center">
                                       <span className={cn(
-                                        'inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium',
+                                        'inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium',
                                         reaction.action === 'Delay' && 'bg-amber-100 text-amber-700',
                                         reaction.action === 'Expand' && 'bg-emerald-100 text-emerald-700',
                                         reaction.action === 'Maintain' && 'bg-gray-100 text-gray-600'
                                       )}>
-                                        {reaction.action === 'Delay' && <ChevronDown className="h-3 w-3" />}
-                                        {reaction.action === 'Expand' && <ChevronUp className="h-3 w-3" />}
-                                        {reaction.action === 'Maintain' && <ArrowRight className="h-3 w-3" />}
+                                        {reaction.action === 'Delay' && <ChevronDown className="h-3.5 w-3.5" />}
+                                        {reaction.action === 'Expand' && <ChevronUp className="h-3.5 w-3.5" />}
+                                        {reaction.action === 'Maintain' && <ArrowRight className="h-3.5 w-3.5" />}
                                         {reaction.action}
                                       </span>
                                     </td>
                                     <td className={cn(
-                                      'py-1.5 text-right font-mono',
+                                      'py-2 text-right font-mono font-semibold',
                                       reaction.volumeChange > 0 && 'text-emerald-600',
                                       reaction.volumeChange < 0 && 'text-amber-600'
                                     )}>
@@ -1049,7 +1049,7 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                                   </tr>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                  <p className="text-xs max-w-48">{reaction.reason}</p>
+                                  <p className="text-sm max-w-56">{reaction.reason}</p>
                                 </TooltipContent>
                               </Tooltip>
                             ))}
@@ -1057,81 +1057,38 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                         </table>
                       </div>
 
-                      {/* SECTION 3: Market Outcome */}
-                      <div className="rounded-lg border border-border/50 bg-white/50 p-3">
-                        <p className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wide">Market Outcome</p>
-                        <div className="grid grid-cols-3 gap-2 text-center">
-                          <div>
-                            <p className="text-[10px] text-muted-foreground mb-1">Price</p>
-                            <div className={cn(
-                              'inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold',
-                              priceDirection === 'down' && 'bg-red-100 text-red-700',
-                              priceDirection === 'up' && 'bg-emerald-100 text-emerald-700',
-                              priceDirection === 'stable' && 'bg-gray-100 text-gray-600'
-                            )}>
-                              {priceDirection === 'down' && <ArrowDown className="h-3 w-3" />}
-                              {priceDirection === 'up' && <ArrowUp className="h-3 w-3" />}
-                              {priceDirection === 'stable' && <ArrowRight className="h-3 w-3" />}
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-[10px] text-muted-foreground mb-1">Utilization</p>
-                            <div className="flex items-center justify-center gap-1">
-                              <span className="font-mono text-sm font-bold">{Math.round(outcome.utilization)}%</span>
-                              <TrafficLight
-                                status={
-                                  outcome.utilization >= 90 ? 'green' :
-                                  outcome.utilization >= 80 ? 'amber' : 'red'
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-[10px] text-muted-foreground mb-1">Profit</p>
-                            <span className={cn(
-                              'text-xs font-semibold',
-                              profitability === 'Compression' && 'text-red-600',
-                              profitability === 'Expansion' && 'text-emerald-600',
-                              profitability === 'Stable' && 'text-gray-600'
-                            )}>
-                              {profitability}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* SECTION 4: Export Allocation (conditional) */}
+                      {/* SECTION 3: Export Allocation (conditional) */}
                       {hasExcess && (
-                        <div className="rounded-lg border border-orange-200 bg-orange-50 p-3">
-                          <p className="text-[10px] font-semibold text-orange-700 mb-2 uppercase tracking-wide">Export Allocation</p>
-                          <div className="space-y-2">
-                            <div className="flex justify-between text-xs">
+                        <div className="rounded-lg border border-orange-200 bg-orange-50 p-4">
+                          <p className="text-xs font-semibold text-orange-700 mb-3 uppercase tracking-wide">Export Allocation</p>
+                          <div className="space-y-3">
+                            <div className="flex justify-between text-sm">
                               <span className="text-orange-600">Excess Volume</span>
-                              <span className="font-mono font-bold text-orange-700">{gap} kt</span>
+                              <span className="font-mono font-bold text-orange-700 text-base">{gap} kt</span>
                             </div>
-                            <div className="space-y-1">
-                              <p className="text-[10px] text-orange-600">Regional Distribution:</p>
+                            <div className="space-y-2">
+                              <p className="text-xs text-orange-600">Regional Distribution:</p>
                               <div className="flex gap-1">
                                 <div 
-                                  className="h-3 rounded-l bg-teal-500 flex items-center justify-center"
+                                  className="h-5 rounded-l bg-teal-500 flex items-center justify-center"
                                   style={{ width: `${segmentConfig.exportRegions.sea}%` }}
                                 >
-                                  <span className="text-[8px] text-white font-medium">SEA</span>
+                                  <span className="text-[10px] text-white font-medium">SEA</span>
                                 </div>
                                 <div 
-                                  className="h-3 bg-blue-500 flex items-center justify-center"
+                                  className="h-5 bg-blue-500 flex items-center justify-center"
                                   style={{ width: `${segmentConfig.exportRegions.europe}%` }}
                                 >
-                                  <span className="text-[8px] text-white font-medium">EU</span>
+                                  <span className="text-[10px] text-white font-medium">EU</span>
                                 </div>
                                 <div 
-                                  className="h-3 rounded-r bg-indigo-500 flex items-center justify-center"
+                                  className="h-5 rounded-r bg-indigo-500 flex items-center justify-center"
                                   style={{ width: `${segmentConfig.exportRegions.na}%` }}
                                 >
-                                  <span className="text-[8px] text-white font-medium">NA</span>
+                                  <span className="text-[10px] text-white font-medium">NA</span>
                                 </div>
                               </div>
-                              <div className="flex justify-between text-[10px] text-orange-600">
+                              <div className="flex justify-between text-xs text-orange-600">
                                 <span>SEA: {segmentConfig.exportRegions.sea}%</span>
                                 <span>Europe: {segmentConfig.exportRegions.europe}%</span>
                                 <span>NA: {segmentConfig.exportRegions.na}%</span>
