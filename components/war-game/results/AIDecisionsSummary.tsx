@@ -605,103 +605,251 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                 </CardContent>
               </Card>
 
-              {/* Exporter Allocation Section (Kept but streamlined) */}
-              <Card className="border-border/50 bg-card/80">
+              {/* Exporter Allocation Table - Regional Rebalancing */}
+              <Card className="border-teal-200 bg-gradient-to-r from-teal-50 to-cyan-50">
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm flex items-center gap-2">
+                    <CardTitle className="text-sm flex items-center gap-2 text-teal-800">
                       <Globe className="h-4 w-4" />
-                      Exporter Allocation Decisions
+                      Global Export Reallocation
                     </CardTitle>
                     <AIBadge size="sm" />
                   </div>
+                  <p className="text-xs text-teal-600 mt-1">
+                    How international suppliers reallocate exports in response to China market changes
+                  </p>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* LatAm Exporters */}
-                    {exporterAllocations.filter(a => {
-                      const player = PLAYERS.find(p => p.id === a.playerId)!
-                      return player.region === 'latam'
-                    }).length > 0 && (
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-xs font-semibold text-[#264653]">
-                          <Globe className="h-3.5 w-3.5" />
-                          LatAm Exporters
-                        </div>
-                        {exporterAllocations.filter(a => {
-                          const player = PLAYERS.find(p => p.id === a.playerId)!
-                          return player.region === 'latam'
-                        }).map(allocation => {
-                          const player = PLAYERS.find(p => p.id === allocation.playerId)!
-                          return (
-                            <div
-                              key={allocation.playerId}
-                              className="rounded-lg border border-[#264653]/30 bg-[#264653]/5 p-2.5"
-                            >
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: player.color }} />
-                                  <span className="text-sm font-medium">{player.nameCn}</span>
-                                </div>
-                                <span className="font-mono font-semibold text-[#cc0000]">
-                                  {Math.round(allocation.chinaShare * 100)}% China
-                                </span>
-                              </div>
-                              <div className="mt-2 h-2 rounded-full bg-secondary overflow-hidden flex">
-                                <div className="h-full bg-[#cc0000]" style={{ width: `${allocation.chinaShare * 100}%` }} />
-                                <div className="h-full bg-[#264653]/30" style={{ width: `${(1 - allocation.chinaShare) * 100}%` }} />
-                              </div>
-                              <p className="mt-1.5 text-[10px] text-muted-foreground italic line-clamp-1">
-                                {allocation.reasoning}
-                              </p>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    )}
+                  {(() => {
+                    // Calculate China demand gap from inputs
+                    const chinaDomesticSupply = (() => {
+                      let base = 800
+                      if (input.forestry.chinaLoggingPolicy === 'tight') base -= 150
+                      else if (input.forestry.chinaLoggingPolicy === 'relaxed') base += 150
+                      if (input.forestry.chinaRealEstateCondition === 'downturn') base -= 100
+                      else if (input.forestry.chinaRealEstateCondition === 'recovery') base += 100
+                      return base
+                    })()
+                    const vietnamExports = (() => {
+                      let base = 400
+                      if (input.forestry.vietnamExportPolicy === 'restricted') base -= 120
+                      else if (input.forestry.vietnamExportPolicy === 'expanded') base += 120
+                      return base
+                    })()
+                    const appExternalPulp = Math.round(appChinaPulpAdd * 0.7)
+                    const chinaDemand = 2500 // Assumed baseline demand
+                    const chinaDemandGap = chinaDemand - (chinaDomesticSupply + appExternalPulp + vietnamExports)
+                    const chinaPriceIndex = chinaDemandGap > 200 ? 1.15 : chinaDemandGap > 0 ? 1.05 : 0.95
 
-                    {/* Indonesia Exporters */}
-                    {exporterAllocations.filter(a => {
-                      const player = PLAYERS.find(p => p.id === a.playerId)!
-                      return player.region === 'indonesia'
-                    }).length > 0 && (
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-xs font-semibold text-[#f4a261]">
-                          <Globe className="h-3.5 w-3.5" />
-                          Indonesia Exporters
+                    // Build exporter data with regional allocations
+                    const exporterData = exporterAllocations.map(allocation => {
+                      const player = PLAYERS.find(p => p.id === allocation.playerId)!
+                      const totalCapacity = player.pulpCapacity || 500
+                      const chinaVol = allocation.chinaVolume
+                      const otherVol = allocation.otherRegionsVolume
+                      
+                      // Distribute "other" into Europe, India, Rest
+                      // Base distribution varies by region
+                      const isLatam = player.region === 'latam'
+                      const europeShare = isLatam ? 0.4 : 0.15
+                      const indiaShare = isLatam ? 0.25 : 0.35
+                      const restShare = 1 - europeShare - indiaShare
+                      
+                      const europeVol = Math.round(otherVol * europeShare)
+                      const indiaVol = Math.round(otherVol * indiaShare)
+                      const restVol = Math.round(otherVol * restShare)
+
+                      // Calculate deltas based on demand gap and price
+                      const baselineChina = Math.round(totalCapacity * 0.35)
+                      const chinaDelta = chinaVol - baselineChina
+                      const europeDelta = chinaDelta < 0 ? Math.round(Math.abs(chinaDelta) * 0.5) : -Math.round(chinaDelta * 0.3)
+                      const indiaDelta = chinaDelta < 0 ? Math.round(Math.abs(chinaDelta) * 0.3) : -Math.round(chinaDelta * 0.2)
+                      const restDelta = -chinaDelta - europeDelta - indiaDelta
+
+                      return {
+                        playerId: allocation.playerId,
+                        name: player.nameCn,
+                        nameEn: player.name,
+                        color: player.color,
+                        region: player.region,
+                        total: totalCapacity,
+                        china: { vol: chinaVol, delta: chinaDelta },
+                        europe: { vol: europeVol, delta: europeDelta },
+                        india: { vol: indiaVol, delta: indiaDelta },
+                        rest: { vol: restVol, delta: restDelta },
+                        reasoning: allocation.reasoning,
+                      }
+                    })
+
+                    return (
+                      <div className="flex gap-4">
+                        {/* Main Table */}
+                        <div className="flex-1 overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead>
+                              <tr className="border-b border-teal-200">
+                                <th className="text-left py-2 px-3 font-medium text-teal-700 w-32">Exporter</th>
+                                <th className="text-center py-2 px-3 font-medium text-[#cc0000] bg-red-50/50">China</th>
+                                <th className="text-center py-2 px-3 font-medium text-blue-700">Europe</th>
+                                <th className="text-center py-2 px-3 font-medium text-orange-700">India</th>
+                                <th className="text-center py-2 px-3 font-medium text-gray-600">Rest</th>
+                                <th className="text-center py-2 px-3 font-medium text-teal-700">Total</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {exporterData.map(exp => (
+                                <tr key={exp.playerId} className="border-b border-teal-100 hover:bg-teal-50/50">
+                                  <td className="py-3 px-3">
+                                    <div className="flex items-center gap-2">
+                                      <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: exp.color }} />
+                                      <div>
+                                        <span className="font-medium block">{exp.name}</span>
+                                        <span className="text-[10px] text-muted-foreground">{exp.nameEn}</span>
+                                      </div>
+                                    </div>
+                                  </td>
+                                  {/* China */}
+                                  <td className="text-center py-3 px-3 bg-red-50/30">
+                                    <div className="space-y-0.5">
+                                      <span className="font-mono font-semibold text-[#cc0000] block">{exp.china.vol} kt</span>
+                                      <span className={cn(
+                                        'text-[10px] font-medium flex items-center justify-center gap-0.5',
+                                        exp.china.delta > 0 && 'text-emerald-600',
+                                        exp.china.delta < 0 && 'text-amber-600',
+                                        exp.china.delta === 0 && 'text-muted-foreground'
+                                      )}>
+                                        {exp.china.delta > 0 && <ChevronUp className="h-3 w-3" />}
+                                        {exp.china.delta < 0 && <ChevronDown className="h-3 w-3" />}
+                                        {exp.china.delta > 0 ? `+${exp.china.delta}` : exp.china.delta < 0 ? exp.china.delta : '-'}
+                                      </span>
+                                    </div>
+                                  </td>
+                                  {/* Europe */}
+                                  <td className="text-center py-3 px-3">
+                                    <div className="space-y-0.5">
+                                      <span className="font-mono block">{exp.europe.vol} kt</span>
+                                      <span className={cn(
+                                        'text-[10px] font-medium flex items-center justify-center gap-0.5',
+                                        exp.europe.delta > 0 && 'text-emerald-600',
+                                        exp.europe.delta < 0 && 'text-amber-600',
+                                        exp.europe.delta === 0 && 'text-muted-foreground'
+                                      )}>
+                                        {exp.europe.delta > 0 && <ChevronUp className="h-3 w-3" />}
+                                        {exp.europe.delta < 0 && <ChevronDown className="h-3 w-3" />}
+                                        {exp.europe.delta > 0 ? `+${exp.europe.delta}` : exp.europe.delta < 0 ? exp.europe.delta : '-'}
+                                      </span>
+                                    </div>
+                                  </td>
+                                  {/* India */}
+                                  <td className="text-center py-3 px-3">
+                                    <div className="space-y-0.5">
+                                      <span className="font-mono block">{exp.india.vol} kt</span>
+                                      <span className={cn(
+                                        'text-[10px] font-medium flex items-center justify-center gap-0.5',
+                                        exp.india.delta > 0 && 'text-emerald-600',
+                                        exp.india.delta < 0 && 'text-amber-600',
+                                        exp.india.delta === 0 && 'text-muted-foreground'
+                                      )}>
+                                        {exp.india.delta > 0 && <ChevronUp className="h-3 w-3" />}
+                                        {exp.india.delta < 0 && <ChevronDown className="h-3 w-3" />}
+                                        {exp.india.delta > 0 ? `+${exp.india.delta}` : exp.india.delta < 0 ? exp.india.delta : '-'}
+                                      </span>
+                                    </div>
+                                  </td>
+                                  {/* Rest */}
+                                  <td className="text-center py-3 px-3">
+                                    <div className="space-y-0.5">
+                                      <span className="font-mono block">{exp.rest.vol} kt</span>
+                                      <span className={cn(
+                                        'text-[10px] font-medium flex items-center justify-center gap-0.5',
+                                        exp.rest.delta > 0 && 'text-emerald-600',
+                                        exp.rest.delta < 0 && 'text-amber-600',
+                                        exp.rest.delta === 0 && 'text-muted-foreground'
+                                      )}>
+                                        {exp.rest.delta > 0 && <ChevronUp className="h-3 w-3" />}
+                                        {exp.rest.delta < 0 && <ChevronDown className="h-3 w-3" />}
+                                        {exp.rest.delta > 0 ? `+${exp.rest.delta}` : exp.rest.delta < 0 ? exp.rest.delta : '-'}
+                                      </span>
+                                    </div>
+                                  </td>
+                                  {/* Total */}
+                                  <td className="text-center py-3 px-3">
+                                    <span className="font-mono font-semibold">{exp.total} kt</span>
+                                  </td>
+                                </tr>
+                              ))}
+                              {/* Totals Row */}
+                              <tr className="bg-teal-100/50 font-semibold">
+                                <td className="py-2.5 px-3 text-teal-800">Total</td>
+                                <td className="text-center py-2.5 px-3 bg-red-100/50">
+                                  <span className="font-mono text-[#cc0000]">
+                                    {exporterData.reduce((sum, e) => sum + e.china.vol, 0)} kt
+                                  </span>
+                                </td>
+                                <td className="text-center py-2.5 px-3">
+                                  <span className="font-mono">
+                                    {exporterData.reduce((sum, e) => sum + e.europe.vol, 0)} kt
+                                  </span>
+                                </td>
+                                <td className="text-center py-2.5 px-3">
+                                  <span className="font-mono">
+                                    {exporterData.reduce((sum, e) => sum + e.india.vol, 0)} kt
+                                  </span>
+                                </td>
+                                <td className="text-center py-2.5 px-3">
+                                  <span className="font-mono">
+                                    {exporterData.reduce((sum, e) => sum + e.rest.vol, 0)} kt
+                                  </span>
+                                </td>
+                                <td className="text-center py-2.5 px-3">
+                                  <span className="font-mono">
+                                    {exporterData.reduce((sum, e) => sum + e.total, 0)} kt
+                                  </span>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
                         </div>
-                        {exporterAllocations.filter(a => {
-                          const player = PLAYERS.find(p => p.id === a.playerId)!
-                          return player.region === 'indonesia'
-                        }).map(allocation => {
-                          const player = PLAYERS.find(p => p.id === allocation.playerId)!
-                          return (
-                            <div
-                              key={allocation.playerId}
-                              className="rounded-lg border border-[#f4a261]/30 bg-[#f4a261]/5 p-2.5"
-                            >
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: player.color }} />
-                                  <span className="text-sm font-medium">{player.nameCn}</span>
-                                </div>
-                                <span className="font-mono font-semibold text-[#cc0000]">
-                                  {Math.round(allocation.chinaShare * 100)}% China
-                                </span>
-                              </div>
-                              <div className="mt-2 h-2 rounded-full bg-secondary overflow-hidden flex">
-                                <div className="h-full bg-[#cc0000]" style={{ width: `${allocation.chinaShare * 100}%` }} />
-                                <div className="h-full bg-[#f4a261]/30" style={{ width: `${(1 - allocation.chinaShare) * 100}%` }} />
-                              </div>
-                              <p className="mt-1.5 text-[10px] text-muted-foreground italic line-clamp-1">
-                                {allocation.reasoning}
+
+                        {/* Right Summary Panel */}
+                        <div className="w-64 space-y-3 border-l border-teal-200 pl-4">
+                          <div className="rounded-lg bg-white p-3 border border-teal-200">
+                            <p className="text-[10px] text-teal-600 mb-1">China Demand Gap</p>
+                            <p className={cn(
+                              'text-xl font-bold',
+                              chinaDemandGap > 200 ? 'text-emerald-600' : chinaDemandGap > 0 ? 'text-amber-600' : 'text-red-600'
+                            )}>
+                              {chinaDemandGap > 0 ? '+' : ''}{chinaDemandGap} kt
+                            </p>
+                            <p className="text-[10px] text-muted-foreground mt-1">
+                              {chinaDemandGap > 200 ? 'High demand attracts imports' : chinaDemandGap > 0 ? 'Moderate demand' : 'Oversupply reduces imports'}
+                            </p>
+                          </div>
+                          <div className="rounded-lg bg-white p-3 border border-teal-200">
+                            <p className="text-[10px] text-teal-600 mb-1">China Price Index</p>
+                            <div className="flex items-center gap-2">
+                              <p className={cn(
+                                'text-xl font-bold',
+                                chinaPriceIndex > 1.1 ? 'text-emerald-600' : chinaPriceIndex > 1 ? 'text-amber-600' : 'text-red-600'
+                              )}>
+                                {(chinaPriceIndex * 100).toFixed(0)}%
                               </p>
+                              <span className="text-xs text-muted-foreground">vs Global</span>
                             </div>
-                          )
-                        })}
+                          </div>
+                          <div className="space-y-2 pt-2 border-t border-teal-200">
+                            <p className="text-[10px] font-semibold text-teal-700">Reallocation Reasoning</p>
+                            {exporterData.slice(0, 3).map(exp => (
+                              <div key={exp.playerId} className="text-[10px] text-muted-foreground">
+                                <span className="font-medium text-foreground">{exp.name}:</span>{' '}
+                                <span className="italic line-clamp-2">{exp.reasoning}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       </div>
-                    )}
-                  </div>
+                    )
+                  })()}
                 </CardContent>
               </Card>
             </div>
