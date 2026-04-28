@@ -935,7 +935,7 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                 return (
                   <Card 
                     key={outcome.segment} 
-                    className={cn('border-2', segmentConfig.borderColor, segmentConfig.bgColor)}
+                    className={cn('border', segmentConfig.borderColor)}
                   >
                     {/* Header with Cannibalization Risk Tag */}
                     <CardHeader className="pb-3">
