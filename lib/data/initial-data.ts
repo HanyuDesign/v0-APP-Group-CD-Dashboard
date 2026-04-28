@@ -217,6 +217,39 @@ export const DEFAULT_DOWNSTREAM_SETTINGS: DownstreamSettings = {
   paperDemand: 'base',
   boardDemand: 'base',
   tissueDemand: 'base',
+  supply: {
+    paper: {
+      appChina: { 2026: 120, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0 },
+    },
+    board: {
+      appChina: { 2026: 200, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0 },
+    },
+    tissue: {
+      appChina: { 2026: 80, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0 },
+    },
+  },
+}
+
+// Downstream competitor supply projections by segment
+export const DOWNSTREAM_COMPETITOR_SUPPLY = {
+  paper: [
+    { playerId: 'sun-paper', playerName: 'Sun Paper', capacity: { 2026: 150, 2027: 0, 2028: -20, 2029: -15, 2030: 0, 2031: -10 } },
+    { playerId: 'chenming', playerName: 'Chenming', capacity: { 2026: 100, 2027: -10, 2028: 0, 2029: -20, 2030: 0, 2031: 0 } },
+    { playerId: 'liansheng', playerName: 'Liansheng', capacity: { 2026: 60, 2027: 0, 2028: 0, 2029: 0, 2030: -10, 2031: 0 } },
+    { playerId: 'others-china', playerName: 'Others China', capacity: { 2026: 200, 2027: -30, 2028: -40, 2029: -25, 2030: -20, 2031: -15 } },
+  ],
+  board: [
+    { playerId: 'sun-paper', playerName: 'Sun Paper', capacity: { 2026: 180, 2027: 40, 2028: 60, 2029: 30, 2030: 50, 2031: 20 } },
+    { playerId: 'chenming', playerName: 'Chenming', capacity: { 2026: 140, 2027: 20, 2028: 30, 2029: 40, 2030: 25, 2031: 35 } },
+    { playerId: 'liansheng', playerName: 'Liansheng', capacity: { 2026: 90, 2027: 15, 2028: 25, 2029: 20, 2030: 10, 2031: 15 } },
+    { playerId: 'others-china', playerName: 'Others China', capacity: { 2026: 250, 2027: 30, 2028: 45, 2029: 35, 2030: 40, 2031: 30 } },
+  ],
+  tissue: [
+    { playerId: 'sun-paper', playerName: 'Sun Paper', capacity: { 2026: 60, 2027: 10, 2028: 15, 2029: 20, 2030: 10, 2031: 15 } },
+    { playerId: 'chenming', playerName: 'Chenming', capacity: { 2026: 40, 2027: 5, 2028: 10, 2029: 8, 2030: 12, 2031: 5 } },
+    { playerId: 'liansheng', playerName: 'Liansheng', capacity: { 2026: 30, 2027: 8, 2028: 5, 2029: 10, 2030: 5, 2031: 8 } },
+    { playerId: 'others-china', playerName: 'Others China', capacity: { 2026: 100, 2027: 15, 2028: 20, 2029: 25, 2030: 18, 2031: 22 } },
+  ],
 }
 
 // Default full simulation input

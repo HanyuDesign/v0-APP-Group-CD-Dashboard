@@ -73,11 +73,25 @@ export interface CompetitorYearlyCapacity {
   capacity: YearlyCapacity
 }
 
+// Downstream supply settings by segment
+export interface DownstreamSupplySettings {
+  paper: {
+    appChina: YearlyCapacity
+  }
+  board: {
+    appChina: YearlyCapacity
+  }
+  tissue: {
+    appChina: YearlyCapacity
+  }
+}
+
 // 下游需求设置
 export interface DownstreamSettings {
   paperDemand: DemandScenario
   boardDemand: DemandScenario
   tissueDemand: DemandScenario
+  supply: DownstreamSupplySettings
 }
 
 // 完整的模拟输入
