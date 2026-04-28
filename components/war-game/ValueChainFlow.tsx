@@ -220,7 +220,7 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
         </div>
         
         {/* Navigation buttons - at bottom of right panel */}
-        <div className="flex justify-end gap-2 mt-4 w-1/2 ml-auto">
+        <div className="flex justify-end gap-2 mt-4 w-1/4 ml-auto">
           <button
             onClick={() => {
               const prevIndex = Math.max(0, currentTabIndex - 1)
