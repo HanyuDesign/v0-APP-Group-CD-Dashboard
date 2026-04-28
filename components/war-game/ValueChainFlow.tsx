@@ -427,47 +427,47 @@ function OverviewPanel({ input }: { input: SimulationInput }) {
           <div className="p-4 bg-white space-y-4">
             {/* Demand Block */}
             <div className="rounded-lg border-2 border-orange-200 bg-orange-50/50 p-3">
-              <h4 className="text-xs font-bold text-orange-800 mb-3 flex items-center gap-1.5">
-                <TrendingUp className="h-3.5 w-3.5" />
+              <h4 className="text-sm font-bold text-orange-800 mb-3 flex items-center gap-1.5">
+                <TrendingUp className="h-4 w-4" />
                 Demand Scenarios
               </h4>
               <div className="grid grid-cols-3 gap-3">
                 {/* Paper */}
-                <div className="rounded-lg bg-white p-2 border border-orange-100">
-                  <div className="text-[10px] text-muted-foreground mb-1">Paper</div>
+                <div className="rounded-lg bg-white p-3 border border-orange-100">
+                  <div className="text-sm font-medium text-muted-foreground mb-1">Paper</div>
                   <div className={cn(
-                    'text-sm font-semibold flex items-center gap-1',
+                    'text-base font-semibold flex items-center gap-1',
                     input.downstream.paperDemand === 'high' && 'text-green-600',
                     input.downstream.paperDemand === 'low' && 'text-red-600'
                   )}>
-                    {input.downstream.paperDemand === 'high' && <TrendingUp className="h-3 w-3" />}
-                    {input.downstream.paperDemand === 'low' && <TrendingDown className="h-3 w-3" />}
+                    {input.downstream.paperDemand === 'high' && <TrendingUp className="h-4 w-4" />}
+                    {input.downstream.paperDemand === 'low' && <TrendingDown className="h-4 w-4" />}
                     {POLICY_LABELS.demandScenario[input.downstream.paperDemand]}
                   </div>
                 </div>
                 {/* Packaging / Carton Board */}
-                <div className="rounded-lg bg-white p-2 border border-orange-100">
-                  <div className="text-[10px] text-muted-foreground mb-1">Packaging / Carton Board</div>
+                <div className="rounded-lg bg-white p-3 border border-orange-100">
+                  <div className="text-sm font-medium text-muted-foreground mb-1">Packaging / Carton Board</div>
                   <div className={cn(
-                    'text-sm font-semibold flex items-center gap-1',
+                    'text-base font-semibold flex items-center gap-1',
                     input.downstream.boardDemand === 'high' && 'text-green-600',
                     input.downstream.boardDemand === 'low' && 'text-red-600'
                   )}>
-                    {input.downstream.boardDemand === 'high' && <TrendingUp className="h-3 w-3" />}
-                    {input.downstream.boardDemand === 'low' && <TrendingDown className="h-3 w-3" />}
+                    {input.downstream.boardDemand === 'high' && <TrendingUp className="h-4 w-4" />}
+                    {input.downstream.boardDemand === 'low' && <TrendingDown className="h-4 w-4" />}
                     {POLICY_LABELS.demandScenario[input.downstream.boardDemand]}
                   </div>
                 </div>
                 {/* Tissue */}
-                <div className="rounded-lg bg-white p-2 border border-orange-100">
-                  <div className="text-[10px] text-muted-foreground mb-1">Tissue</div>
+                <div className="rounded-lg bg-white p-3 border border-orange-100">
+                  <div className="text-sm font-medium text-muted-foreground mb-1">Tissue</div>
                   <div className={cn(
-                    'text-sm font-semibold flex items-center gap-1',
+                    'text-base font-semibold flex items-center gap-1',
                     input.downstream.tissueDemand === 'high' && 'text-green-600',
                     input.downstream.tissueDemand === 'low' && 'text-red-600'
                   )}>
-                    {input.downstream.tissueDemand === 'high' && <TrendingUp className="h-3 w-3" />}
-                    {input.downstream.tissueDemand === 'low' && <TrendingDown className="h-3 w-3" />}
+                    {input.downstream.tissueDemand === 'high' && <TrendingUp className="h-4 w-4" />}
+                    {input.downstream.tissueDemand === 'low' && <TrendingDown className="h-4 w-4" />}
                     {POLICY_LABELS.demandScenario[input.downstream.tissueDemand]}
                   </div>
                 </div>
@@ -476,8 +476,8 @@ function OverviewPanel({ input }: { input: SimulationInput }) {
 
             {/* Supply Block */}
             <div className="rounded-lg border-2 border-red-200 bg-red-50/50 p-3">
-              <h4 className="text-xs font-bold text-red-800 mb-3 flex items-center gap-1.5">
-                <Factory className="h-3.5 w-3.5" />
+              <h4 className="text-sm font-bold text-red-800 mb-3 flex items-center gap-1.5">
+                <Factory className="h-4 w-4" />
                 Supply Capacity Additions (kt)
               </h4>
               <div className="space-y-3">
