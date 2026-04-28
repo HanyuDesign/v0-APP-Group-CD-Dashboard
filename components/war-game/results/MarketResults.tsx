@@ -40,12 +40,12 @@ export function MarketResults({ result }: MarketResultsProps) {
           <Table>
             <TableHeader>
               <TableRow className="border-border/50">
-                <TableHead className="text-xs">Player</TableHead>
-                <TableHead className="text-right text-xs">Pulp Capacity</TableHead>
-                <TableHead className="text-right text-xs">Pulp Volume</TableHead>
-                <TableHead className="text-right text-xs">Utilization</TableHead>
-                <TableHead className="text-right text-xs">Market Share</TableHead>
-                <TableHead className="text-right text-xs">Cost per Ton</TableHead>
+                <TableHead className="text-sm">Player</TableHead>
+                <TableHead className="text-right text-sm">Pulp Capacity</TableHead>
+                <TableHead className="text-right text-sm">Pulp Volume</TableHead>
+                <TableHead className="text-right text-sm">Utilization</TableHead>
+                <TableHead className="text-right text-sm">Market Share</TableHead>
+                <TableHead className="text-right text-sm">Cost per Ton</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -60,23 +60,23 @@ export function MarketResults({ result }: MarketResultsProps) {
                       isAppChina && 'bg-[#cc0000]/5 border-l-2 border-l-[#cc0000]'
                     )}
                   >
-                    <TableCell className="text-xs">
+                    <TableCell className="text-sm py-3">
                       <div className="flex items-center gap-2">
                         <span
-                          className="h-2 w-2 rounded-full"
+                          className="h-2.5 w-2.5 rounded-full"
                           style={{ backgroundColor: player.color }}
                         />
                         <span className={cn(isAppChina && 'font-semibold text-[#cc0000]')}>{player.nameCn}</span>
                         {player.isAIDriven && <AIBadge size="sm" />}
                       </div>
                     </TableCell>
-                    <TableCell className={cn('text-right font-mono text-xs', isAppChina && 'font-semibold')}>
+                    <TableCell className={cn('text-right font-mono text-sm py-3', isAppChina && 'font-semibold')}>
                       {outcome.pulpCapacity} kt
                     </TableCell>
-                    <TableCell className={cn('text-right font-mono text-xs', isAppChina && 'font-semibold')}>
+                    <TableCell className={cn('text-right font-mono text-sm py-3', isAppChina && 'font-semibold')}>
                       {outcome.pulpVolume} kt
                     </TableCell>
-                    <TableCell className="text-right font-mono text-xs">
+                    <TableCell className="text-right font-mono text-sm py-3">
                       <span className={cn(
                         outcome.pulpUtilization >= 85 ? 'text-success' :
                         outcome.pulpUtilization >= 75 ? 'text-warning' : 'text-destructive',
@@ -85,10 +85,10 @@ export function MarketResults({ result }: MarketResultsProps) {
                         {outcome.pulpUtilization}%
                       </span>
                     </TableCell>
-                    <TableCell className={cn('text-right font-mono text-xs', isAppChina && 'font-semibold')}>
+                    <TableCell className={cn('text-right font-mono text-sm py-3', isAppChina && 'font-semibold')}>
                       {Math.round(outcome.pulpMarketShare)}%
                     </TableCell>
-                    <TableCell className={cn('text-right font-mono text-xs', isAppChina && 'font-semibold')}>
+                    <TableCell className={cn('text-right font-mono text-sm py-3', isAppChina && 'font-semibold')}>
                       ${Math.round(350 + Math.random() * 100)} /t
                     </TableCell>
                   </TableRow>
