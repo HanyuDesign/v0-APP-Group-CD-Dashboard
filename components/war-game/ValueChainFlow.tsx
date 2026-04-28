@@ -5,7 +5,7 @@ import { ForestryModule } from './modules/ForestryModule'
 import { PulpModule } from './modules/PulpModule'
 import { DownstreamModule } from './modules/DownstreamModule'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Trees, Factory, Package, ChevronRight, ClipboardList, TrendingUp, TrendingDown, Play, RotateCcw, ArrowRight } from 'lucide-react'
+import { Trees, Factory, Package, ChevronRight, ClipboardList, TrendingUp, TrendingDown, Play, RotateCcw, ArrowRight, FileText, Bath } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { POLICY_LABELS } from '@/lib/data/initial-data'
@@ -434,7 +434,10 @@ function OverviewPanel({ input }: { input: SimulationInput }) {
               <div className="grid grid-cols-3 gap-3">
                 {/* Paper */}
                 <div className="rounded-lg bg-white p-3 border border-orange-100">
-                  <div className="text-sm font-medium text-muted-foreground mb-1">Paper</div>
+                  <div className="text-sm font-medium text-muted-foreground mb-1 flex items-center gap-1.5">
+                    <FileText className="h-4 w-4" />
+                    Paper
+                  </div>
                   <div className={cn(
                     'text-base font-semibold flex items-center gap-1',
                     input.downstream.paperDemand === 'high' && 'text-green-600',
@@ -447,7 +450,10 @@ function OverviewPanel({ input }: { input: SimulationInput }) {
                 </div>
                 {/* Packaging / Carton Board */}
                 <div className="rounded-lg bg-white p-3 border border-orange-100">
-                  <div className="text-sm font-medium text-muted-foreground mb-1">Packaging / Carton Board</div>
+                  <div className="text-sm font-medium text-muted-foreground mb-1 flex items-center gap-1.5">
+                    <Package className="h-4 w-4" />
+                    Packaging / Carton Board
+                  </div>
                   <div className={cn(
                     'text-base font-semibold flex items-center gap-1',
                     input.downstream.boardDemand === 'high' && 'text-green-600',
@@ -460,7 +466,10 @@ function OverviewPanel({ input }: { input: SimulationInput }) {
                 </div>
                 {/* Tissue */}
                 <div className="rounded-lg bg-white p-3 border border-orange-100">
-                  <div className="text-sm font-medium text-muted-foreground mb-1">Tissue</div>
+                  <div className="text-sm font-medium text-muted-foreground mb-1 flex items-center gap-1.5">
+                    <Bath className="h-4 w-4" />
+                    Tissue
+                  </div>
                   <div className={cn(
                     'text-base font-semibold flex items-center gap-1',
                     input.downstream.tissueDemand === 'high' && 'text-green-600',
