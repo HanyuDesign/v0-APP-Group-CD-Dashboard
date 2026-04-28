@@ -86,13 +86,13 @@ export function ForestryModule({
       <CardContent>
         <div className="grid grid-cols-2 gap-4">
           {/* China Block */}
-          <div className="rounded-lg border border-border/50 bg-secondary/20 p-4">
+          <div className="rounded-lg border border-border/50 bg-secondary/20 p-4 flex flex-col">
             <div className="flex items-center gap-2 mb-4">
               <TreePine className="h-4 w-4 text-success" />
               <h3 className="font-semibold text-sm">China Domestic Supply</h3>
             </div>
             
-            <div className="space-y-4">
+            <div className="flex-1 space-y-4">
               {/* China Logging Policy Slider */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -136,43 +136,43 @@ export function ForestryModule({
                   <span>Recovery</span>
                 </div>
               </div>
+            </div>
 
-              {/* China Woodchip Supply */}
-              <div className="rounded-lg border-2 border-primary/40 bg-primary/5 p-3 mt-2 h-14 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-primary" />
-                  <span className="text-xs font-medium">China Supply</span>
-                </div>
-                <div className="text-right">
-                  <span className={cn(
-                    'text-base font-bold',
-                    chinaOutput.level === 'high' && 'text-success',
-                    chinaOutput.level === 'medium' && 'text-warning',
-                    chinaOutput.level === 'low' && 'text-destructive'
-                  )}>
-                    {chinaOutput.supply} kt
-                  </span>
-                  <span className={cn(
-                    'ml-1.5 text-[10px] px-1.5 py-0.5 rounded',
-                    chinaOutput.level === 'high' && 'bg-success/20 text-success',
-                    chinaOutput.level === 'medium' && 'bg-warning/20 text-warning',
-                    chinaOutput.level === 'low' && 'bg-destructive/20 text-destructive'
-                  )}>
-                    {chinaOutput.level === 'high' ? 'Abundant' : chinaOutput.level === 'medium' ? 'Moderate' : 'Tight'}
-                  </span>
-                </div>
+            {/* China Woodchip Supply - Always at bottom */}
+            <div className="rounded-lg border-2 border-primary/40 bg-primary/5 p-3 mt-4 h-14 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-primary" />
+                <span className="text-xs font-medium">China Supply</span>
+              </div>
+              <div className="text-right">
+                <span className={cn(
+                  'text-base font-bold',
+                  chinaOutput.level === 'high' && 'text-success',
+                  chinaOutput.level === 'medium' && 'text-warning',
+                  chinaOutput.level === 'low' && 'text-destructive'
+                )}>
+                  {chinaOutput.supply} kt
+                </span>
+                <span className={cn(
+                  'ml-1.5 text-[10px] px-1.5 py-0.5 rounded',
+                  chinaOutput.level === 'high' && 'bg-success/20 text-success',
+                  chinaOutput.level === 'medium' && 'bg-warning/20 text-warning',
+                  chinaOutput.level === 'low' && 'bg-destructive/20 text-destructive'
+                )}>
+                  {chinaOutput.level === 'high' ? 'Abundant' : chinaOutput.level === 'medium' ? 'Moderate' : 'Tight'}
+                </span>
               </div>
             </div>
           </div>
 
           {/* Vietnam Block */}
-          <div className="rounded-lg border border-border/50 bg-secondary/20 p-4">
+          <div className="rounded-lg border border-border/50 bg-secondary/20 p-4 flex flex-col">
             <div className="flex items-center gap-2 mb-4">
               <Ship className="h-4 w-4 text-chart-2" />
               <h3 className="font-semibold text-sm">Vietnam Exports to China</h3>
             </div>
             
-            <div className="space-y-4">
+            <div className="flex-1 space-y-4">
               {/* Vietnam Export Policy Slider */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -194,31 +194,31 @@ export function ForestryModule({
                   <span>Expanded</span>
                 </div>
               </div>
+            </div>
 
-              {/* Vietnam Woodchip Supply */}
-              <div className="rounded-lg border-2 border-primary/40 bg-primary/5 p-3 mt-2 h-14 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-primary" />
-                  <span className="text-xs font-medium">Vietnam Supply</span>
-                </div>
-                <div className="text-right">
-                  <span className={cn(
-                    'text-base font-bold',
-                    vietnamOutput.level === 'high' && 'text-success',
-                    vietnamOutput.level === 'medium' && 'text-warning',
-                    vietnamOutput.level === 'low' && 'text-destructive'
-                  )}>
-                    {vietnamOutput.supply} kt
-                  </span>
-                  <span className={cn(
-                    'ml-1.5 text-[10px] px-1.5 py-0.5 rounded',
-                    vietnamOutput.level === 'high' && 'bg-success/20 text-success',
-                    vietnamOutput.level === 'medium' && 'bg-warning/20 text-warning',
-                    vietnamOutput.level === 'low' && 'bg-destructive/20 text-destructive'
-                  )}>
-                    {vietnamOutput.level === 'high' ? 'Abundant' : vietnamOutput.level === 'medium' ? 'Moderate' : 'Tight'}
-                  </span>
-                </div>
+            {/* Vietnam Woodchip Supply - Always at bottom */}
+            <div className="rounded-lg border-2 border-primary/40 bg-primary/5 p-3 mt-4 h-14 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-primary" />
+                <span className="text-xs font-medium">Vietnam Supply</span>
+              </div>
+              <div className="text-right">
+                <span className={cn(
+                  'text-base font-bold',
+                  vietnamOutput.level === 'high' && 'text-success',
+                  vietnamOutput.level === 'medium' && 'text-warning',
+                  vietnamOutput.level === 'low' && 'text-destructive'
+                )}>
+                  {vietnamOutput.supply} kt
+                </span>
+                <span className={cn(
+                  'ml-1.5 text-[10px] px-1.5 py-0.5 rounded',
+                  vietnamOutput.level === 'high' && 'bg-success/20 text-success',
+                  vietnamOutput.level === 'medium' && 'bg-warning/20 text-warning',
+                  vietnamOutput.level === 'low' && 'bg-destructive/20 text-destructive'
+                )}>
+                  {vietnamOutput.level === 'high' ? 'Abundant' : vietnamOutput.level === 'medium' ? 'Moderate' : 'Tight'}
+                </span>
               </div>
             </div>
           </div>
