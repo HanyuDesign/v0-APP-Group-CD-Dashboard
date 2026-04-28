@@ -112,34 +112,14 @@ export default function InputPage() {
       </nav>
 
       {/* Main content */}
-      <main className="flex-1 overflow-x-auto p-6">
+      <main className="flex-1 p-6">
         {/* Value chain flow */}
         <section>
-          <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-            <span className="h-px flex-1 bg-border" />
-            Value Chain Strategy Setup
-            <span className="h-px flex-1 bg-border" />
-          </h2>
-          <div className="min-w-[1200px]">
-            <ValueChainFlow
-              input={input}
-              onInputChange={setInput}
-              result={result}
-            />
-          </div>
-        </section>
-
-        {/* Instructions */}
-        <section className="mt-8">
-          <div className="rounded-lg border border-border/50 bg-card/50 p-6">
-            <h3 className="text-lg font-semibold mb-3">How to Use</h3>
-            <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
-              <li>Configure <strong>Forestry & Woodchips</strong> policies (China logging, Vietnam export)</li>
-              <li>Set <strong>APP Capacity Decisions</strong> for Guangxi and Jiangsu/Fujian projects</li>
-              <li>Select <strong>Downstream Demand</strong> scenarios for Paper, Packaging, and Tissue</li>
-              <li>Click <strong>Run Simulation</strong> to see AI-driven competitor responses and market outcomes</li>
-            </ol>
-          </div>
+          <ValueChainFlow
+            input={input}
+            onInputChange={setInput}
+            result={result}
+          />
         </section>
       </main>
 
