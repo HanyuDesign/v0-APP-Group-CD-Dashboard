@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
@@ -15,9 +15,66 @@ interface AIDecisionsSummaryProps {
   result: SimulationResult
 }
 
+// Navigation items for Pulp Capacity Decisions sub-sections
+const PULP_NAV_ITEMS = [
+  { id: 'app-capacity-outcome', label: 'APP Capacity Outcome', icon: Factory },
+  { id: 'competitor-response', label: 'Competitor Response', icon: Users },
+  { id: 'export-reallocation', label: 'Global Export Reallocation', icon: Globe },
+  { id: 'market-impact', label: 'Market Impact Summary', icon: BarChart3 },
+] as const
+
 export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
   const [isInsightsExpanded, setIsInsightsExpanded] = useState(true)
+  const [activeSection, setActiveSection] = useState<string>('app-capacity-outcome')
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({})
+  const navRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  
   const { competitorChanges, exporterAllocations, segmentOutcomes, input } = result
+  
+  // Scroll to section with offset for sticky nav
+  const scrollToSection = useCallback((sectionId: string) => {
+    const section = sectionRefs.current[sectionId]
+    const nav = navRef.current
+    if (section && nav) {
+      const navHeight = nav.offsetHeight
+      const sectionTop = section.offsetTop - navHeight - 16 // 16px extra padding
+      containerRef.current?.scrollTo({
+        top: sectionTop,
+        behavior: 'smooth'
+      })
+      setActiveSection(sectionId)
+    }
+  }, [])
+  
+  // Scroll spy to detect active section
+  useEffect(() => {
+    const container = containerRef.current
+    const nav = navRef.current
+    if (!container || !nav) return
+    
+    const handleScroll = () => {
+      const navHeight = nav.offsetHeight
+      const scrollTop = container.scrollTop
+      
+      // Find the section currently in view
+      for (const item of PULP_NAV_ITEMS) {
+        const section = sectionRefs.current[item.id]
+        if (section) {
+          const sectionTop = section.offsetTop - navHeight - 32
+          const sectionBottom = sectionTop + section.offsetHeight
+          
+          if (scrollTop >= sectionTop && scrollTop < sectionBottom) {
+            setActiveSection(item.id)
+            break
+          }
+        }
+      }
+    }
+    
+    container.addEventListener('scroll', handleScroll)
+    return () => container.removeEventListener('scroll', handleScroll)
+  }, [])
 
   // Years constant
   const years = [2026, 2027, 2028, 2029, 2030, 2031] as const
@@ -321,10 +378,46 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
 
         {/* Tab 1: Pulp Capacity Decisions - Redesigned as Results View */}
         <TabsContent value="pulp">
-          <TooltipProvider>
-            <div className="space-y-4">
-              {/* SECTION 1: APP Capacity Outcome */}
-              <Card className="border-2 border-[#cc0000]/30 bg-red-50/30">
+          <div ref={containerRef} className="relative max-h-[calc(100vh-300px)] overflow-y-auto">
+            {/* Sticky Sub-Navigation Bar */}
+            <div 
+              ref={navRef}
+              className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-border/50 shadow-sm mb-4 -mx-1 px-1"
+            >
+              <nav className="flex items-center gap-1 py-2 overflow-x-auto">
+                {PULP_NAV_ITEMS.map((item) => {
+                  const Icon = item.icon
+                  const isActive = activeSection === item.id
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => scrollToSection(item.id)}
+                      className={cn(
+                        'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-all',
+                        isActive 
+                          ? 'bg-primary text-primary-foreground shadow-sm' 
+                          : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span>{item.label}</span>
+                      {isActive && (
+                        <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground" />
+                      )}
+                    </button>
+                  )
+                })}
+              </nav>
+            </div>
+
+            <TooltipProvider>
+              <div className="space-y-4">
+                {/* SECTION 1: APP Capacity Outcome */}
+                <Card 
+                  id="app-capacity-outcome"
+                  ref={(el) => { sectionRefs.current['app-capacity-outcome'] = el }}
+                  className="border-2 border-[#cc0000]/30 bg-red-50/30 scroll-mt-16"
+                >
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-sm flex items-center gap-2">
@@ -459,7 +552,11 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
               </Card>
 
               {/* SECTION 2: Competitor Response Table */}
-              <Card className="border-border/50 bg-card/80">
+              <Card 
+                id="competitor-response"
+                ref={(el) => { sectionRefs.current['competitor-response'] = el }}
+                className="border-border/50 bg-card/80 scroll-mt-16"
+              >
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-sm flex items-center gap-2">
@@ -552,7 +649,11 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
               </Card>
 
               {/* SECTION 3: Global Export Reallocation */}
-              <Card className="border-teal-200 bg-gradient-to-r from-teal-50 to-cyan-50">
+              <Card 
+                id="export-reallocation"
+                ref={(el) => { sectionRefs.current['export-reallocation'] = el }}
+                className="border-teal-200 bg-gradient-to-r from-teal-50 to-cyan-50 scroll-mt-16"
+              >
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-sm flex items-center gap-2 text-teal-800">
@@ -800,7 +901,11 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
               </Card>
 
               {/* SECTION 4: Market Impact Summary */}
-              <Card className="border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+              <Card 
+                id="market-impact"
+                ref={(el) => { sectionRefs.current['market-impact'] = el }}
+                className="border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 scroll-mt-16"
+              >
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm flex items-center gap-2 text-blue-800">
                     <BarChart3 className="h-4 w-4" />
@@ -959,8 +1064,9 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                   </div>
                 </CardContent>
               </Card>
-            </div>
-          </TooltipProvider>
+              </div>
+            </TooltipProvider>
+          </div>
         </TabsContent>
 
         {/* Tab 2: Downstream Outcomes - Comprehensive 3-Column Layout */}
