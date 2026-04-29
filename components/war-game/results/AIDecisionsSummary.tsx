@@ -580,6 +580,26 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                       </div>
                     </div>
                   </div>
+                  
+                  {/* AI Insight Box */}
+                  <div className="mt-4 p-4 rounded-lg bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-full bg-indigo-100">
+                        <Lightbulb className="h-4 w-4 text-indigo-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-semibold text-indigo-900 mb-1">AI Insight</h4>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {appChinaPulpAdd > 250 
+                            ? `APP's aggressive expansion of +${appChinaPulpAdd}kt will significantly increase market supply pressure. With ${Math.round(appChinaPulpAdd * 0.7)}kt released to market, competitors may delay their projects to avoid oversupply. This strategy aims to capture market share but risks margin compression if demand doesn't keep pace.`
+                            : appChinaPulpAdd > 100
+                              ? `APP's balanced expansion of +${appChinaPulpAdd}kt demonstrates measured growth. The ${Math.round(appChinaPulpAdd * 0.7)}kt market release is calibrated to meet demand growth without triggering aggressive competitive responses. This approach maintains healthy margins while gradually expanding market presence.`
+                              : `APP's conservative expansion of +${appChinaPulpAdd}kt prioritizes margin protection over market share. This defensive posture may encourage competitors to fill the supply gap, potentially ceding market position in exchange for profitability stability.`
+                          }
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -676,6 +696,33 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                         })}
                       </tbody>
                     </table>
+                  </div>
+                  
+                  {/* AI Insight Box */}
+                  <div className="mt-4 p-4 rounded-lg bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-full bg-indigo-100">
+                        <Lightbulb className="h-4 w-4 text-indigo-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-semibold text-indigo-900 mb-1">AI Insight</h4>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {(() => {
+                            const expanding = competitorChanges.filter(c => c.action === 'add').length
+                            const delaying = competitorChanges.filter(c => c.action === 'delay').length
+                            const totalChange = competitorChanges.reduce((sum, c) => sum + c.pulpChange, 0)
+                            
+                            if (delaying > expanding) {
+                              return `Market response is cautious: ${delaying} competitors are delaying expansion plans while only ${expanding} are proceeding. This suggests APP's capacity decisions are successfully deterring competitive investment. The net capacity change of ${totalChange > 0 ? '+' : ''}${totalChange}kt indicates a strategic window for APP to consolidate market position.`
+                            } else if (expanding > delaying) {
+                              return `Market response is aggressive: ${expanding} competitors are expanding capacity despite APP's moves. This competitive environment with net ${totalChange > 0 ? '+' : ''}${totalChange}kt additional capacity may lead to oversupply conditions and margin pressure across the industry.`
+                            } else {
+                              return `Market response is balanced: equal numbers of competitors are expanding and delaying. This equilibrium suggests the market is absorbing APP's capacity decisions without major disruption. Monitor for signs of shifting competitive dynamics.`
+                            }
+                          })()}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -880,6 +927,33 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                             </p>
                           </div>
                         </div>
+                        
+                        {/* AI Insight Box */}
+                        <div className="mt-4 p-4 rounded-lg bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200">
+                          <div className="flex items-start gap-3">
+                            <div className="p-2 rounded-full bg-indigo-100">
+                              <Lightbulb className="h-4 w-4 text-indigo-600" />
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="text-sm font-semibold text-indigo-900 mb-1">AI Insight</h4>
+                              <p className="text-sm text-muted-foreground leading-relaxed">
+                                {(() => {
+                                  const totalChinaExports = exporterData.reduce((sum, e) => sum + e.china.vol, 0)
+                                  const totalDelta = exporterData.reduce((sum, e) => sum + e.china.delta, 0)
+                                  const largestExporter = exporterData.reduce((max, e) => e.china.vol > max.china.vol ? e : max, exporterData[0])
+                                  
+                                  if (totalDelta > 50) {
+                                    return `Global exporters are significantly increasing China allocation (+${totalDelta}kt). ${largestExporter.name} leads with ${largestExporter.china.vol}kt, representing ${Math.round(largestExporter.china.vol / totalChinaExports * 100)}% of total imports. This influx suggests strong China demand signals or weakening alternative markets. Monitor for potential oversupply and price pressure.`
+                                  } else if (totalDelta < -50) {
+                                    return `Global exporters are reducing China allocation (${totalDelta}kt). This shift indicates either weakening China demand perception or stronger opportunities in alternative markets. ${largestExporter.name} remains the largest supplier at ${largestExporter.china.vol}kt. APP may benefit from reduced import competition.`
+                                  } else {
+                                    return `Export allocation to China remains stable (${totalDelta > 0 ? '+' : ''}${totalDelta}kt change). ${largestExporter.name} leads imports at ${largestExporter.china.vol}kt (${Math.round(largestExporter.china.vol / totalChinaExports * 100)}% share). This stability suggests balanced global demand and predictable supply conditions for APP's planning.`
+                                  }
+                                })()}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     )
                   })()}
@@ -1046,6 +1120,38 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                           </div>
                         )
                       })()}
+                    </div>
+                  </div>
+                  
+                  {/* AI Insight Box */}
+                  <div className="mt-4 p-4 rounded-lg bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-full bg-indigo-100">
+                        <Lightbulb className="h-4 w-4 text-indigo-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-semibold text-indigo-900 mb-1">AI Insight</h4>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {(() => {
+                            const totalNet = years.slice(1).reduce((total, year) => {
+                              const appExternal = Math.round(input.appCapacity.appChina[year] * 0.7)
+                              const competitorNet = competitorChanges.reduce((sum, c) => {
+                                const yearFactor = year === 2027 ? 0.2 : year === 2028 ? 0.3 : year === 2029 ? 0.25 : year === 2030 ? 0.15 : 0.1
+                                return sum + Math.round(c.pulpChange * yearFactor)
+                              }, 0)
+                              return total + appExternal + competitorNet
+                            }, 0)
+                            
+                            if (totalNet > 200) {
+                              return `The 5-year net supply addition of +${totalNet}kt creates significant oversupply risk. Price pressure is expected to intensify, particularly in 2028-2029 when capacity additions peak. APP should consider strategic inventory management and aggressive downstream integration to absorb excess supply. Margin compression of 10-15% is likely without demand growth acceleration.`
+                            } else if (totalNet > 0) {
+                              return `Moderate supply growth of +${totalNet}kt over 5 years suggests a balanced market outlook. Price stability is achievable if demand growth tracks at 2-3% annually. APP's market position remains defensible with current capacity plans. Monitor competitor execution and downstream demand signals for adjustment opportunities.`
+                            } else {
+                              return `Net supply reduction of ${totalNet}kt indicates potential market tightness. This creates favorable pricing conditions and margin expansion opportunities. APP may consider accelerating capacity investments to capture market share during this supply-constrained period. Watch for competitor response to changing market dynamics.`
+                            }
+                          })()}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
