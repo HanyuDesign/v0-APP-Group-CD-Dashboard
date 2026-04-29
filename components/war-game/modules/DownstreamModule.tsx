@@ -97,32 +97,33 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange }: S
   const competitors = DOWNSTREAM_COMPETITOR_SUPPLY[segment]
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       <div className="flex items-center gap-2">
         {icon}
         <span className="font-medium text-sm">{title}</span>
       </div>
 
-      {/* Competitor Supply Table */}
+      {/* Combined Competitor + APP China Supply Table */}
       <div className="rounded-lg border border-border/50 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/30">
-              <TableHead className="text-sm font-semibold w-32">Competitor</TableHead>
+              <TableHead className="text-sm font-semibold w-36">Player</TableHead>
               {years.map(year => (
-                <TableHead key={year} className="text-sm text-center font-semibold">{year}</TableHead>
+                <TableHead key={year} className="text-sm text-center font-semibold w-[72px]">{year}</TableHead>
               ))}
             </TableRow>
           </TableHeader>
           <TableBody>
+            {/* Competitor rows (AI-driven, read-only) */}
             {competitors.map(comp => {
               const player = PLAYERS.find(p => p.id === comp.playerId)
               return (
                 <TableRow key={comp.playerId} className="border-border/30">
-                  <TableCell className="font-medium">
+                  <TableCell className="font-medium py-2">
                     <div className="flex items-center gap-2">
                       <span
-                        className="h-3 w-3 rounded-full flex-shrink-0"
+                        className="h-2.5 w-2.5 rounded-full flex-shrink-0"
                         style={{ backgroundColor: player?.color || '#6c757d' }}
                       />
                       <span className="text-sm">{comp.playerName}</span>
@@ -131,7 +132,7 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange }: S
                   {years.map(year => {
                     const value = comp.capacity[year]
                     return (
-                      <TableCell key={year} className="text-center">
+                      <TableCell key={year} className="text-center py-2">
                         <span className={cn(
                           'text-sm font-mono',
                           value > 0 && 'text-success',
@@ -146,51 +147,35 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange }: S
                 </TableRow>
               )
             })}
-          </TableBody>
-        </Table>
-      </div>
 
-      {/* APP China Supply Table */}
-      <div className="rounded-lg border-2 border-[#cc0000]/30 bg-[#cc0000]/5 overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-[#cc0000]/10">
-              <TableHead className="text-sm font-semibold w-32">
+            {/* APP China row (user input) - highlighted */}
+            <TableRow className="bg-[#cc0000]/5 border-t-2 border-[#cc0000]/30">
+              <TableCell className="font-medium py-2">
                 <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-full bg-[#cc0000]" />
-                  APP China
+                  <span className="h-2.5 w-2.5 rounded-full flex-shrink-0 bg-[#cc0000]" />
+                  <span className="text-sm font-semibold text-[#cc0000]">APP China</span>
+                  <span className="px-1.5 py-0.5 text-[10px] font-medium bg-[#cc0000]/10 text-[#cc0000] rounded">User Input</span>
                 </div>
-              </TableHead>
+              </TableCell>
               {years.map(year => (
-                <TableHead key={year} className="text-sm text-center font-semibold">{year}</TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow className="border-border/30">
-              <TableCell className="text-sm font-medium">Capacity (kt)</TableCell>
-              {years.map(year => (
-                <TableCell key={year} className="text-center px-1">
-                  {year === 2026 ? (
-                    <span className="text-sm font-mono font-semibold text-[#cc0000]">
-                      {appSupply[year]}
-                    </span>
-                  ) : (
-                    <Input
-                      type="number"
-                      value={appSupply[year] || ''}
-                      onChange={(e) => onAppSupplyChange(year, parseInt(e.target.value) || 0)}
-                      className="h-7 w-20 text-sm text-left p-0 pl-1 mx-auto bg-white border-2 border-[#cc0000]/40 focus:border-[#cc0000] font-mono"
-                      min={0}
-                      max={99999}
-                    />
-                  )}
+                <TableCell key={year} className="text-center py-2 px-1">
+                  <Input
+                    type="number"
+                    value={appSupply[year] || ''}
+                    onChange={(e) => onAppSupplyChange(year, parseInt(e.target.value) || 0)}
+                    className="h-7 w-16 text-sm text-center px-1 mx-auto bg-white border border-[#cc0000]/30 focus:border-[#cc0000] focus:ring-1 focus:ring-[#cc0000]/20 font-mono"
+                  />
                 </TableCell>
               ))}
             </TableRow>
           </TableBody>
         </Table>
       </div>
+
+      {/* Note about data sources */}
+      <p className="text-[11px] text-muted-foreground italic">
+        Competitor capacity is AI-driven; APP capacity is user-defined.
+      </p>
     </div>
   )
 }
