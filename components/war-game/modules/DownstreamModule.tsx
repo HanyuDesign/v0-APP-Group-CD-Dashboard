@@ -9,7 +9,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { FileText, Package, Bath, TrendingDown, TrendingUp, Minus, Factory } from 'lucide-react'
 import type { DownstreamSettings, DemandScenario, YearlyCapacity } from '@/lib/types/war-game'
 import { POLICY_LABELS, DOWNSTREAM_COMPETITOR_SUPPLY, PLAYERS } from '@/lib/data/initial-data'
@@ -21,6 +28,7 @@ interface DownstreamModuleProps {
 }
 
 const demandOptions: DemandScenario[] = ['low', 'base', 'high']
+const years = [2026, 2027, 2028, 2029, 2030, 2031] as const
 
 interface DemandCardProps {
   title: string
@@ -82,69 +90,106 @@ interface SupplySectionProps {
   title: string
   icon: React.ReactNode
   appSupply: YearlyCapacity
-  onAppSupplyChange: (value: number) => void
+  onAppSupplyChange: (year: keyof YearlyCapacity, value: number) => void
 }
 
 function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange }: SupplySectionProps) {
   const competitors = DOWNSTREAM_COMPETITOR_SUPPLY[segment]
-  // Calculate total capacity change for each competitor (sum of all years)
-  const getCompetitorTotal = (capacity: Record<number, number>) => {
-    return Object.values(capacity).reduce((sum, val) => sum + val, 0)
-  }
-  // Calculate APP total (sum of all years)
-  const appTotal = Object.values(appSupply).reduce((sum, val) => sum + val, 0)
 
   return (
-    <div className="rounded-lg border border-border/50 bg-white/50 p-4">
-      <div className="flex items-center gap-2 mb-3">
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
         {icon}
-        <span className="font-semibold text-sm">{title}</span>
+        <span className="font-medium text-sm">{title}</span>
       </div>
 
-      <div className="space-y-3">
-        {/* Competitor Supply - Simple list */}
-        <div className="space-y-2">
-          {competitors.map(comp => {
-            const player = PLAYERS.find(p => p.id === comp.playerId)
-            const total = getCompetitorTotal(comp.capacity)
-            return (
-              <div key={comp.playerId} className="flex items-center justify-between py-1.5 px-2 rounded bg-muted/30">
-                <div className="flex items-center gap-2">
-                  <span
-                    className="h-2.5 w-2.5 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: player?.color || '#6c757d' }}
-                  />
-                  <span className="text-sm">{comp.playerName}</span>
-                </div>
-                <span className={cn(
-                  'text-sm font-mono font-medium',
-                  total > 0 && 'text-success',
-                  total < 0 && 'text-destructive',
-                  total === 0 && 'text-muted-foreground'
-                )}>
-                  {total > 0 ? `+${total}` : total === 0 ? '-' : total} kt
-                </span>
-              </div>
-            )
-          })}
-        </div>
+      {/* Competitor Supply Table */}
+      <div className="rounded-lg border border-border/50 overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-muted/30">
+              <TableHead className="text-sm font-semibold w-32">Competitor</TableHead>
+              {years.map(year => (
+                <TableHead key={year} className="text-sm text-center font-semibold">{year}</TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {competitors.map(comp => {
+              const player = PLAYERS.find(p => p.id === comp.playerId)
+              return (
+                <TableRow key={comp.playerId} className="border-border/30">
+                  <TableCell className="font-medium">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="h-3 w-3 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: player?.color || '#6c757d' }}
+                      />
+                      <span className="text-sm">{comp.playerName}</span>
+                    </div>
+                  </TableCell>
+                  {years.map(year => {
+                    const value = comp.capacity[year]
+                    return (
+                      <TableCell key={year} className="text-center">
+                        <span className={cn(
+                          'text-sm font-mono',
+                          value > 0 && 'text-success',
+                          value < 0 && 'text-destructive',
+                          value === 0 && 'text-muted-foreground'
+                        )}>
+                          {value > 0 ? `+${value}` : value === 0 ? '-' : value}
+                        </span>
+                      </TableCell>
+                    )
+                  })}
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
+      </div>
 
-        {/* APP China Supply - Single input */}
-        <div className="flex items-center justify-between py-2 px-3 rounded-lg border-2 border-[#cc0000]/30 bg-[#cc0000]/5">
-          <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#cc0000]" />
-            <span className="text-sm font-semibold text-[#cc0000]">APP China</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Input
-              type="number"
-              value={appTotal || ''}
-              onChange={(e) => onAppSupplyChange(parseInt(e.target.value) || 0)}
-              className="h-8 w-24 text-sm text-right px-2 bg-white border-2 border-[#cc0000]/40 focus:border-[#cc0000] font-mono font-semibold"
-            />
-            <span className="text-sm text-muted-foreground">kt</span>
-          </div>
-        </div>
+      {/* APP China Supply Table */}
+      <div className="rounded-lg border-2 border-[#cc0000]/30 bg-[#cc0000]/5 overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-[#cc0000]/10">
+              <TableHead className="text-sm font-semibold w-32">
+                <div className="flex items-center gap-2">
+                  <span className="h-3 w-3 rounded-full bg-[#cc0000]" />
+                  APP China
+                </div>
+              </TableHead>
+              {years.map(year => (
+                <TableHead key={year} className="text-sm text-center font-semibold">{year}</TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow className="border-border/30">
+              <TableCell className="text-sm font-medium">Capacity (kt)</TableCell>
+              {years.map(year => (
+                <TableCell key={year} className="text-center px-1">
+                  {year === 2026 ? (
+                    <span className="text-sm font-mono font-semibold text-[#cc0000]">
+                      {appSupply[year]}
+                    </span>
+                  ) : (
+                    <Input
+                      type="number"
+                      value={appSupply[year] || ''}
+                      onChange={(e) => onAppSupplyChange(year, parseInt(e.target.value) || 0)}
+                      className="h-7 w-20 text-sm text-left p-0 pl-1 mx-auto bg-white border-2 border-[#cc0000]/40 focus:border-[#cc0000] font-mono"
+                      min={0}
+                      max={99999}
+                    />
+                  )}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableBody>
+        </Table>
       </div>
     </div>
   )
@@ -154,10 +199,7 @@ export function DownstreamModule({
   settings,
   onChange,
 }: DownstreamModuleProps) {
-  const handleAppSupplyChange = (segment: 'paper' | 'board' | 'tissue', value: number) => {
-    // Distribute the total value evenly across years (simplified approach)
-    const perYear = Math.round(value / 6)
-    const remainder = value - (perYear * 6)
+  const handleAppSupplyChange = (segment: 'paper' | 'board' | 'tissue', year: keyof YearlyCapacity, value: number) => {
     onChange({
       ...settings,
       supply: {
@@ -165,12 +207,8 @@ export function DownstreamModule({
         [segment]: {
           ...settings.supply[segment],
           appChina: {
-            2026: perYear,
-            2027: perYear,
-            2028: perYear,
-            2029: perYear,
-            2030: perYear,
-            2031: perYear + remainder,
+            ...settings.supply[segment].appChina,
+            [year]: value,
           },
         },
       },
@@ -236,7 +274,7 @@ export function DownstreamModule({
               title="Paper"
               icon={<FileText className="h-4 w-4 text-muted-foreground" />}
               appSupply={settings.supply.paper.appChina}
-              onAppSupplyChange={(value) => handleAppSupplyChange('paper', value)}
+              onAppSupplyChange={(year, value) => handleAppSupplyChange('paper', year, value)}
             />
 
             {/* Board Supply */}
@@ -245,7 +283,7 @@ export function DownstreamModule({
               title="Packaging / Carton Board"
               icon={<Package className="h-4 w-4 text-chart-3" />}
               appSupply={settings.supply.board.appChina}
-              onAppSupplyChange={(value) => handleAppSupplyChange('board', value)}
+              onAppSupplyChange={(year, value) => handleAppSupplyChange('board', year, value)}
             />
 
             {/* Tissue Supply */}
@@ -254,7 +292,7 @@ export function DownstreamModule({
               title="Tissue"
               icon={<Bath className="h-4 w-4 text-chart-2" />}
               appSupply={settings.supply.tissue.appChina}
-              onAppSupplyChange={(value) => handleAppSupplyChange('tissue', value)}
+              onAppSupplyChange={(year, value) => handleAppSupplyChange('tissue', year, value)}
             />
           </div>
         </div>
