@@ -19,21 +19,23 @@ const realEstateValues: RealEstateCondition[] = ['downturn', 'stable', 'recovery
 
 // Calculate China woodchip supply based on inputs
 function calculateChinaSupply(loggingPolicy: PolicyLevel, realEstateCondition: RealEstateCondition): { supply: number; level: 'low' | 'medium' | 'high' } {
-  // Base supply: 800 kt
-  let supply = 800
+  // Base supply: 750 kt
+  let supply = 750
   
   // Logging policy impact
   if (loggingPolicy === 'tight') supply -= 150
   else if (loggingPolicy === 'relaxed') supply += 150
   
-  // Real estate impact (construction waste wood recycling)
-  if (realEstateCondition === 'downturn') supply -= 100
-  else if (realEstateCondition === 'recovery') supply += 100
+  // Real estate impact - REVERSED LOGIC:
+  // Downturn = less construction demand = MORE wood available for pulp
+  // Recovery = strong construction demand = LESS wood available for pulp (diverted to construction/furniture)
+  if (realEstateCondition === 'downturn') supply += 150  // More wood available
+  else if (realEstateCondition === 'recovery') supply -= 150  // Less wood available
   
   // Determine level
   let level: 'low' | 'medium' | 'high' = 'medium'
   if (supply <= 650) level = 'low'
-  else if (supply >= 900) level = 'high'
+  else if (supply >= 850) level = 'high'
   
   return { supply, level }
 }
@@ -154,12 +156,12 @@ export function ForestryModule({
                   {chinaOutput.supply} kt
                 </span>
                 <span className={cn(
-                  'ml-1.5 text-[10px] px-1.5 py-0.5 rounded',
+                  'ml-1.5 text-[10px] px-1.5 py-0.5 rounded font-medium',
                   chinaOutput.level === 'high' && 'bg-success/20 text-success',
-                  chinaOutput.level === 'medium' && 'bg-warning/20 text-warning',
+                  chinaOutput.level === 'medium' && 'bg-amber-100 text-amber-700',
                   chinaOutput.level === 'low' && 'bg-destructive/20 text-destructive'
                 )}>
-                  {chinaOutput.level === 'high' ? 'Abundant' : chinaOutput.level === 'medium' ? 'Moderate' : 'Tight'}
+                  {chinaOutput.level === 'high' ? 'Abundant' : chinaOutput.level === 'medium' ? 'Balanced' : 'Tight'}
                 </span>
               </div>
             </div>
@@ -212,12 +214,12 @@ export function ForestryModule({
                   {vietnamOutput.supply} kt
                 </span>
                 <span className={cn(
-                  'ml-1.5 text-[10px] px-1.5 py-0.5 rounded',
+                  'ml-1.5 text-[10px] px-1.5 py-0.5 rounded font-medium',
                   vietnamOutput.level === 'high' && 'bg-success/20 text-success',
-                  vietnamOutput.level === 'medium' && 'bg-warning/20 text-warning',
+                  vietnamOutput.level === 'medium' && 'bg-amber-100 text-amber-700',
                   vietnamOutput.level === 'low' && 'bg-destructive/20 text-destructive'
                 )}>
-                  {vietnamOutput.level === 'high' ? 'Abundant' : vietnamOutput.level === 'medium' ? 'Moderate' : 'Tight'}
+                  {vietnamOutput.level === 'high' ? 'Abundant' : vietnamOutput.level === 'medium' ? 'Balanced' : 'Tight'}
                 </span>
               </div>
             </div>
