@@ -216,8 +216,6 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
             settings={input.appCapacity}
             onChange={handleAppCapacityChange}
             competitorChanges={result?.competitorChanges}
-            inputMode={inputMode}
-            onInputModeChange={setInputMode}
           />
         )}
         {activeTab === 'downstream' && (
