@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ResultsPanel } from '@/components/war-game/results/ResultsPanel'
 import { OverviewPanel } from '@/components/war-game/OverviewPanel'
-import { Zap, ArrowLeft, History, Download, Share2, ClipboardList, ChevronDown, ChevronUp, Bug } from 'lucide-react'
+import { Zap, ArrowLeft, History, Download, Share2, ClipboardList, ChevronDown, ChevronUp, Bug, Check } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { useSimulation } from '@/lib/context/SimulationContext'
 import { computeAllFromInput } from '@/lib/simulation/computations'
 
@@ -151,21 +152,59 @@ export default function ResultsPage() {
         </div>
       </header>
 
-      {/* Navigation tabs */}
+      {/* Navigation tabs - 4 steps */}
       <nav className="border-b border-border/50 bg-background px-6">
-        <div className="flex gap-1">
+        <div className="flex items-center gap-1">
+          {/* Step 1: Market Input */}
           <button
             onClick={handleBackToInput}
-            className="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-muted-foreground hover:text-foreground hover:border-border flex items-center gap-1.5"
+            className="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-emerald-600 hover:text-emerald-700 flex items-center gap-2"
           >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Input Configuration
+            <span className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold bg-emerald-100 text-emerald-600">
+              <Check className="h-3 w-3" />
+            </span>
+            Market Input
           </button>
+          
+          {/* Step 2: Competitor Configure */}
           <button
-            className="px-4 py-2.5 text-sm font-medium border-b-2 border-primary text-primary"
+            onClick={handleBackToInput}
+            className="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-emerald-600 hover:text-emerald-700 flex items-center gap-2"
           >
+            <span className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold bg-emerald-100 text-emerald-600">
+              <Check className="h-3 w-3" />
+            </span>
+            Competitor Configure
+          </button>
+          
+          {/* Step 3: Reaction Input */}
+          <button
+            onClick={handleBackToInput}
+            className="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-emerald-600 hover:text-emerald-700 flex items-center gap-2"
+          >
+            <span className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold bg-emerald-100 text-emerald-600">
+              <Check className="h-3 w-3" />
+            </span>
+            Reaction Input
+          </button>
+          
+          {/* Step 4: Simulation Results - Active */}
+          <button
+            className="px-4 py-2.5 text-sm font-medium border-b-2 border-primary text-primary flex items-center gap-2"
+          >
+            <span className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold bg-primary text-primary-foreground">
+              4
+            </span>
             Simulation Results
           </button>
+          
+          {/* Progress indicator */}
+          <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
+            <span>Step 4 of 4</span>
+            <div className="h-1.5 w-24 rounded-full bg-secondary overflow-hidden">
+              <div className="h-full bg-primary w-full" />
+            </div>
+          </div>
         </div>
       </nav>
 

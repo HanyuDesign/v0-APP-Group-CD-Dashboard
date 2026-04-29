@@ -113,6 +113,8 @@ export interface SimulationInput {
   forestry: ForestrySettings
   appCapacity: APPCapacitySettings
   downstream: DownstreamSettings
+  competitorConfig?: CompetitorConfig[]
+  reactionSettings?: ReactionSettings
 }
 
 // 木片市场结果
@@ -223,6 +225,24 @@ export interface SimulationResult {
 
 // 模拟状态
 export type SimulationStatus = 'idle' | 'running' | 'completed' | 'error'
+
+// Navigation steps
+export type SimulationStep = 'market-input' | 'competitor-configure' | 'reaction-input' | 'results'
+
+// Competitor configuration (editable by user)
+export interface CompetitorConfig {
+  playerId: string
+  playerName: string
+  capacity: YearlyCapacity
+  isEdited: boolean
+}
+
+// Reaction input settings (behavior layer)
+export interface ReactionSettings {
+  competitorBehavior: 'aggressive' | 'neutral' | 'conservative'
+  exporterStrategy: 'china-focused' | 'balanced' | 'diversified'
+  downstreamReaction: 'expand' | 'maintain' | 'contract'
+}
 
 // 应用状态
 export interface WarGameState {

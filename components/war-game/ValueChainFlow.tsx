@@ -6,11 +6,8 @@ import { WoodchipSupplyOutput } from './modules/WoodchipSupplyOutput'
 import { PulpModule } from './modules/PulpModule'
 import { DownstreamModule } from './modules/DownstreamModule'
 import { OverviewPanel } from './OverviewPanel'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Trees, Factory, Package, ChevronRight, ClipboardList, TrendingUp, TrendingDown, Play, RotateCcw, ArrowRight, FileText, Bath } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Trees, Factory, Package, ChevronRight, ClipboardList } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { POLICY_LABELS } from '@/lib/data/initial-data'
 import type { 
   SimulationInput, 
   SimulationResult,
@@ -23,8 +20,6 @@ interface ValueChainFlowProps {
   input: SimulationInput
   onInputChange: (input: SimulationInput) => void
   result: SimulationResult | null
-  onRunSimulation?: () => void
-  onReset?: () => void
   isRunning?: boolean
 }
 
@@ -39,7 +34,7 @@ const TABS: { key: TabKey; label: string; icon: React.ReactNode; description: st
   },
   { 
     key: 'pulp', 
-    label: 'Pulp Capacity & Players', 
+    label: 'Pulp Capacity (APP)', 
     icon: <Factory className="h-4 w-4" />,
     description: 'Set APP capacity decisions'
   },
@@ -57,9 +52,8 @@ const TABS: { key: TabKey; label: string; icon: React.ReactNode; description: st
   },
 ]
 
-export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, onReset, isRunning }: ValueChainFlowProps) {
+export function ValueChainFlow({ input, onInputChange, result, isRunning }: ValueChainFlowProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('forestry')
-
 
   const handleForestryChange = (forestry: ForestrySettings) => {
     onInputChange({ ...input, forestry })
@@ -83,7 +77,7 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
           <div className="rounded-lg border border-border/50 bg-card/50 overflow-hidden">
             {/* Tab header */}
             <div className="px-4 py-3 bg-secondary/30 border-b border-border/50">
-              <h3 className="text-sm font-semibold">Value Chain Setup</h3>
+              <h3 className="text-sm font-semibold">Market Input Setup</h3>
               <p className="text-xs text-muted-foreground mt-0.5">Configure each stage</p>
             </div>
             
@@ -158,42 +152,6 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
               </div>
             </div>
           </div>
-
-          {/* Reset & Run Simulation buttons - Vertical layout */}
-          <div className="flex flex-col gap-2">
-            <Button
-              variant="outline"
-              onClick={onReset}
-              disabled={isRunning}
-              className="w-full h-10"
-            >
-              <RotateCcw className="mr-1.5 h-4 w-4" />
-              Reset
-            </Button>
-            <Button
-              onClick={onRunSimulation}
-              disabled={isRunning || activeTab !== 'overview'}
-              className={cn(
-                'w-full h-10',
-                activeTab === 'overview'
-                  ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                  : 'bg-secondary/50 text-muted-foreground cursor-not-allowed'
-              )}
-            >
-              {isRunning ? (
-                <>
-                  <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                  Running...
-                </>
-              ) : (
-                <>
-                  <Play className="mr-1.5 h-4 w-4" />
-                  Run Simulation
-                  <ArrowRight className="ml-1.5 h-4 w-4" />
-                </>
-              )}
-            </Button>
-          </div>
         </div>
       </div>
 
@@ -230,4 +188,3 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
     </div>
   )
 }
-

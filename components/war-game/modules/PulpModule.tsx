@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import {
@@ -11,8 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Factory, Package, Users } from 'lucide-react'
-import type { APPCapacitySettings, PlayerCapacityChange, YearlyCapacity, InputMode } from '@/lib/types/war-game'
+import { Factory, Package, Users, Info } from 'lucide-react'
+import type { APPCapacitySettings, PlayerCapacityChange, YearlyCapacity } from '@/lib/types/war-game'
 import { PLAYERS, COMPETITOR_CAPACITY_PROJECTIONS } from '@/lib/data/initial-data'
 import { cn } from '@/lib/utils'
 
@@ -20,8 +20,6 @@ interface PulpModuleProps {
   settings: APPCapacitySettings
   onChange: (settings: APPCapacitySettings) => void
   competitorChanges?: PlayerCapacityChange[]
-  inputMode?: InputMode // Keep for compatibility but won't use
-  onInputModeChange?: (mode: InputMode) => void // Keep for compatibility but won't use
 }
 
 const YEARS = [2026, 2027, 2028, 2029, 2030, 2031] as const
@@ -79,93 +77,7 @@ function CapacityInput({
   )
 }
 
-// Inline editable cell for competitor data
-function EditableCell({
-  value,
-  onChange,
-  isEdited = false,
-}: {
-  value: number
-  onChange: (value: number) => void
-  isEdited?: boolean
-}) {
-  const [isEditing, setIsEditing] = useState(false)
-  const [editValue, setEditValue] = useState(value)
-
-  const handleClick = () => {
-    setEditValue(value)
-    setIsEditing(true)
-  }
-
-  const handleBlur = () => {
-    setIsEditing(false)
-    if (editValue !== value) {
-      onChange(editValue)
-    }
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      setIsEditing(false)
-      if (editValue !== value) {
-        onChange(editValue)
-      }
-    }
-    if (e.key === 'Escape') {
-      setIsEditing(false)
-      setEditValue(value)
-    }
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value.trim()
-    if (input === '') {
-      setEditValue(0)
-      return
-    }
-    const numValue = parseInt(input, 10)
-    if (!isNaN(numValue) && numValue >= 0) {
-      setEditValue(Math.min(99999, numValue))
-    }
-  }
-
-  if (isEditing) {
-    return (
-      <Input
-        type="number"
-        value={editValue || ''}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        onKeyDown={handleKeyDown}
-        className="h-7 w-20 text-center text-sm font-mono bg-white border-2 border-primary p-0"
-        autoFocus
-        min={0}
-        max={99999}
-      />
-    )
-  }
-
-  return (
-    <button
-      onClick={handleClick}
-      className={cn(
-        "relative px-3 py-1.5 rounded text-sm font-mono transition-all",
-        "hover:bg-primary/10 hover:ring-2 hover:ring-primary/30 cursor-pointer",
-        isEdited && "bg-amber-50"
-      )}
-    >
-      {value}
-      {isEdited && (
-        <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-amber-500" />
-      )}
-    </button>
-  )
-}
-
 export function PulpModule({ settings, onChange }: PulpModuleProps) {
-  // Track edited competitor cells
-  const [editedCompetitorCells, setEditedCompetitorCells] = useState<Record<string, Record<Year, number>>>({})
-  
   // Get APP China player for color
   const appChina = PLAYERS.find(p => p.id === 'app-china')!
   
@@ -202,47 +114,19 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
     return player?.color || '#6c757d'
   }
 
-  // Calculate competitor total capacity from base additions + edits
-  const getCompetitorTotalCapacity = (playerId: string, baseAdditions: YearlyCapacity): YearlyCapacity => {
-    const edits = editedCompetitorCells[playerId] || {}
-    
-    // Start with base 2026 value (or edited if available)
-    const base2026 = edits[2026] !== undefined ? edits[2026] : baseAdditions[2026]
-    
-    // Calculate cumulative totals, using edits where available
+  // Calculate competitor total capacity from base additions
+  const getCompetitorTotalCapacity = (baseAdditions: YearlyCapacity): YearlyCapacity => {
+    const base2026 = baseAdditions[2026]
     let cumulative = base2026
     const totals: YearlyCapacity = { 2026: base2026, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0 }
     
     for (let i = 1; i < YEARS.length; i++) {
       const year = YEARS[i]
-      if (edits[year] !== undefined) {
-        // User edited this cell - use their value directly as total
-        totals[year] = edits[year]
-        cumulative = edits[year]
-      } else {
-        // Not edited - calculate from previous + additions
-        cumulative = cumulative + Math.max(0, baseAdditions[year])
-        totals[year] = cumulative
-      }
+      cumulative = cumulative + Math.max(0, baseAdditions[year])
+      totals[year] = cumulative
     }
     
     return totals
-  }
-
-  // Handle competitor cell edit
-  const handleCompetitorEdit = (playerId: string, year: Year, value: number) => {
-    setEditedCompetitorCells(prev => ({
-      ...prev,
-      [playerId]: {
-        ...(prev[playerId] || {}),
-        [year]: value,
-      }
-    }))
-  }
-
-  // Check if a competitor cell has been edited
-  const isCompetitorCellEdited = (playerId: string, year: Year): boolean => {
-    return editedCompetitorCells[playerId]?.[year] !== undefined
   }
 
   return (
@@ -250,7 +134,7 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Factory className="h-5 w-5 text-primary" />
-          Pulp Capacity & Players
+          APP Pulp Capacity Decisions
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -330,12 +214,12 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
           </p>
         </div>
 
-        {/* Competitor Capacity - Total Capacity with Inline Editing */}
+        {/* Competitor Capacity Reference - Read Only */}
         <div className="rounded-lg border border-border/50 p-4">
           <div className="mb-4 flex items-center gap-2">
             <Users className="h-4 w-4 text-muted-foreground" />
-            <span className="font-semibold text-sm">Competitor Total Capacity</span>
-            <span className="ml-auto px-2 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground rounded uppercase">Editable Reference</span>
+            <span className="font-semibold text-sm">Competitor Capacity Reference</span>
+            <span className="ml-auto px-2 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground rounded uppercase">Read Only</span>
           </div>
           
           <Table>
@@ -351,7 +235,7 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
             </TableHeader>
             <TableBody>
               {COMPETITOR_CAPACITY_PROJECTIONS.map((competitor) => {
-                const competitorTotals = getCompetitorTotalCapacity(competitor.playerId, competitor.capacity)
+                const competitorTotals = getCompetitorTotalCapacity(competitor.capacity)
                 
                 return (
                   <TableRow key={competitor.playerId} className="border-border/30">
@@ -365,12 +249,10 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
                       </div>
                     </TableCell>
                     {YEARS.map((year) => (
-                      <TableCell key={year} className="text-center p-1">
-                        <EditableCell
-                          value={competitorTotals[year]}
-                          onChange={(value) => handleCompetitorEdit(competitor.playerId, year, value)}
-                          isEdited={isCompetitorCellEdited(competitor.playerId, year)}
-                        />
+                      <TableCell key={year} className="text-center p-2">
+                        <span className="text-sm font-mono text-muted-foreground">
+                          {competitorTotals[year]}
+                        </span>
                       </TableCell>
                     ))}
                   </TableRow>
@@ -379,9 +261,12 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
             </TableBody>
           </Table>
           
-          <p className="mt-3 text-xs text-muted-foreground">
-            Click any value to adjust total capacity assumptions. Edited values are marked with a dot.
-          </p>
+          <div className="mt-3 flex items-start gap-2 p-2 rounded bg-muted/50">
+            <Info className="h-3.5 w-3.5 text-muted-foreground mt-0.5 flex-shrink-0" />
+            <p className="text-xs text-muted-foreground">
+              Competitor capacity shown here is read-only reference data. To modify competitor assumptions, proceed to Step 2: Competitor Configure.
+            </p>
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -4,6 +4,7 @@ import type {
   ForestrySettings,
   APPCapacitySettings,
   DownstreamSettings,
+  ReactionSettings,
 } from '@/lib/types/war-game'
 
 // Player data with Bain-style colors (red primary, professional palette)
@@ -257,11 +258,19 @@ export const DOWNSTREAM_COMPETITOR_SUPPLY = {
   ],
 }
 
+// Default reaction settings
+export const DEFAULT_REACTION_SETTINGS: ReactionSettings = {
+  competitorBehavior: 'neutral',
+  exporterStrategy: 'balanced',
+  downstreamReaction: 'maintain',
+}
+
 // Default full simulation input
 export const DEFAULT_SIMULATION_INPUT: SimulationInput = {
   forestry: DEFAULT_FORESTRY_SETTINGS,
   appCapacity: DEFAULT_APP_CAPACITY_SETTINGS,
   downstream: DEFAULT_DOWNSTREAM_SETTINGS,
+  reactionSettings: DEFAULT_REACTION_SETTINGS,
 }
 
 // Policy option labels
