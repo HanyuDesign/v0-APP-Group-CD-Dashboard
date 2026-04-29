@@ -89,7 +89,7 @@ export function ForestryModule({
         {/* Section 2: Policy Drivers - 2-Column Grid */}
         <div className="grid grid-cols-2 gap-6">
           {/* Left Column: China Logging Policy */}
-          <div className="rounded-lg border border-success/30 bg-success/5 p-4">
+          <div className="rounded-lg border border-border/50 p-4">
             <div className="flex items-center gap-2 mb-4">
               <TreePine className="h-4 w-4 text-success" />
               <span className="text-sm font-semibold text-success">China Logging Policy</span>
@@ -129,7 +129,7 @@ export function ForestryModule({
           </div>
 
           {/* Right Column: Vietnam Export Policy */}
-          <div className="rounded-lg border border-chart-2/30 bg-chart-2/5 p-4">
+          <div className="rounded-lg border border-border/50 p-4">
             <div className="flex items-center gap-2 mb-4">
               <Globe className="h-4 w-4 text-chart-2" />
               <span className="text-sm font-semibold text-chart-2">Vietnam Export Policy</span>
