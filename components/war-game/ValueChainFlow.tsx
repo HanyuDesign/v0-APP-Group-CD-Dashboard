@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { ForestryModule } from './modules/ForestryModule'
-import { WoodchipSupplyOutput } from './modules/WoodchipSupplyOutput'
 import { PulpModule } from './modules/PulpModule'
 import { DownstreamModule } from './modules/DownstreamModule'
 import { OverviewPanel } from './OverviewPanel'
@@ -201,15 +200,10 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
       {/* Right content panel */}
       <div className="flex-1 min-w-0">
         {activeTab === 'forestry' && (
-          <div className="space-y-4">
-            <ForestryModule
-              settings={input.forestry}
-              onChange={handleForestryChange}
-            />
-            <WoodchipSupplyOutput
-              settings={input.forestry}
-            />
-          </div>
+          <ForestryModule
+            settings={input.forestry}
+            onChange={handleForestryChange}
+          />
         )}
         {activeTab === 'pulp' && (
           <PulpModule
