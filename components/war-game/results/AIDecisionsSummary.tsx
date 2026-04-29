@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
@@ -15,6 +16,7 @@ interface AIDecisionsSummaryProps {
 }
 
 export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
+  const [isInsightsExpanded, setIsInsightsExpanded] = useState(true)
   const { competitorChanges, exporterAllocations, segmentOutcomes, input } = result
 
   // Years constant
@@ -117,134 +119,157 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
 
       {/* AI Strategic Insights - Value Chain Flow */}
       <div className="rounded-lg border-2 border-indigo-200 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 overflow-hidden">
-        <div className="px-4 py-3 border-b border-indigo-200 bg-indigo-100/50 flex items-center gap-2">
+        <div 
+          className="px-4 py-3 border-b border-indigo-200 bg-indigo-100/50 flex items-center gap-2 cursor-pointer hover:bg-indigo-100/70 transition-colors"
+          onClick={() => setIsInsightsExpanded(!isInsightsExpanded)}
+        >
           <Lightbulb className="h-5 w-5 text-indigo-600" />
           <h3 className="font-bold text-indigo-900">AI Strategic Insights</h3>
-          <span className="ml-auto text-xs text-indigo-600 bg-indigo-100 px-2 py-0.5 rounded">Value Chain Analysis</span>
+          <span className="text-xs text-indigo-600 bg-indigo-100 px-2 py-0.5 rounded">Value Chain Analysis</span>
+          <button className="ml-auto flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 transition-colors">
+            {isInsightsExpanded ? (
+              <>
+                <ChevronUp className="h-4 w-4" />
+                <span>Collapse</span>
+              </>
+            ) : (
+              <>
+                <ChevronDown className="h-4 w-4" />
+                <span>Expand</span>
+              </>
+            )}
+          </button>
         </div>
         
         <div className="p-4">
-          {/* 3-Stage Horizontal Flow */}
-          <div className="grid grid-cols-[1fr_auto_1.2fr_auto_1fr] gap-2 items-stretch">
-            {/* Stage 1: Forestry (LEFT) */}
-            <div className="rounded-lg border border-green-200 bg-white p-3">
-              <div className="flex items-center gap-2 mb-3">
-                <Trees className="h-4 w-4 text-green-600" />
-                <h4 className="font-semibold text-sm text-green-800">Forestry & Woodchip Supply</h4>
-              </div>
-              <div className="space-y-2">
-                <div className="text-center p-2 rounded bg-green-50">
-                  <div className="text-xs text-muted-foreground">Total Supply Impact</div>
-                  <div className="text-xl font-bold text-green-700">
-                    {appChinaPulpAdd > 200 ? 'High Demand' : appChinaPulpAdd > 100 ? 'Moderate' : 'Stable'}
-                  </div>
-                  <span className={cn(
-                    'text-xs px-1.5 py-0.5 rounded font-medium',
-                    appChinaPulpAdd > 200 ? 'bg-red-100 text-red-600' : appChinaPulpAdd > 100 ? 'bg-amber-100 text-amber-600' : 'bg-green-100 text-green-600'
-                  )}>
-                    {appChinaPulpAdd > 200 ? 'Tight' : appChinaPulpAdd > 100 ? 'Balanced' : 'Abundant'}
-                  </span>
+          {/* Expanded: Full 3-Stage Horizontal Flow */}
+          {isInsightsExpanded && (
+            <div className="grid grid-cols-[1fr_auto_1.2fr_auto_1fr] gap-2 items-stretch mb-4">
+              {/* Stage 1: Forestry (LEFT) */}
+              <div className="rounded-lg border border-green-200 bg-white p-3">
+                <div className="flex items-center gap-2 mb-3">
+                  <Trees className="h-4 w-4 text-green-600" />
+                  <h4 className="font-semibold text-sm text-green-800">Forestry & Woodchip Supply</h4>
                 </div>
-                <div className="text-center p-2 rounded bg-muted/30">
-                  <div className="text-[10px] text-muted-foreground">Wood Demand from APP</div>
-                  <div className="text-sm font-semibold">+{Math.round(appChinaPulpAdd * 2.2)} kt/yr</div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Arrow: Pulp <- Forestry */}
-            <div className="flex flex-col items-center justify-center px-1">
-              <ArrowLeft className="h-5 w-5 text-green-500" />
-              <div className="text-[9px] text-muted-foreground text-center mt-1 leading-tight">
-                Drives<br/>wood demand
-              </div>
-            </div>
-            
-            {/* Stage 2: Pulp (CENTER - Primary Driver) */}
-            <div className="rounded-lg border-2 border-blue-300 bg-white p-3 shadow-sm">
-              <div className="flex items-center gap-2 mb-3">
-                <Factory className="h-4 w-4 text-blue-600" />
-                <h4 className="font-semibold text-sm text-blue-800">Pulp Capacity & Market Response</h4>
-              </div>
-              <div className="space-y-2">
-                {/* APP Expansion */}
-                <div className="p-2 rounded bg-red-50 border border-red-200">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-red-700 font-medium">APP Capacity Decision</span>
-                    <span className="text-sm font-bold text-red-700">+{appChinaPulpAdd} kt</span>
-                  </div>
-                </div>
-                {/* Competitor Response */}
-                <div className="p-2 rounded bg-blue-50 border border-blue-100">
-                  <div className="flex items-center gap-1 mb-1">
-                    <Users className="h-3 w-3 text-blue-600" />
-                    <span className="text-xs text-blue-700 font-medium">Competitor Response</span>
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-semibold text-blue-800">{competitorsExpanding} expanding, {competitorsDelaying} delaying</span>
+                <div className="space-y-2">
+                  <div className="text-center p-2 rounded bg-green-50">
+                    <div className="text-xs text-muted-foreground">Total Supply Impact</div>
+                    <div className="text-xl font-bold text-green-700">
+                      {appChinaPulpAdd > 200 ? 'High Demand' : appChinaPulpAdd > 100 ? 'Moderate' : 'Stable'}
+                    </div>
                     <span className={cn(
-                      'ml-2 font-bold',
-                      totalCompetitorPulpChange >= 0 ? 'text-green-600' : 'text-red-600'
+                      'text-xs px-1.5 py-0.5 rounded font-medium',
+                      appChinaPulpAdd > 200 ? 'bg-red-100 text-red-600' : appChinaPulpAdd > 100 ? 'bg-amber-100 text-amber-600' : 'bg-green-100 text-green-600'
                     )}>
-                      {totalCompetitorPulpChange >= 0 ? '+' : ''}{totalCompetitorPulpChange} kt
+                      {appChinaPulpAdd > 200 ? 'Tight' : appChinaPulpAdd > 100 ? 'Balanced' : 'Abundant'}
                     </span>
                   </div>
-                </div>
-                {/* Exporter Allocation */}
-                <div className="p-2 rounded bg-indigo-50 border border-indigo-100">
-                  <div className="flex items-center gap-1 mb-1">
-                    <Globe className="h-3 w-3 text-indigo-600" />
-                    <span className="text-xs text-indigo-700 font-medium">Exporter China Allocation</span>
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-semibold text-indigo-800">{Math.round(avgChinaShare * 100)}%</span>
-                    <span className="text-muted-foreground ml-1">({totalChinaExports} kt to China)</span>
+                  <div className="text-center p-2 rounded bg-muted/30">
+                    <div className="text-[10px] text-muted-foreground">Wood Demand from APP</div>
+                    <div className="text-sm font-semibold">+{Math.round(appChinaPulpAdd * 2.2)} kt/yr</div>
                   </div>
                 </div>
               </div>
-            </div>
-            
-            {/* Arrow: Pulp -> Downstream */}
-            <div className="flex flex-col items-center justify-center px-1">
-              <ArrowRight className="h-5 w-5 text-purple-500" />
-              <div className="text-[9px] text-muted-foreground text-center mt-1 leading-tight">
-                Requires<br/>absorption
+              
+              {/* Arrow: Pulp <- Forestry */}
+              <div className="flex flex-col items-center justify-center px-1">
+                <ArrowLeft className="h-5 w-5 text-green-500" />
+                <div className="text-[9px] text-muted-foreground text-center mt-1 leading-tight">
+                  Drives<br/>wood demand
+                </div>
               </div>
-            </div>
-            
-            {/* Stage 3: Downstream (RIGHT) */}
-            <div className="rounded-lg border border-purple-200 bg-white p-3">
-              <div className="flex items-center gap-2 mb-3">
-                <Package className="h-4 w-4 text-purple-600" />
-                <h4 className="font-semibold text-sm text-purple-800">Downstream Absorption</h4>
-              </div>
-              <div className="space-y-2">
-                {segmentOutcomes.map(s => {
-                  const Icon = segmentIcons[s.segment] || Package
-                  return (
-                    <div key={s.segment} className="p-2 rounded bg-purple-50/50 border border-purple-100">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-medium flex items-center gap-1">
-                          {Icon} {segmentLabels[s.segment]}
-                        </span>
-                        <span className="text-xs">{s.utilization}% util</span>
-                      </div>
-                      <div className={cn(
-                        'text-[10px] mt-0.5',
-                        s.utilization >= 85 ? 'text-green-600' :
-                        s.utilization >= 70 ? 'text-amber-600' : 'text-red-600'
-                      )}>
-                        Margin Pressure: {s.utilization >= 85 ? 'Low' : s.utilization >= 70 ? 'Medium' : 'High'}
+              
+              {/* Stage 2: Pulp (CENTER - Primary Driver) */}
+              <div className="rounded-lg border-2 border-blue-300 bg-white p-3 shadow-sm">
+                <div className="space-y-3">
+                  {/* APP Expansion - Enlarged */}
+                  <div className="p-4 rounded-lg bg-red-50 border-2 border-red-300">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Factory className="h-5 w-5 text-red-600" />
+                        <span className="text-sm text-red-700 font-semibold">APP Capacity Decision</span>
                       </div>
                     </div>
-                  )
-                })}
+                    <div className="text-center">
+                      <span className="text-3xl font-bold text-red-700">+{appChinaPulpAdd}</span>
+                      <span className="text-lg text-red-600 ml-1">kt</span>
+                    </div>
+                  </div>
+                  {/* Competitor Response */}
+                  <div className="p-2 rounded bg-blue-50 border border-blue-100">
+                    <div className="flex items-center gap-1 mb-1">
+                      <Users className="h-3 w-3 text-blue-600" />
+                      <span className="text-xs text-blue-700 font-medium">Competitor Response</span>
+                    </div>
+                    <div className="text-sm">
+                      <span className="font-semibold text-blue-800">{competitorsExpanding} expanding, {competitorsDelaying} delaying</span>
+                      <span className={cn(
+                        'ml-2 font-bold',
+                        totalCompetitorPulpChange >= 0 ? 'text-green-600' : 'text-red-600'
+                      )}>
+                        {totalCompetitorPulpChange >= 0 ? '+' : ''}{totalCompetitorPulpChange} kt
+                      </span>
+                    </div>
+                  </div>
+                  {/* Exporter Allocation */}
+                  <div className="p-2 rounded bg-indigo-50 border border-indigo-100">
+                    <div className="flex items-center gap-1 mb-1">
+                      <Globe className="h-3 w-3 text-indigo-600" />
+                      <span className="text-xs text-indigo-700 font-medium">Exporter China Allocation</span>
+                    </div>
+                    <div className="text-sm">
+                      <span className="font-semibold text-indigo-800">{Math.round(avgChinaShare * 100)}%</span>
+                      <span className="text-muted-foreground ml-1">({totalChinaExports} kt to China)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Arrow: Pulp -> Downstream */}
+              <div className="flex flex-col items-center justify-center px-1">
+                <ArrowRight className="h-5 w-5 text-purple-500" />
+                <div className="text-[9px] text-muted-foreground text-center mt-1 leading-tight">
+                  Requires<br/>absorption
+                </div>
+              </div>
+              
+              {/* Stage 3: Downstream (RIGHT) */}
+              <div className="rounded-lg border border-purple-200 bg-white p-3">
+                <div className="flex items-center gap-2 mb-3">
+                  <Package className="h-4 w-4 text-purple-600" />
+                  <h4 className="font-semibold text-sm text-purple-800">Downstream Absorption</h4>
+                </div>
+                <div className="space-y-2">
+                  {segmentOutcomes.map(s => {
+                    const Icon = segmentIcons[s.segment] || Package
+                    return (
+                      <div key={s.segment} className="p-2 rounded bg-purple-50/50 border border-purple-100">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-medium flex items-center gap-1">
+                            {Icon} {segmentLabels[s.segment]}
+                          </span>
+                          <span className="text-xs">{s.utilization}% util</span>
+                        </div>
+                        <div className={cn(
+                          'text-[10px] mt-0.5',
+                          s.utilization >= 85 ? 'text-green-600' :
+                          s.utilization >= 70 ? 'text-amber-600' : 'text-red-600'
+                        )}>
+                          Margin Pressure: {s.utilization >= 85 ? 'Low' : s.utilization >= 70 ? 'Medium' : 'High'}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             </div>
-          </div>
+          )}
           
-          {/* Bottom Insights Layer - 3 Columns */}
-          <div className="grid grid-cols-3 gap-3 mt-4 pt-3 border-t border-indigo-200">
+          {/* Bottom Insights Layer - 3 Columns (Always visible) */}
+          <div className={cn(
+            "grid grid-cols-3 gap-3",
+            isInsightsExpanded && "pt-3 border-t border-indigo-200"
+          )}>
             {/* Upstream Insights */}
             <div className="p-2 rounded bg-green-50/50">
               <h5 className="text-[10px] font-semibold text-green-700 uppercase tracking-wide mb-1">Upstream Insight</h5>
