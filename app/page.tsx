@@ -203,6 +203,7 @@ export default function InputPage() {
           <CompetitorConfigModule
             config={competitorConfig}
             onChange={handleCompetitorConfigChange}
+            appCapacityAdditions={input.appCapacity.appChina}
           />
         )}
 

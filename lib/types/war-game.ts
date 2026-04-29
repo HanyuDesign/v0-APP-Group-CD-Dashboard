@@ -229,11 +229,25 @@ export type SimulationStatus = 'idle' | 'running' | 'completed' | 'error'
 // Navigation steps
 export type SimulationStep = 'market-input' | 'competitor-configure' | 'reaction-input' | 'results'
 
+// Competitor behavior settings (user-adjustable)
+export type CapacityReactionStyle = 'aggressive' | 'follow-the-leader' | 'defensive'
+export type ReactionTiming = 'immediate' | '1-year-lag' | '2-year-lag'
+export type UtilizationTarget = 'high' | 'balanced' | 'flexible'
+
+export interface CompetitorBehaviorSettings {
+  capacityReactionStyle: CapacityReactionStyle
+  followRatio: number // 0-80%
+  reactionTiming: ReactionTiming
+  utilizationTarget: UtilizationTarget
+}
+
 // Competitor configuration (editable by user)
 export interface CompetitorConfig {
   playerId: string
   playerName: string
-  capacity: YearlyCapacity
+  strategy: string // e.g. "Defend market share, Maintain high utilization"
+  behaviorSettings: CompetitorBehaviorSettings
+  derivedCapacity?: YearlyCapacity // Auto-calculated from settings
   isEdited: boolean
 }
 
