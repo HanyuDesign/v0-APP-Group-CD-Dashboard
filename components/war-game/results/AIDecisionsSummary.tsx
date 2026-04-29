@@ -379,32 +379,83 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
         {/* Tab 1: Pulp Capacity Decisions - Redesigned as Results View */}
         <TabsContent value="pulp">
           <div ref={containerRef} className="relative max-h-[calc(100vh-300px)] overflow-y-auto">
-            {/* Sticky Sub-Navigation Bar */}
+            {/* Sticky Sub-Navigation Bar - Step Progress Style */}
             <div 
               ref={navRef}
-              className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-border/50 shadow-sm mb-4 -mx-1 px-1"
+              className="sticky top-0 z-10 bg-white rounded-xl shadow-lg mb-4 py-6 px-8"
             >
-              <nav className="flex items-center gap-1 py-2 overflow-x-auto">
-                {PULP_NAV_ITEMS.map((item) => {
+              <nav className="flex items-start justify-between overflow-x-auto">
+                {PULP_NAV_ITEMS.map((item, index) => {
                   const Icon = item.icon
+                  const activeIndex = PULP_NAV_ITEMS.findIndex(i => i.id === activeSection)
+                  const isCompleted = index < activeIndex
                   const isActive = activeSection === item.id
+                  const isPending = index > activeIndex
+                  const isLast = index === PULP_NAV_ITEMS.length - 1
+                  
                   return (
-                    <button
-                      key={item.id}
-                      onClick={() => scrollToSection(item.id)}
-                      className={cn(
-                        'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-all',
-                        isActive 
-                          ? 'bg-primary text-primary-foreground shadow-sm' 
-                          : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                      )}
-                    >
-                      <Icon className="h-4 w-4" />
-                      <span>{item.label}</span>
-                      {isActive && (
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground" />
-                      )}
-                    </button>
+                    <div key={item.id} className="flex items-start flex-1">
+                      {/* Step Content */}
+                      <button
+                        onClick={() => scrollToSection(item.id)}
+                        className="flex flex-col items-start gap-2 text-left hover:opacity-80 transition-opacity"
+                      >
+                        {/* Circle Indicator */}
+                        <div className="flex items-center">
+                          <div className={cn(
+                            'w-8 h-8 rounded-full flex items-center justify-center transition-all',
+                            isCompleted && 'bg-teal-500',
+                            isActive && 'border-[3px] border-blue-500 bg-white',
+                            isPending && 'bg-blue-100'
+                          )}>
+                            {isCompleted ? (
+                              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                            ) : isActive ? (
+                              <div className="w-3 h-3 rounded-full bg-blue-500" />
+                            ) : (
+                              <Icon className="w-4 h-4 text-blue-300" />
+                            )}
+                          </div>
+                          
+                          {/* Connecting Line */}
+                          {!isLast && (
+                            <div className="flex-1 h-0.5 min-w-[40px] mx-2">
+                              <div className={cn(
+                                'h-full',
+                                isCompleted && 'bg-teal-500',
+                                isActive && 'bg-gradient-to-r from-blue-500 via-blue-500 to-gray-200',
+                                isPending && 'bg-gray-200'
+                              )} 
+                              style={isActive ? { backgroundSize: '50% 100%', backgroundRepeat: 'no-repeat' } : undefined}
+                              />
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Step Label */}
+                        <div className="mt-1">
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                            Step {index + 1}
+                          </p>
+                          <p className={cn(
+                            'text-sm font-semibold mt-0.5',
+                            isActive ? 'text-foreground' : 'text-muted-foreground'
+                          )}>
+                            {item.label}
+                          </p>
+                          <p className={cn(
+                            'text-xs mt-0.5',
+                            isCompleted && 'text-teal-500',
+                            isActive && 'text-blue-500',
+                            isPending && 'text-muted-foreground'
+                          )}>
+                            {isCompleted ? 'Completed' : isActive ? 'In Progress' : 'Pending'}
+                          </p>
+                        </div>
+                      </button>
+                    </div>
                   )
                 })}
               </nav>
