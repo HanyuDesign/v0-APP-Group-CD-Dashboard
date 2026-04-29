@@ -265,12 +265,12 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
             </div>
           )}
           
-          {/* Bottom Insights Layer - 3 Columns (Always visible) */}
+          {/* Bottom Insights Layer - Aligned with stages above */}
           <div className={cn(
-            "grid grid-cols-3 gap-4",
+            "grid grid-cols-[1fr_auto_1.2fr_auto_1fr] gap-2",
             isInsightsExpanded && "pt-4 border-t border-indigo-200"
           )}>
-            {/* Upstream Insights */}
+            {/* Upstream Insights - Aligned with Forestry & Woodchip Supply */}
             <div className="p-3 rounded bg-green-50/50">
               <h5 className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-2">Upstream Insight</h5>
               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -282,7 +282,9 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                 }
               </p>
             </div>
-            {/* Market Dynamics */}
+            {/* Spacer for arrow alignment */}
+            <div />
+            {/* Market Dynamics - Aligned with APP Capacity Decision */}
             <div className="p-3 rounded bg-blue-50/50">
               <h5 className="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-2">Market Dynamics</h5>
               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -292,7 +294,9 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                 }
               </p>
             </div>
-            {/* Downstream Risks */}
+            {/* Spacer for arrow alignment */}
+            <div />
+            {/* Downstream Risks - Aligned with Downstream Absorption */}
             <div className="p-3 rounded bg-purple-50/50">
               <h5 className="text-xs font-semibold text-purple-700 uppercase tracking-wide mb-2">Downstream Risk</h5>
               <p className="text-sm text-muted-foreground leading-relaxed">
