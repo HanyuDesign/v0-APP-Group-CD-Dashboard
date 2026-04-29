@@ -410,7 +410,7 @@ export function DownstreamModule({
                   className={cn(
                     "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
                     inputMode === 'incremental'
-                      ? "bg-blue-600 text-white shadow-sm"
+                      ? "bg-red-500 text-white shadow-sm"
                       : "text-muted-foreground hover:bg-muted/50"
                   )}
                 >
@@ -421,7 +421,7 @@ export function DownstreamModule({
                   className={cn(
                     "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
                     inputMode === 'total'
-                      ? "bg-green-600 text-white shadow-sm"
+                      ? "bg-red-500 text-white shadow-sm"
                       : "text-muted-foreground hover:bg-muted/50"
                   )}
                 >
