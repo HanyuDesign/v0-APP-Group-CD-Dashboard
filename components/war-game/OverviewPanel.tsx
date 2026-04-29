@@ -40,13 +40,13 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
     { name: 'Others China', color: '#6c757d', capacity: { 2026: 150, 2027: 20, 2028: 30, 2029: 40, 2030: 25, 2031: 35 } },
   ]
 
-  // Competitor data for downstream segments
+  // Competitor data for downstream segments (positive additions only)
   const downstreamCompetitorData = {
     paper: [
-      { name: 'Sun Paper', capacity: { 2026: 150, 2027: 0, 2028: -20, 2029: -15, 2030: 0, 2031: -10 } },
-      { name: 'Chenming', capacity: { 2026: 100, 2027: -10, 2028: 0, 2029: -20, 2030: 0, 2031: 0 } },
-      { name: 'Liansheng', capacity: { 2026: 60, 2027: 0, 2028: 0, 2029: 0, 2030: -10, 2031: 0 } },
-      { name: 'Others', capacity: { 2026: 200, 2027: -30, 2028: -40, 2029: -25, 2030: -20, 2031: -15 } },
+      { name: 'Sun Paper', capacity: { 2026: 150, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0 } },
+      { name: 'Chenming', capacity: { 2026: 100, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0 } },
+      { name: 'Liansheng', capacity: { 2026: 60, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0 } },
+      { name: 'Others', capacity: { 2026: 200, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0 } },
     ],
     board: [
       { name: 'Sun Paper', capacity: { 2026: 180, 2027: 40, 2028: 60, 2029: 30, 2030: 50, 2031: 20 } },
@@ -128,10 +128,9 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                           ) : (
                             <span className={cn(
                               value > 0 && 'text-green-600',
-                              value < 0 && 'text-red-600',
                               value === 0 && 'text-muted-foreground'
                             )}>
-                              {value > 0 ? `+${value}` : value < 0 ? value : '-'}
+                              {value > 0 ? `+${value}` : '-'}
                             </span>
                           )}
                         </td>
@@ -156,10 +155,9 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                         ) : (
                           <span className={cn(
                             value > 0 && 'text-green-600',
-                            value < 0 && 'text-red-600',
                             value === 0 && 'text-muted-foreground'
                           )}>
-                            {value > 0 ? `+${value}` : value < 0 ? value : '-'}
+                            {value > 0 ? `+${value}` : '-'}
                           </span>
                         )}
                       </td>
@@ -263,8 +261,8 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                       <tr key={c.name} className="border-b border-border/30">
                         <td className="py-2 px-2 text-muted-foreground">{c.name}</td>
                         {years.map(y => (
-                          <td key={y} className={cn('text-center py-2 px-2 font-mono', y !== 2026 && c.capacity[y] > 0 && 'text-green-600', y !== 2026 && c.capacity[y] < 0 && 'text-red-600')}>
-                            {y === 2026 ? c.capacity[y] : c.capacity[y] !== 0 ? (c.capacity[y] > 0 ? `+${c.capacity[y]}` : c.capacity[y]) : '-'}
+                          <td key={y} className={cn('text-center py-2 px-2 font-mono', y !== 2026 && c.capacity[y] > 0 && 'text-green-600')}>
+                            {y === 2026 ? c.capacity[y] : c.capacity[y] > 0 ? `+${c.capacity[y]}` : '-'}
                           </td>
                         ))}
                       </tr>
@@ -276,10 +274,9 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                         return (
                           <td key={y} className={cn(
                             'text-center py-2 px-2 font-mono',
-                            y !== 2026 && value > 0 && 'text-green-600',
-                            y !== 2026 && value < 0 && 'text-red-600'
+                            y !== 2026 && value > 0 && 'text-green-600'
                           )}>
-                            {y === 2026 ? value : value > 0 ? `+${value}` : value < 0 ? value : '-'}
+                            {y === 2026 ? value : value > 0 ? `+${value}` : '-'}
                           </td>
                         )
                       })}
@@ -306,8 +303,8 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                       <tr key={c.name} className="border-b border-border/30">
                         <td className="py-2 px-2 text-muted-foreground">{c.name}</td>
                         {years.map(y => (
-                          <td key={y} className={cn('text-center py-2 px-2 font-mono', y !== 2026 && c.capacity[y] > 0 && 'text-green-600', y !== 2026 && c.capacity[y] < 0 && 'text-red-600')}>
-                            {y === 2026 ? c.capacity[y] : c.capacity[y] !== 0 ? (c.capacity[y] > 0 ? `+${c.capacity[y]}` : c.capacity[y]) : '-'}
+                          <td key={y} className={cn('text-center py-2 px-2 font-mono', y !== 2026 && c.capacity[y] > 0 && 'text-green-600')}>
+                            {y === 2026 ? c.capacity[y] : c.capacity[y] > 0 ? `+${c.capacity[y]}` : '-'}
                           </td>
                         ))}
                       </tr>
@@ -319,10 +316,9 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                         return (
                           <td key={y} className={cn(
                             'text-center py-2 px-2 font-mono',
-                            y !== 2026 && value > 0 && 'text-green-600',
-                            y !== 2026 && value < 0 && 'text-red-600'
+                            y !== 2026 && value > 0 && 'text-green-600'
                           )}>
-                            {y === 2026 ? value : value > 0 ? `+${value}` : value < 0 ? value : '-'}
+                            {y === 2026 ? value : value > 0 ? `+${value}` : '-'}
                           </td>
                         )
                       })}
@@ -349,8 +345,8 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                       <tr key={c.name} className="border-b border-border/30">
                         <td className="py-2 px-2 text-muted-foreground">{c.name}</td>
                         {years.map(y => (
-                          <td key={y} className={cn('text-center py-2 px-2 font-mono', y !== 2026 && c.capacity[y] > 0 && 'text-green-600', y !== 2026 && c.capacity[y] < 0 && 'text-red-600')}>
-                            {y === 2026 ? c.capacity[y] : c.capacity[y] !== 0 ? (c.capacity[y] > 0 ? `+${c.capacity[y]}` : c.capacity[y]) : '-'}
+                          <td key={y} className={cn('text-center py-2 px-2 font-mono', y !== 2026 && c.capacity[y] > 0 && 'text-green-600')}>
+                            {y === 2026 ? c.capacity[y] : c.capacity[y] > 0 ? `+${c.capacity[y]}` : '-'}
                           </td>
                         ))}
                       </tr>
@@ -362,10 +358,9 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                         return (
                           <td key={y} className={cn(
                             'text-center py-2 px-2 font-mono',
-                            y !== 2026 && value > 0 && 'text-green-600',
-                            y !== 2026 && value < 0 && 'text-red-600'
+                            y !== 2026 && value > 0 && 'text-green-600'
                           )}>
-                            {y === 2026 ? value : value > 0 ? `+${value}` : value < 0 ? value : '-'}
+                            {y === 2026 ? value : value > 0 ? `+${value}` : '-'}
                           </td>
                         )
                       })}

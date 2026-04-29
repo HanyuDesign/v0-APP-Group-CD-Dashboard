@@ -1,7 +1,9 @@
 'use client'
 
 import * as React from 'react'
+import { useState, useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
@@ -17,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { FileText, Package, Bath, TrendingDown, TrendingUp, Minus, Factory } from 'lucide-react'
+import { FileText, Package, Bath, TrendingDown, TrendingUp, Minus, Factory, ToggleLeft, ToggleRight } from 'lucide-react'
 import type { DownstreamSettings, DemandScenario, YearlyCapacity } from '@/lib/types/war-game'
 import { POLICY_LABELS, DOWNSTREAM_COMPETITOR_SUPPLY, PLAYERS } from '@/lib/data/initial-data'
 import { cn } from '@/lib/utils'
@@ -29,6 +31,8 @@ interface DownstreamModuleProps {
 
 const demandOptions: DemandScenario[] = ['low', 'base', 'high']
 const years = [2026, 2027, 2028, 2029, 2030, 2031] as const
+type Year = typeof years[number]
+type InputMode = 'incremental' | 'total'
 
 interface DemandCardProps {
   title: string
@@ -91,94 +95,98 @@ interface SupplySectionProps {
   icon: React.ReactNode
   appSupply: YearlyCapacity
   onAppSupplyChange: (year: keyof YearlyCapacity, value: number) => void
+  inputMode: InputMode
+  baseCapacity: number
 }
 
-// Validated numeric input for capacity (allows negative, max 5 digits)
+// Positive-only capacity input component
 function CapacityInput({ 
   value, 
   onChange, 
-  year,
-  tabIndex 
+  placeholder = "0",
+  disabled = false 
 }: { 
   value: number
   onChange: (value: number) => void
-  year: number
-  tabIndex?: number
+  placeholder?: string
+  disabled?: boolean
 }) {
-  const [localValue, setLocalValue] = React.useState<string>(value === 0 ? '' : String(value))
-  const [isInvalid, setIsInvalid] = React.useState(false)
-
-  // Sync local value when prop changes
-  React.useEffect(() => {
-    setLocalValue(value === 0 ? '' : String(value))
-  }, [value])
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value
+    const input = e.target.value.trim()
     
     // Allow empty input
-    if (input === '' || input === '-') {
-      setLocalValue(input)
-      setIsInvalid(false)
-      if (input === '') onChange(0)
+    if (input === '') {
+      onChange(0)
       return
     }
-
-    // Validate: allow only numbers with optional leading minus
-    const regex = /^-?\d*$/
-    if (!regex.test(input)) {
-      setIsInvalid(true)
+    
+    // Block negative sign - only allow positive integers
+    if (input.includes('-')) {
       return
     }
-
-    // Check max 5 digits (excluding minus sign)
-    const digitsOnly = input.replace('-', '')
-    if (digitsOnly.length > 5) {
-      setIsInvalid(true)
-      return
-    }
-
-    setIsInvalid(false)
-    setLocalValue(input)
     
     const numValue = parseInt(input, 10)
-    if (!isNaN(numValue)) {
-      onChange(numValue)
+    if (!isNaN(numValue) && numValue >= 0) {
+      // Limit to 5 digits (0 to 99999)
+      const clampedValue = Math.min(99999, numValue)
+      onChange(clampedValue)
     }
-  }
-
-  const handleBlur = () => {
-    // Clean up on blur
-    if (localValue === '-' || localValue === '') {
-      setLocalValue('')
-      onChange(0)
-    }
-    setIsInvalid(false)
   }
 
   return (
-    <input
-      type="text"
-      inputMode="numeric"
-      value={localValue}
+    <Input
+      type="number"
+      value={value || ''}
       onChange={handleChange}
-      onBlur={handleBlur}
-      placeholder="0"
-      tabIndex={tabIndex}
       className={cn(
-        'h-8 w-[68px] text-sm text-center px-1 mx-auto rounded-md font-mono transition-all',
-        'bg-white border focus:outline-none focus:ring-2',
-        isInvalid 
-          ? 'border-red-500 focus:border-red-500 focus:ring-red-200' 
-          : 'border-[#cc0000]/30 focus:border-[#cc0000] focus:ring-[#cc0000]/20',
-        'hover:border-[#cc0000]/50'
+        "h-8 w-[68px] text-sm text-center px-1 mx-auto font-mono",
+        "bg-white border-2 border-[#cc0000]/30 focus:border-[#cc0000]",
+        disabled && "bg-muted/50 cursor-not-allowed"
       )}
+      placeholder={placeholder}
+      min={0}
+      max={99999}
+      disabled={disabled}
     />
   )
 }
 
-function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange }: SupplySectionProps) {
+// Helper functions for capacity calculations
+const calculateTotalCapacity = (additions: YearlyCapacity): YearlyCapacity => {
+  let cumulative = additions[2026]
+  return {
+    2026: additions[2026],
+    2027: cumulative + additions[2027],
+    2028: cumulative + additions[2027] + additions[2028],
+    2029: cumulative + additions[2027] + additions[2028] + additions[2029],
+    2030: cumulative + additions[2027] + additions[2028] + additions[2029] + additions[2030],
+    2031: cumulative + additions[2027] + additions[2028] + additions[2029] + additions[2030] + additions[2031],
+  }
+}
+
+const calculateIncrementalFromTotal = (total: YearlyCapacity): YearlyCapacity => {
+  return {
+    2026: total[2026],
+    2027: Math.max(0, total[2027] - total[2026]),
+    2028: Math.max(0, total[2028] - total[2027]),
+    2029: Math.max(0, total[2029] - total[2028]),
+    2030: Math.max(0, total[2030] - total[2029]),
+    2031: Math.max(0, total[2031] - total[2030]),
+  }
+}
+
+function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange, inputMode, baseCapacity }: SupplySectionProps) {
   const competitors = DOWNSTREAM_COMPETITOR_SUPPLY[segment]
+  
+  // Calculate total capacity from incremental additions
+  const totalCapacity = useMemo(() => calculateTotalCapacity(appSupply), [appSupply])
+
+  // Handle total capacity input change (convert back to incremental)
+  const handleTotalChange = (year: Year, value: number) => {
+    const newTotal = { ...totalCapacity, [year]: value }
+    const newIncremental = calculateIncrementalFromTotal(newTotal)
+    onAppSupplyChange(year, newIncremental[year])
+  }
 
   return (
     <div className="rounded-lg border border-border/60 bg-white/80 overflow-hidden">
@@ -200,7 +208,7 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange }: S
             </TableRow>
           </TableHeader>
           <TableBody>
-            {/* Competitor rows (AI-driven, read-only) */}
+            {/* Competitor rows (AI-driven, read-only) - only positive values */}
             {competitors.map(comp => {
               const player = PLAYERS.find(p => p.id === comp.playerId)
               return (
@@ -215,16 +223,16 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange }: S
                     </div>
                   </TableCell>
                   {years.map(year => {
-                    const value = comp.capacity[year]
+                    // Only show positive values (no negative)
+                    const value = Math.max(0, comp.capacity[year])
                     return (
                       <TableCell key={year} className="text-center py-2.5">
                         <span className={cn(
                           'text-sm font-mono inline-block w-[68px]',
                           value > 0 && 'text-success',
-                          value < 0 && 'text-destructive',
                           value === 0 && 'text-muted-foreground'
                         )}>
-                          {value > 0 ? `+${value}` : value === 0 ? '-' : value}
+                          {value > 0 ? `+${value}` : '-'}
                         </span>
                       </TableCell>
                     )
@@ -239,17 +247,51 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange }: S
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full flex-shrink-0 bg-[#cc0000]" />
                   <span className="text-sm font-semibold text-[#cc0000]">APP China</span>
-                  <span className="px-1.5 py-0.5 text-[9px] font-semibold bg-[#cc0000]/10 text-[#cc0000] rounded uppercase tracking-wide">User Input</span>
+                  <span className="px-1.5 py-0.5 text-[9px] font-semibold bg-[#cc0000]/10 text-[#cc0000] rounded uppercase">Input</span>
                 </div>
               </TableCell>
               {years.map((year, idx) => (
                 <TableCell key={year} className="text-center py-2.5 px-1">
-                  <CapacityInput
-                    value={appSupply[year]}
-                    onChange={(value) => onAppSupplyChange(year, value)}
-                    year={year}
-                    tabIndex={idx + 1}
-                  />
+                  {idx === 0 ? (
+                    // 2026 - base capacity, read-only
+                    <span className="text-sm font-semibold text-[#cc0000] bg-[#cc0000]/10 px-2 py-1 rounded">
+                      {baseCapacity}
+                    </span>
+                  ) : inputMode === 'incremental' ? (
+                    <CapacityInput
+                      value={appSupply[year]}
+                      onChange={(value) => onAppSupplyChange(year, value)}
+                      placeholder="0"
+                    />
+                  ) : (
+                    <CapacityInput
+                      value={totalCapacity[year]}
+                      onChange={(value) => handleTotalChange(year, value)}
+                      placeholder={String(baseCapacity)}
+                    />
+                  )}
+                </TableCell>
+              ))}
+            </TableRow>
+
+            {/* Auto-calculated derived row */}
+            <TableRow className="bg-muted/20 border-t border-border/30">
+              <TableCell className="font-medium py-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-muted-foreground italic">
+                    {inputMode === 'incremental' ? 'Total Capacity' : 'Annual Additions'}
+                  </span>
+                  <span className="px-1 py-0.5 text-[8px] font-medium bg-muted text-muted-foreground rounded">Auto</span>
+                </div>
+              </TableCell>
+              {years.map((year, idx) => (
+                <TableCell key={year} className="text-center py-2">
+                  <span className="text-xs font-mono text-muted-foreground">
+                    {inputMode === 'incremental' 
+                      ? totalCapacity[year]
+                      : (idx === 0 ? '-' : (appSupply[year] > 0 ? `+${appSupply[year]}` : '-'))
+                    }
+                  </span>
                 </TableCell>
               ))}
             </TableRow>
@@ -271,6 +313,9 @@ export function DownstreamModule({
   settings,
   onChange,
 }: DownstreamModuleProps) {
+  // Input mode state: incremental (additions per year) or total (absolute capacity)
+  const [inputMode, setInputMode] = useState<InputMode>('incremental')
+
   const handleAppSupplyChange = (segment: 'paper' | 'board' | 'tissue', year: keyof YearlyCapacity, value: number) => {
     onChange({
       ...settings,
@@ -285,6 +330,11 @@ export function DownstreamModule({
         },
       },
     })
+  }
+
+  // Toggle mode without losing data
+  const toggleMode = () => {
+    setInputMode(inputMode === 'incremental' ? 'total' : 'incremental')
   }
 
   return (
@@ -333,11 +383,49 @@ export function DownstreamModule({
 
         {/* PART 2: Supply Block */}
         <div className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4">
-          <h3 className="text-base font-bold flex items-center gap-2 mb-4 text-red-800">
-            <span className="flex items-center justify-center h-6 w-6 rounded-full bg-red-600 text-white text-xs font-bold">2</span>
-            <Factory className="h-4 w-4" />
-            Supply Capacity Additions (kt)
-          </h3>
+          {/* Header with toggle */}
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base font-bold flex items-center gap-2 text-red-800">
+              <span className="flex items-center justify-center h-6 w-6 rounded-full bg-red-600 text-white text-xs font-bold">2</span>
+              <Factory className="h-4 w-4" />
+              Supply Capacity Additions (kt)
+            </h3>
+            
+            {/* Input Mode Toggle */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">Input Mode:</span>
+              <button
+                onClick={toggleMode}
+                className={cn(
+                  "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
+                  "border-2 hover:shadow-sm",
+                  inputMode === 'incremental' 
+                    ? "bg-blue-50 border-blue-300 text-blue-700" 
+                    : "bg-green-50 border-green-300 text-green-700"
+                )}
+              >
+                {inputMode === 'incremental' ? (
+                  <>
+                    <ToggleLeft className="h-4 w-4" />
+                    Incremental Additions
+                  </>
+                ) : (
+                  <>
+                    <ToggleRight className="h-4 w-4" />
+                    Total Capacity
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Helper text */}
+          <p className="text-xs text-muted-foreground mb-4">
+            {inputMode === 'incremental' 
+              ? "Enter yearly capacity additions (kt/year). 2026 shows base capacity."
+              : "Enter total installed capacity per year. 2026 shows base capacity."
+            }
+          </p>
           
           <div className="space-y-6">
             {/* Paper Supply */}
@@ -347,6 +435,8 @@ export function DownstreamModule({
               icon={<FileText className="h-4 w-4 text-muted-foreground" />}
               appSupply={settings.supply.paper.appChina}
               onAppSupplyChange={(year, value) => handleAppSupplyChange('paper', year, value)}
+              inputMode={inputMode}
+              baseCapacity={settings.supply.paper.appChina[2026]}
             />
 
             {/* Board Supply */}
@@ -356,6 +446,8 @@ export function DownstreamModule({
               icon={<Package className="h-4 w-4 text-chart-3" />}
               appSupply={settings.supply.board.appChina}
               onAppSupplyChange={(year, value) => handleAppSupplyChange('board', year, value)}
+              inputMode={inputMode}
+              baseCapacity={settings.supply.board.appChina[2026]}
             />
 
             {/* Tissue Supply */}
@@ -365,6 +457,8 @@ export function DownstreamModule({
               icon={<Bath className="h-4 w-4 text-chart-2" />}
               appSupply={settings.supply.tissue.appChina}
               onAppSupplyChange={(year, value) => handleAppSupplyChange('tissue', year, value)}
+              inputMode={inputMode}
+              baseCapacity={settings.supply.tissue.appChina[2026]}
             />
           </div>
         </div>
