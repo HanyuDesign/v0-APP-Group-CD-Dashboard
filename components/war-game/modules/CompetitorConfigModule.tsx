@@ -518,11 +518,11 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
               </div>
             </CardHeader>
             <CardContent className="pt-0 space-y-5">
-              {/* A. Upstream (Woodchip Strategy) */}
+              {/* A. Forestry & Woodchips Strategy */}
               <div className="rounded-lg border border-border/50 p-4">
                 <div className="flex items-center gap-2 mb-4">
                   <TreePine className="h-5 w-5 text-green-600" />
-                  <h4 className="text-sm font-semibold text-foreground">A. Upstream (Woodchip Strategy)</h4>
+                  <h4 className="text-sm font-semibold text-foreground">A. Forestry & Woodchips Strategy</h4>
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="text-center p-3 rounded-md bg-muted/50">
