@@ -1,26 +1,45 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Trees, Factory, Package, ClipboardList, TrendingUp, TrendingDown, FileText, Bath } from 'lucide-react'
+import { Trees, Factory, Package, ClipboardList, TrendingUp, TrendingDown, FileText, Bath, Info } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { POLICY_LABELS } from '@/lib/data/initial-data'
-import type { SimulationInput } from '@/lib/types/war-game'
+import type { SimulationInput, YearlyCapacity } from '@/lib/types/war-game'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface OverviewPanelProps {
   input: SimulationInput
   showHeader?: boolean
 }
 
-export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) {
-  const years = [2026, 2027, 2028, 2029, 2030, 2031] as const
+const years = [2026, 2027, 2028, 2029, 2030, 2031] as const
+type Year = typeof years[number]
 
-  // Calculate China supply
+// Helper function to convert additions to cumulative total capacity
+function calculateTotalCapacity(additions: YearlyCapacity): YearlyCapacity {
+  let cumulative = additions[2026] // Base year is the starting capacity
+  const totals: YearlyCapacity = { 2026: additions[2026], 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0 }
+  
+  for (let i = 1; i < years.length; i++) {
+    const year = years[i]
+    cumulative += Math.max(0, additions[year])
+    totals[year] = cumulative
+  }
+  
+  return totals
+}
+
+export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) {
+  // Calculate China supply - using CORRECTED logic
+  // Downturn = MORE wood available for pulp (less construction demand)
+  // Recovery = LESS wood available for pulp (diverted to construction/furniture)
   const getChinaSupply = () => {
-    let base = 800
+    let base = 750
     if (input.forestry.chinaLoggingPolicy === 'tight') base -= 150
     else if (input.forestry.chinaLoggingPolicy === 'relaxed') base += 150
-    if (input.forestry.chinaRealEstateCondition === 'downturn') base -= 100
-    else if (input.forestry.chinaRealEstateCondition === 'recovery') base += 100
+    // Reversed logic: downturn adds supply, recovery reduces
+    if (input.forestry.chinaRealEstateCondition === 'downturn') base += 150
+    else if (input.forestry.chinaRealEstateCondition === 'recovery') base -= 150
     return base
   }
 
@@ -32,35 +51,41 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
     return base
   }
 
-  // Competitor data for pulp
-  const competitorPulpData = [
-    { name: 'Sun Paper', color: '#1d4e89', capacity: { 2026: 180, 2027: 50, 2028: 80, 2029: 0, 2030: 100, 2031: 0 } },
-    { name: 'Chenming', color: '#2a9d8f', capacity: { 2026: 120, 2027: 0, 2028: 60, 2029: 40, 2030: 0, 2031: 50 } },
-    { name: 'Liansheng', color: '#e9c46a', capacity: { 2026: 80, 2027: 30, 2028: 0, 2029: 50, 2030: 0, 2031: 0 } },
-    { name: 'Others China', color: '#6c757d', capacity: { 2026: 150, 2027: 20, 2028: 30, 2029: 40, 2030: 25, 2031: 35 } },
+  // Competitor data for pulp (base capacity in 2026, additions in subsequent years)
+  const competitorPulpAdditions = [
+    { name: 'Sun Paper', color: '#1d4e89', capacity: { 2026: 180, 2027: 50, 2028: 80, 2029: 0, 2030: 100, 2031: 0 } as YearlyCapacity },
+    { name: 'Chenming', color: '#2a9d8f', capacity: { 2026: 120, 2027: 0, 2028: 60, 2029: 40, 2030: 0, 2031: 50 } as YearlyCapacity },
+    { name: 'Liansheng', color: '#e9c46a', capacity: { 2026: 80, 2027: 30, 2028: 0, 2029: 50, 2030: 0, 2031: 0 } as YearlyCapacity },
+    { name: 'Others China', color: '#6c757d', capacity: { 2026: 150, 2027: 20, 2028: 30, 2029: 40, 2030: 25, 2031: 35 } as YearlyCapacity },
   ]
 
-  // Competitor data for downstream segments (positive additions only)
-  const downstreamCompetitorData = {
+  // Competitor data for downstream segments (base + additions)
+  const downstreamCompetitorAdditions = {
     paper: [
-      { name: 'Sun Paper', capacity: { 2026: 150, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0 } },
-      { name: 'Chenming', capacity: { 2026: 100, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0 } },
-      { name: 'Liansheng', capacity: { 2026: 60, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0 } },
-      { name: 'Others', capacity: { 2026: 200, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0 } },
+      { name: 'Sun Paper', capacity: { 2026: 150, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0 } as YearlyCapacity },
+      { name: 'Chenming', capacity: { 2026: 100, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0 } as YearlyCapacity },
+      { name: 'Liansheng', capacity: { 2026: 60, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0 } as YearlyCapacity },
+      { name: 'Others', capacity: { 2026: 200, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0 } as YearlyCapacity },
     ],
     board: [
-      { name: 'Sun Paper', capacity: { 2026: 180, 2027: 40, 2028: 60, 2029: 30, 2030: 50, 2031: 20 } },
-      { name: 'Chenming', capacity: { 2026: 140, 2027: 20, 2028: 30, 2029: 40, 2030: 25, 2031: 35 } },
-      { name: 'Liansheng', capacity: { 2026: 90, 2027: 15, 2028: 25, 2029: 20, 2030: 10, 2031: 15 } },
-      { name: 'Others', capacity: { 2026: 250, 2027: 30, 2028: 45, 2029: 35, 2030: 40, 2031: 30 } },
+      { name: 'Sun Paper', capacity: { 2026: 180, 2027: 40, 2028: 60, 2029: 30, 2030: 50, 2031: 20 } as YearlyCapacity },
+      { name: 'Chenming', capacity: { 2026: 140, 2027: 20, 2028: 30, 2029: 40, 2030: 25, 2031: 35 } as YearlyCapacity },
+      { name: 'Liansheng', capacity: { 2026: 90, 2027: 15, 2028: 25, 2029: 20, 2030: 10, 2031: 15 } as YearlyCapacity },
+      { name: 'Others', capacity: { 2026: 250, 2027: 30, 2028: 45, 2029: 35, 2030: 40, 2031: 30 } as YearlyCapacity },
     ],
     tissue: [
-      { name: 'Sun Paper', capacity: { 2026: 60, 2027: 10, 2028: 15, 2029: 20, 2030: 10, 2031: 15 } },
-      { name: 'Chenming', capacity: { 2026: 40, 2027: 5, 2028: 10, 2029: 8, 2030: 12, 2031: 5 } },
-      { name: 'Liansheng', capacity: { 2026: 30, 2027: 8, 2028: 5, 2029: 10, 2030: 5, 2031: 8 } },
-      { name: 'Others', capacity: { 2026: 100, 2027: 15, 2028: 20, 2029: 25, 2030: 18, 2031: 22 } },
+      { name: 'Sun Paper', capacity: { 2026: 60, 2027: 10, 2028: 15, 2029: 20, 2030: 10, 2031: 15 } as YearlyCapacity },
+      { name: 'Chenming', capacity: { 2026: 40, 2027: 5, 2028: 10, 2029: 8, 2030: 12, 2031: 5 } as YearlyCapacity },
+      { name: 'Liansheng', capacity: { 2026: 30, 2027: 8, 2028: 5, 2029: 10, 2030: 5, 2031: 8 } as YearlyCapacity },
+      { name: 'Others', capacity: { 2026: 100, 2027: 15, 2028: 20, 2029: 25, 2030: 18, 2031: 22 } as YearlyCapacity },
     ],
   }
+
+  // Calculate APP total capacity from additions
+  const appPulpTotals = calculateTotalCapacity(input.appCapacity.appChina)
+  const appPaperTotals = calculateTotalCapacity(input.downstream.supply.paper.appChina)
+  const appBoardTotals = calculateTotalCapacity(input.downstream.supply.board.appChina)
+  const appTissueTotals = calculateTotalCapacity(input.downstream.supply.tissue.appChina)
 
   const content = (
     <div className="space-y-4">
@@ -91,12 +116,27 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
         </div>
       </div>
 
-      {/* Stage 2: Pulp Capacity & Players - With competitor table */}
+      {/* Stage 2: Pulp Capacity & Players - Total Capacity View */}
       <div className="rounded-lg border border-border/50 overflow-hidden">
-        <div className="bg-blue-50 px-4 py-2 border-b border-border/50 flex items-center gap-2">
-          <span className="flex items-center justify-center h-6 w-6 rounded-full bg-blue-600 text-white text-xs font-bold">2</span>
-          <Factory className="h-4 w-4 text-blue-700" />
-          <h3 className="font-semibold text-sm text-blue-800">Pulp Capacity & Players</h3>
+        <div className="bg-blue-50 px-4 py-2 border-b border-border/50 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="flex items-center justify-center h-6 w-6 rounded-full bg-blue-600 text-white text-xs font-bold">2</span>
+            <Factory className="h-4 w-4 text-blue-700" />
+            <h3 className="font-semibold text-sm text-blue-800">Pulp Capacity & Players</h3>
+          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-blue-100 text-blue-700 text-xs font-medium">
+                  <Info className="h-3 w-3" />
+                  Total Capacity (kt)
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Values represent cumulative installed capacity</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <div className="p-4 bg-white">
           <div className="overflow-x-auto">
@@ -110,35 +150,26 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                 </tr>
               </thead>
               <tbody>
-                {/* Competitor rows */}
-                {competitorPulpData.map((competitor) => (
-                  <tr key={competitor.name} className="border-b border-border/30">
-                    <td className="py-2 px-2">
-                      <div className="flex items-center gap-2">
-                        <span className="h-3 w-3 rounded-full" style={{ backgroundColor: competitor.color }} />
-                        <span className="font-medium text-muted-foreground">{competitor.name}</span>
-                      </div>
-                    </td>
-                    {years.map(year => {
-                      const value = competitor.capacity[year]
-                      return (
+                {/* Competitor rows - showing TOTAL capacity */}
+                {competitorPulpAdditions.map((competitor) => {
+                  const totals = calculateTotalCapacity(competitor.capacity)
+                  return (
+                    <tr key={competitor.name} className="border-b border-border/30">
+                      <td className="py-2 px-2">
+                        <div className="flex items-center gap-2">
+                          <span className="h-3 w-3 rounded-full" style={{ backgroundColor: competitor.color }} />
+                          <span className="font-medium text-muted-foreground">{competitor.name}</span>
+                        </div>
+                      </td>
+                      {years.map(year => (
                         <td key={year} className="text-center py-2 px-2 font-mono">
-                          {year === 2026 ? (
-                            <span className="text-muted-foreground">{value}</span>
-                          ) : (
-                            <span className={cn(
-                              value > 0 && 'text-green-600',
-                              value === 0 && 'text-muted-foreground'
-                            )}>
-                              {value > 0 ? `+${value}` : '-'}
-                            </span>
-                          )}
+                          <span className="text-muted-foreground">{totals[year]}</span>
                         </td>
-                      )
-                    })}
-                  </tr>
-                ))}
-                {/* APP China row - highlighted */}
+                      ))}
+                    </tr>
+                  )
+                })}
+                {/* APP China row - highlighted, showing TOTAL capacity */}
                 <tr className="bg-red-50 border-2 border-[#cc0000]/30">
                   <td className="py-2 px-2">
                     <div className="flex items-center gap-2">
@@ -146,23 +177,11 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                       <span className="font-bold text-[#cc0000]">APP China</span>
                     </div>
                   </td>
-                  {years.map(year => {
-                    const value = input.appCapacity.appChina[year]
-                    return (
-                      <td key={year} className="text-center py-2 px-2 font-mono font-semibold">
-                        {year === 2026 ? (
-                          <span className="text-[#cc0000]">{value}</span>
-                        ) : (
-                          <span className={cn(
-                            value > 0 && 'text-green-600',
-                            value === 0 && 'text-muted-foreground'
-                          )}>
-                            {value > 0 ? `+${value}` : '-'}
-                          </span>
-                        )}
-                      </td>
-                    )
-                  })}
+                  {years.map(year => (
+                    <td key={year} className="text-center py-2 px-2 font-mono font-semibold">
+                      <span className="text-[#cc0000]">{appPulpTotals[year]}</span>
+                    </td>
+                  ))}
                 </tr>
               </tbody>
             </table>
@@ -236,14 +255,29 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
             </div>
           </div>
 
-          {/* Supply Block */}
+          {/* Supply Block - Total Capacity View */}
           <div className="rounded-lg border-2 border-red-200 bg-red-50/50 p-3">
-            <h4 className="text-sm font-bold text-red-800 mb-3 flex items-center gap-1.5">
-              <Factory className="h-4 w-4" />
-              Supply Capacity Additions (kt)
-            </h4>
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-sm font-bold text-red-800 flex items-center gap-1.5">
+                <Factory className="h-4 w-4" />
+                Supply Capacity
+              </h4>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-red-100 text-red-700 text-xs font-medium">
+                      <Info className="h-3 w-3" />
+                      Total Capacity (kt)
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Values represent cumulative installed capacity</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <div className="space-y-3">
-              {/* Paper Supply */}
+              {/* Paper Supply - Total Capacity */}
               <div className="rounded-lg bg-white p-3 border border-red-100">
                 <div className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
                   <FileText className="h-4 w-4" />
@@ -257,35 +291,32 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                     </tr>
                   </thead>
                   <tbody>
-                    {downstreamCompetitorData.paper.map(c => (
-                      <tr key={c.name} className="border-b border-border/30">
-                        <td className="py-2 px-2 text-muted-foreground">{c.name}</td>
-                        {years.map(y => (
-                          <td key={y} className={cn('text-center py-2 px-2 font-mono', y !== 2026 && c.capacity[y] > 0 && 'text-green-600')}>
-                            {y === 2026 ? c.capacity[y] : c.capacity[y] > 0 ? `+${c.capacity[y]}` : '-'}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
+                    {downstreamCompetitorAdditions.paper.map(c => {
+                      const totals = calculateTotalCapacity(c.capacity)
+                      return (
+                        <tr key={c.name} className="border-b border-border/30">
+                          <td className="py-2 px-2 text-muted-foreground">{c.name}</td>
+                          {years.map(y => (
+                            <td key={y} className="text-center py-2 px-2 font-mono">
+                              {totals[y]}
+                            </td>
+                          ))}
+                        </tr>
+                      )
+                    })}
                     <tr className="bg-red-100/50 font-semibold">
                       <td className="py-2 px-2 text-[#cc0000]">APP China</td>
-                      {years.map(y => {
-                        const value = input.downstream.supply.paper.appChina[y]
-                        return (
-                          <td key={y} className={cn(
-                            'text-center py-2 px-2 font-mono',
-                            y !== 2026 && value > 0 && 'text-green-600'
-                          )}>
-                            {y === 2026 ? value : value > 0 ? `+${value}` : '-'}
-                          </td>
-                        )
-                      })}
+                      {years.map(y => (
+                        <td key={y} className="text-center py-2 px-2 font-mono text-[#cc0000]">
+                          {appPaperTotals[y]}
+                        </td>
+                      ))}
                     </tr>
                   </tbody>
                 </table>
               </div>
 
-              {/* Board Supply */}
+              {/* Board Supply - Total Capacity */}
               <div className="rounded-lg bg-white p-3 border border-red-100">
                 <div className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
                   <Package className="h-4 w-4" />
@@ -299,35 +330,32 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                     </tr>
                   </thead>
                   <tbody>
-                    {downstreamCompetitorData.board.map(c => (
-                      <tr key={c.name} className="border-b border-border/30">
-                        <td className="py-2 px-2 text-muted-foreground">{c.name}</td>
-                        {years.map(y => (
-                          <td key={y} className={cn('text-center py-2 px-2 font-mono', y !== 2026 && c.capacity[y] > 0 && 'text-green-600')}>
-                            {y === 2026 ? c.capacity[y] : c.capacity[y] > 0 ? `+${c.capacity[y]}` : '-'}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
+                    {downstreamCompetitorAdditions.board.map(c => {
+                      const totals = calculateTotalCapacity(c.capacity)
+                      return (
+                        <tr key={c.name} className="border-b border-border/30">
+                          <td className="py-2 px-2 text-muted-foreground">{c.name}</td>
+                          {years.map(y => (
+                            <td key={y} className="text-center py-2 px-2 font-mono">
+                              {totals[y]}
+                            </td>
+                          ))}
+                        </tr>
+                      )
+                    })}
                     <tr className="bg-red-100/50 font-semibold">
                       <td className="py-2 px-2 text-[#cc0000]">APP China</td>
-                      {years.map(y => {
-                        const value = input.downstream.supply.board.appChina[y]
-                        return (
-                          <td key={y} className={cn(
-                            'text-center py-2 px-2 font-mono',
-                            y !== 2026 && value > 0 && 'text-green-600'
-                          )}>
-                            {y === 2026 ? value : value > 0 ? `+${value}` : '-'}
-                          </td>
-                        )
-                      })}
+                      {years.map(y => (
+                        <td key={y} className="text-center py-2 px-2 font-mono text-[#cc0000]">
+                          {appBoardTotals[y]}
+                        </td>
+                      ))}
                     </tr>
                   </tbody>
                 </table>
               </div>
 
-              {/* Tissue Supply */}
+              {/* Tissue Supply - Total Capacity */}
               <div className="rounded-lg bg-white p-3 border border-red-100">
                 <div className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
                   <Bath className="h-4 w-4" />
@@ -341,29 +369,26 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                     </tr>
                   </thead>
                   <tbody>
-                    {downstreamCompetitorData.tissue.map(c => (
-                      <tr key={c.name} className="border-b border-border/30">
-                        <td className="py-2 px-2 text-muted-foreground">{c.name}</td>
-                        {years.map(y => (
-                          <td key={y} className={cn('text-center py-2 px-2 font-mono', y !== 2026 && c.capacity[y] > 0 && 'text-green-600')}>
-                            {y === 2026 ? c.capacity[y] : c.capacity[y] > 0 ? `+${c.capacity[y]}` : '-'}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
+                    {downstreamCompetitorAdditions.tissue.map(c => {
+                      const totals = calculateTotalCapacity(c.capacity)
+                      return (
+                        <tr key={c.name} className="border-b border-border/30">
+                          <td className="py-2 px-2 text-muted-foreground">{c.name}</td>
+                          {years.map(y => (
+                            <td key={y} className="text-center py-2 px-2 font-mono">
+                              {totals[y]}
+                            </td>
+                          ))}
+                        </tr>
+                      )
+                    })}
                     <tr className="bg-red-100/50 font-semibold">
                       <td className="py-2 px-2 text-[#cc0000]">APP China</td>
-                      {years.map(y => {
-                        const value = input.downstream.supply.tissue.appChina[y]
-                        return (
-                          <td key={y} className={cn(
-                            'text-center py-2 px-2 font-mono',
-                            y !== 2026 && value > 0 && 'text-green-600'
-                          )}>
-                            {y === 2026 ? value : value > 0 ? `+${value}` : '-'}
-                          </td>
-                        )
-                      })}
+                      {years.map(y => (
+                        <td key={y} className="text-center py-2 px-2 font-mono text-[#cc0000]">
+                          {appTissueTotals[y]}
+                        </td>
+                      ))}
                     </tr>
                   </tbody>
                 </table>
