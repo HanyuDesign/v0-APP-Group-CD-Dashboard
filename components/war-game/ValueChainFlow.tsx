@@ -79,119 +79,119 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
       <div className="w-64 flex-shrink-0">
         <div className="sticky top-4 space-y-3 z-10">
           <div className="rounded-lg border border-border/50 bg-card/50 overflow-hidden">
-          {/* Tab header */}
-          <div className="px-4 py-3 bg-secondary/30 border-b border-border/50">
-            <h3 className="text-sm font-semibold">Value Chain Setup</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">Configure each stage</p>
-          </div>
-          
-          {/* Tab list */}
-          <div className="p-2 space-y-1">
-            {TABS.map((tab, index) => {
-              const isActive = activeTab === tab.key
-              const isPast = index < currentTabIndex
-              
-              return (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
-                  className={cn(
-                    'w-full flex items-center gap-3 px-3 py-3 rounded-lg text-left transition-all',
-                    isActive 
-                      ? 'bg-primary text-primary-foreground shadow-sm' 
-                      : 'hover:bg-secondary/50',
-                    isPast && !isActive && 'text-muted-foreground'
-                  )}
-                >
-                  {/* Step number */}
-                  <div className={cn(
-                    'flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold flex-shrink-0',
-                    isActive 
-                      ? 'bg-primary-foreground/20 text-primary-foreground' 
-                      : isPast 
-                        ? 'bg-success/20 text-success' 
-                        : 'bg-secondary text-muted-foreground'
-                  )}>
-                    {isPast ? '✓' : index + 1}
-                  </div>
-                  
-                  {/* Tab content */}
-                  <div className="flex-1 min-w-0">
+            {/* Tab header */}
+            <div className="px-4 py-3 bg-secondary/30 border-b border-border/50">
+              <h3 className="text-sm font-semibold">Value Chain Setup</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Configure each stage</p>
+            </div>
+            
+            {/* Tab list */}
+            <div className="p-2 space-y-1">
+              {TABS.map((tab, index) => {
+                const isActive = activeTab === tab.key
+                const isPast = index < currentTabIndex
+                
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveTab(tab.key)}
+                    className={cn(
+                      'w-full flex items-center gap-3 px-3 py-3 rounded-lg text-left transition-all',
+                      isActive 
+                        ? 'bg-primary text-primary-foreground shadow-sm' 
+                        : 'hover:bg-secondary/50',
+                      isPast && !isActive && 'text-muted-foreground'
+                    )}
+                  >
+                    {/* Step number */}
                     <div className={cn(
-                      'text-sm font-medium truncate',
-                      isActive ? 'text-primary-foreground' : ''
+                      'flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold flex-shrink-0',
+                      isActive 
+                        ? 'bg-primary-foreground/20 text-primary-foreground' 
+                        : isPast 
+                          ? 'bg-success/20 text-success' 
+                          : 'bg-secondary text-muted-foreground'
                     )}>
-                      {tab.label}
+                      {isPast ? '✓' : index + 1}
                     </div>
-                    <div className={cn(
-                      'text-xs truncate',
-                      isActive ? 'text-primary-foreground/70' : 'text-muted-foreground'
-                    )}>
-                      {tab.description}
+                    
+                    {/* Tab content */}
+                    <div className="flex-1 min-w-0">
+                      <div className={cn(
+                        'text-sm font-medium truncate',
+                        isActive ? 'text-primary-foreground' : ''
+                      )}>
+                        {tab.label}
+                      </div>
+                      <div className={cn(
+                        'text-xs truncate',
+                        isActive ? 'text-primary-foreground/70' : 'text-muted-foreground'
+                      )}>
+                        {tab.description}
+                      </div>
                     </div>
-                  </div>
-                  
-                  {/* Arrow indicator */}
-                  <ChevronRight className={cn(
-                    'h-4 w-4 flex-shrink-0 transition-transform',
-                    isActive ? 'text-primary-foreground' : 'text-muted-foreground',
-                    isActive && 'translate-x-0.5'
-                  )} />
-                </button>
-              )
-            })}
+                    
+                    {/* Arrow indicator */}
+                    <ChevronRight className={cn(
+                      'h-4 w-4 flex-shrink-0 transition-transform',
+                      isActive ? 'text-primary-foreground' : 'text-muted-foreground',
+                      isActive && 'translate-x-0.5'
+                    )} />
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Progress indicator */}
+            <div className="px-4 py-3 border-t border-border/50 bg-secondary/20">
+              <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                <span>Progress</span>
+                <span>{currentTabIndex + 1} of {TABS.length}</span>
+              </div>
+              <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
+                <div 
+                  className="h-full bg-primary transition-all duration-300"
+                  style={{ width: `${((currentTabIndex + 1) / TABS.length) * 100}%` }}
+                />
+              </div>
+            </div>
           </div>
 
-          {/* Progress indicator */}
-          <div className="px-4 py-3 border-t border-border/50 bg-secondary/20">
-            <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-              <span>Progress</span>
-              <span>{currentTabIndex + 1} of {TABS.length}</span>
-            </div>
-            <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
-              <div 
-                className="h-full bg-primary transition-all duration-300"
-                style={{ width: `${((currentTabIndex + 1) / TABS.length) * 100}%` }}
-              />
-            </div>
+          {/* Reset & Run Simulation buttons - Vertical layout */}
+          <div className="flex flex-col gap-2">
+            <Button
+              variant="outline"
+              onClick={onReset}
+              disabled={isRunning}
+              className="w-full h-10"
+            >
+              <RotateCcw className="mr-1.5 h-4 w-4" />
+              Reset
+            </Button>
+            <Button
+              onClick={onRunSimulation}
+              disabled={isRunning || activeTab !== 'overview'}
+              className={cn(
+                'w-full h-10',
+                activeTab === 'overview'
+                  ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                  : 'bg-secondary/50 text-muted-foreground cursor-not-allowed'
+              )}
+            >
+              {isRunning ? (
+                <>
+                  <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  Running...
+                </>
+              ) : (
+                <>
+                  <Play className="mr-1.5 h-4 w-4" />
+                  Run Simulation
+                  <ArrowRight className="ml-1.5 h-4 w-4" />
+                </>
+              )}
+            </Button>
           </div>
-        </div>
-
-        {/* Reset & Run Simulation buttons - Vertical layout */}
-        <div className="flex flex-col gap-2">
-          <Button
-            variant="outline"
-            onClick={onReset}
-            disabled={isRunning}
-            className="w-full h-10"
-          >
-            <RotateCcw className="mr-1.5 h-4 w-4" />
-            Reset
-          </Button>
-          <Button
-            onClick={onRunSimulation}
-            disabled={isRunning || activeTab !== 'overview'}
-            className={cn(
-              'w-full h-10',
-              activeTab === 'overview'
-                ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                : 'bg-secondary/50 text-muted-foreground cursor-not-allowed'
-            )}
-          >
-            {isRunning ? (
-              <>
-                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                Running...
-              </>
-            ) : (
-              <>
-                <Play className="mr-1.5 h-4 w-4" />
-                Run Simulation
-                <ArrowRight className="ml-1.5 h-4 w-4" />
-              </>
-            )}
-          </Button>
-        </div>
         </div>
       </div>
 
