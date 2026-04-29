@@ -61,13 +61,8 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
         <AIDecisionsSummary result={result} />
       </section>
 
-      {/* Section 2: Detailed Market & Financial Results */}
+      {/* Section 2: Market & Financial Results */}
       <section>
-        <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-          <span className="h-px flex-1 bg-border" />
-          Detailed Analysis
-          <span className="h-px flex-1 bg-border" />
-        </h3>
         <Tabs defaultValue="market" className="w-full">
           <TabsList className="mb-4 grid w-full max-w-md grid-cols-2">
             <TabsTrigger value="market" className="gap-2">

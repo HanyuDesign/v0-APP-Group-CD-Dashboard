@@ -299,6 +299,13 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
         </div>
       </div>
 
+      {/* Detailed Analysis Divider */}
+      <h3 className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+        <span className="h-px flex-1 bg-border" />
+        Detailed Analysis
+        <span className="h-px flex-1 bg-border" />
+      </h3>
+
       {/* Tabbed Section: Pulp Capacity Decisions & Downstream Outcomes */}
       <Tabs defaultValue="pulp" className="w-full">
         <TabsList className="mb-4 grid w-full max-w-md grid-cols-2">
@@ -544,168 +551,7 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                 </CardContent>
               </Card>
 
-              {/* SECTION 3: Market Impact Overlay */}
-              <Card className="border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm flex items-center gap-2 text-blue-800">
-                    <BarChart3 className="h-4 w-4" />
-                    Market Impact Summary
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Net Supply Change Row */}
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-blue-200">
-                          <th className="text-left py-2 px-3 font-medium text-blue-700 w-48">Metric</th>
-                          {years.map(year => (
-                            <th key={year} className="text-center py-2 px-3 font-medium text-blue-700">{year}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {/* Net Supply Change */}
-                        <tr className="border-b border-blue-100">
-                          <td className="py-2.5 px-3 font-medium text-blue-800">Net Supply Change</td>
-                          {years.map(year => {
-                            const appExternal = year === 2026 ? 0 : Math.round(input.appCapacity.appChina[year] * 0.7)
-                            const competitorNet = competitorChanges.reduce((sum, c) => {
-                              const yearFactor = year === 2026 ? 0 : year === 2027 ? 0.2 : year === 2028 ? 0.3 : year === 2029 ? 0.25 : year === 2030 ? 0.15 : 0.1
-                              return sum + Math.round(c.pulpChange * yearFactor)
-                            }, 0)
-                            const net = appExternal + competitorNet
-                            return (
-                              <td key={year} className="text-center py-2.5 px-3">
-                                <span className={cn(
-                                  'font-mono font-semibold',
-                                  net > 50 ? 'text-red-600' : net < -20 ? 'text-emerald-600' : 'text-blue-600'
-                                )}>
-                                  {year === 2026 ? '-' : net > 0 ? `+${net}` : net < 0 ? net : '0'}
-                                </span>
-                                {year !== 2026 && <span className="text-[10px] text-muted-foreground ml-1">kt</span>}
-                              </td>
-                            )
-                          })}
-                        </tr>
-                        {/* Price Signal */}
-                        <tr className="bg-blue-100/50">
-                          <td className="py-2.5 px-3 font-medium text-blue-800">Price Signal</td>
-                          {years.map(year => {
-                            const appExternal = year === 2026 ? 0 : Math.round(input.appCapacity.appChina[year] * 0.7)
-                            const competitorNet = competitorChanges.reduce((sum, c) => {
-                              const yearFactor = year === 2026 ? 0 : year === 2027 ? 0.2 : year === 2028 ? 0.3 : year === 2029 ? 0.25 : year === 2030 ? 0.15 : 0.1
-                              return sum + Math.round(c.pulpChange * yearFactor)
-                            }, 0)
-                            const net = appExternal + competitorNet
-                            const signal = net > 50 ? 'down' : net < -20 ? 'up' : 'stable'
-                            return (
-                              <td key={year} className="text-center py-2.5 px-3">
-                                {year === 2026 ? (
-                                  <span className="text-muted-foreground">-</span>
-                                ) : (
-                                  <div className={cn(
-                                    'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium',
-                                    signal === 'down' && 'bg-red-100 text-red-700',
-                                    signal === 'up' && 'bg-emerald-100 text-emerald-700',
-                                    signal === 'stable' && 'bg-gray-100 text-gray-600'
-                                  )}>
-                                    {signal === 'down' && <ArrowDown className="h-3 w-3" />}
-                                    {signal === 'up' && <ArrowUp className="h-3 w-3" />}
-                                    {signal === 'stable' && <ArrowRight className="h-3 w-3" />}
-                                    {signal === 'down' ? 'Down' : signal === 'up' ? 'Up' : 'Stable'}
-                                  </div>
-                                )}
-                              </td>
-                            )
-                          })}
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* Bottom KPI Strip */}
-                  <div className="grid grid-cols-3 gap-4 pt-2 border-t border-blue-200">
-                    {/* Total Net Supply Change */}
-                    <div className="rounded-lg bg-white p-3 border border-blue-200">
-                      <p className="text-xs text-blue-600 mb-1">5-Year Net Supply</p>
-                      {(() => {
-                        const totalNet = years.slice(1).reduce((total, year) => {
-                          const appExternal = Math.round(input.appCapacity.appChina[year] * 0.7)
-                          const competitorNet = competitorChanges.reduce((sum, c) => {
-                            const yearFactor = year === 2027 ? 0.2 : year === 2028 ? 0.3 : year === 2029 ? 0.25 : year === 2030 ? 0.15 : 0.1
-                            return sum + Math.round(c.pulpChange * yearFactor)
-                          }, 0)
-                          return total + appExternal + competitorNet
-                        }, 0)
-                        return (
-                          <p className={cn(
-                            'text-2xl font-bold',
-                            totalNet > 200 ? 'text-red-600' : totalNet > 0 ? 'text-amber-600' : 'text-emerald-600'
-                          )}>
-                            {totalNet > 0 ? '+' : ''}{totalNet} kt
-                          </p>
-                        )
-                      })()}
-                    </div>
-                    {/* Market Balance */}
-                    <div className="rounded-lg bg-white p-3 border border-blue-200">
-                      <p className="text-xs text-blue-600 mb-1">Market Balance</p>
-                      {(() => {
-                        const totalNet = years.slice(1).reduce((total, year) => {
-                          const appExternal = Math.round(input.appCapacity.appChina[year] * 0.7)
-                          const competitorNet = competitorChanges.reduce((sum, c) => {
-                            const yearFactor = year === 2027 ? 0.2 : year === 2028 ? 0.3 : year === 2029 ? 0.25 : year === 2030 ? 0.15 : 0.1
-                            return sum + Math.round(c.pulpChange * yearFactor)
-                          }, 0)
-                          return total + appExternal + competitorNet
-                        }, 0)
-                        const balance = totalNet > 150 ? 'Surplus' : totalNet < -50 ? 'Tight' : 'Balanced'
-                        return (
-                          <div className={cn(
-                            'inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold',
-                            balance === 'Surplus' && 'bg-red-100 text-red-700',
-                            balance === 'Tight' && 'bg-emerald-100 text-emerald-700',
-                            balance === 'Balanced' && 'bg-amber-100 text-amber-700'
-                          )}>
-                            {balance}
-                          </div>
-                        )
-                      })()}
-                    </div>
-                    {/* Price Trend */}
-                    <div className="rounded-lg bg-white p-3 border border-blue-200">
-                      <p className="text-xs text-blue-600 mb-1">Price Trend</p>
-                      {(() => {
-                        const totalNet = years.slice(1).reduce((total, year) => {
-                          const appExternal = Math.round(input.appCapacity.appChina[year] * 0.7)
-                          const competitorNet = competitorChanges.reduce((sum, c) => {
-                            const yearFactor = year === 2027 ? 0.2 : year === 2028 ? 0.3 : year === 2029 ? 0.25 : year === 2030 ? 0.15 : 0.1
-                            return sum + Math.round(c.pulpChange * yearFactor)
-                          }, 0)
-                          return total + appExternal + competitorNet
-                        }, 0)
-                        const trend = totalNet > 150 ? 'Down' : totalNet < -50 ? 'Up' : 'Stable'
-                        return (
-                          <div className={cn(
-                            'inline-flex items-center gap-2 text-xl font-bold',
-                            trend === 'Down' && 'text-red-600',
-                            trend === 'Up' && 'text-emerald-600',
-                            trend === 'Stable' && 'text-gray-600'
-                          )}>
-                            {trend === 'Down' && <ArrowDown className="h-5 w-5" />}
-                            {trend === 'Up' && <ArrowUp className="h-5 w-5" />}
-                            {trend === 'Stable' && <ArrowRight className="h-5 w-5" />}
-                            {trend}
-                          </div>
-                        )
-                      })()}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Exporter Allocation Table - Regional Rebalancing */}
+              {/* SECTION 3: Global Export Reallocation */}
               <Card className="border-teal-200 bg-gradient-to-r from-teal-50 to-cyan-50">
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
@@ -950,6 +796,167 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                       </div>
                     )
                   })()}
+                </CardContent>
+              </Card>
+
+              {/* SECTION 4: Market Impact Summary */}
+              <Card className="border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm flex items-center gap-2 text-blue-800">
+                    <BarChart3 className="h-4 w-4" />
+                    Market Impact Summary
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Net Supply Change Row */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-blue-200">
+                          <th className="text-left py-2 px-3 font-medium text-blue-700 w-48">Metric</th>
+                          {years.map(year => (
+                            <th key={year} className="text-center py-2 px-3 font-medium text-blue-700">{year}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {/* Net Supply Change */}
+                        <tr className="border-b border-blue-100">
+                          <td className="py-2.5 px-3 font-medium text-blue-800">Net Supply Change</td>
+                          {years.map(year => {
+                            const appExternal = year === 2026 ? 0 : Math.round(input.appCapacity.appChina[year] * 0.7)
+                            const competitorNet = competitorChanges.reduce((sum, c) => {
+                              const yearFactor = year === 2026 ? 0 : year === 2027 ? 0.2 : year === 2028 ? 0.3 : year === 2029 ? 0.25 : year === 2030 ? 0.15 : 0.1
+                              return sum + Math.round(c.pulpChange * yearFactor)
+                            }, 0)
+                            const net = appExternal + competitorNet
+                            return (
+                              <td key={year} className="text-center py-2.5 px-3">
+                                <span className={cn(
+                                  'font-mono font-semibold',
+                                  net > 50 ? 'text-red-600' : net < -20 ? 'text-emerald-600' : 'text-blue-600'
+                                )}>
+                                  {year === 2026 ? '-' : net > 0 ? `+${net}` : net < 0 ? net : '0'}
+                                </span>
+                                {year !== 2026 && <span className="text-[10px] text-muted-foreground ml-1">kt</span>}
+                              </td>
+                            )
+                          })}
+                        </tr>
+                        {/* Price Signal */}
+                        <tr className="bg-blue-100/50">
+                          <td className="py-2.5 px-3 font-medium text-blue-800">Price Signal</td>
+                          {years.map(year => {
+                            const appExternal = year === 2026 ? 0 : Math.round(input.appCapacity.appChina[year] * 0.7)
+                            const competitorNet = competitorChanges.reduce((sum, c) => {
+                              const yearFactor = year === 2026 ? 0 : year === 2027 ? 0.2 : year === 2028 ? 0.3 : year === 2029 ? 0.25 : year === 2030 ? 0.15 : 0.1
+                              return sum + Math.round(c.pulpChange * yearFactor)
+                            }, 0)
+                            const net = appExternal + competitorNet
+                            const signal = net > 50 ? 'down' : net < -20 ? 'up' : 'stable'
+                            return (
+                              <td key={year} className="text-center py-2.5 px-3">
+                                {year === 2026 ? (
+                                  <span className="text-muted-foreground">-</span>
+                                ) : (
+                                  <div className={cn(
+                                    'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium',
+                                    signal === 'down' && 'bg-red-100 text-red-700',
+                                    signal === 'up' && 'bg-emerald-100 text-emerald-700',
+                                    signal === 'stable' && 'bg-gray-100 text-gray-600'
+                                  )}>
+                                    {signal === 'down' && <ArrowDown className="h-3 w-3" />}
+                                    {signal === 'up' && <ArrowUp className="h-3 w-3" />}
+                                    {signal === 'stable' && <ArrowRight className="h-3 w-3" />}
+                                    {signal === 'down' ? 'Down' : signal === 'up' ? 'Up' : 'Stable'}
+                                  </div>
+                                )}
+                              </td>
+                            )
+                          })}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Bottom KPI Strip */}
+                  <div className="grid grid-cols-3 gap-4 pt-2 border-t border-blue-200">
+                    {/* Total Net Supply Change */}
+                    <div className="rounded-lg bg-white p-3 border border-blue-200">
+                      <p className="text-xs text-blue-600 mb-1">5-Year Net Supply</p>
+                      {(() => {
+                        const totalNet = years.slice(1).reduce((total, year) => {
+                          const appExternal = Math.round(input.appCapacity.appChina[year] * 0.7)
+                          const competitorNet = competitorChanges.reduce((sum, c) => {
+                            const yearFactor = year === 2027 ? 0.2 : year === 2028 ? 0.3 : year === 2029 ? 0.25 : year === 2030 ? 0.15 : 0.1
+                            return sum + Math.round(c.pulpChange * yearFactor)
+                          }, 0)
+                          return total + appExternal + competitorNet
+                        }, 0)
+                        return (
+                          <p className={cn(
+                            'text-2xl font-bold',
+                            totalNet > 200 ? 'text-red-600' : totalNet > 0 ? 'text-amber-600' : 'text-emerald-600'
+                          )}>
+                            {totalNet > 0 ? '+' : ''}{totalNet} kt
+                          </p>
+                        )
+                      })()}
+                    </div>
+                    {/* Market Balance */}
+                    <div className="rounded-lg bg-white p-3 border border-blue-200">
+                      <p className="text-xs text-blue-600 mb-1">Market Balance</p>
+                      {(() => {
+                        const totalNet = years.slice(1).reduce((total, year) => {
+                          const appExternal = Math.round(input.appCapacity.appChina[year] * 0.7)
+                          const competitorNet = competitorChanges.reduce((sum, c) => {
+                            const yearFactor = year === 2027 ? 0.2 : year === 2028 ? 0.3 : year === 2029 ? 0.25 : year === 2030 ? 0.15 : 0.1
+                            return sum + Math.round(c.pulpChange * yearFactor)
+                          }, 0)
+                          return total + appExternal + competitorNet
+                        }, 0)
+                        const balance = totalNet > 150 ? 'Surplus' : totalNet < -50 ? 'Tight' : 'Balanced'
+                        return (
+                          <div className={cn(
+                            'inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold',
+                            balance === 'Surplus' && 'bg-red-100 text-red-700',
+                            balance === 'Tight' && 'bg-emerald-100 text-emerald-700',
+                            balance === 'Balanced' && 'bg-amber-100 text-amber-700'
+                          )}>
+                            {balance}
+                          </div>
+                        )
+                      })()}
+                    </div>
+                    {/* Price Trend */}
+                    <div className="rounded-lg bg-white p-3 border border-blue-200">
+                      <p className="text-xs text-blue-600 mb-1">Price Trend</p>
+                      {(() => {
+                        const totalNet = years.slice(1).reduce((total, year) => {
+                          const appExternal = Math.round(input.appCapacity.appChina[year] * 0.7)
+                          const competitorNet = competitorChanges.reduce((sum, c) => {
+                            const yearFactor = year === 2027 ? 0.2 : year === 2028 ? 0.3 : year === 2029 ? 0.25 : year === 2030 ? 0.15 : 0.1
+                            return sum + Math.round(c.pulpChange * yearFactor)
+                          }, 0)
+                          return total + appExternal + competitorNet
+                        }, 0)
+                        const trend = totalNet > 150 ? 'Down' : totalNet < -50 ? 'Up' : 'Stable'
+                        return (
+                          <div className={cn(
+                            'inline-flex items-center gap-2 text-xl font-bold',
+                            trend === 'Down' && 'text-red-600',
+                            trend === 'Up' && 'text-emerald-600',
+                            trend === 'Stable' && 'text-gray-600'
+                          )}>
+                            {trend === 'Down' && <ArrowDown className="h-5 w-5" />}
+                            {trend === 'Up' && <ArrowUp className="h-5 w-5" />}
+                            {trend === 'Stable' && <ArrowRight className="h-5 w-5" />}
+                            {trend}
+                          </div>
+                        )
+                      })()}
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>
