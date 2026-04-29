@@ -245,13 +245,13 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                     return (
                       <div key={s.segment} className="p-2 rounded bg-purple-50/50 border border-purple-100">
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-medium flex items-center gap-1">
+                          <span className="text-sm font-medium flex items-center gap-1">
                             {Icon} {segmentLabels[s.segment]}
                           </span>
-                          <span className="text-xs">{s.utilization}% util</span>
+                          <span className="text-base font-bold text-purple-700">{s.utilization.toFixed(2)}%</span>
                         </div>
                         <div className={cn(
-                          'text-[10px] mt-0.5',
+                          'text-xs mt-1 font-medium',
                           s.utilization >= 85 ? 'text-green-600' :
                           s.utilization >= 70 ? 'text-amber-600' : 'text-red-600'
                         )}>
@@ -267,13 +267,13 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
           
           {/* Bottom Insights Layer - 3 Columns (Always visible) */}
           <div className={cn(
-            "grid grid-cols-3 gap-3",
-            isInsightsExpanded && "pt-3 border-t border-indigo-200"
+            "grid grid-cols-3 gap-4",
+            isInsightsExpanded && "pt-4 border-t border-indigo-200"
           )}>
             {/* Upstream Insights */}
-            <div className="p-2 rounded bg-green-50/50">
-              <h5 className="text-[10px] font-semibold text-green-700 uppercase tracking-wide mb-1">Upstream Insight</h5>
-              <p className="text-xs text-muted-foreground leading-relaxed">
+            <div className="p-3 rounded bg-green-50/50">
+              <h5 className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-2">Upstream Insight</h5>
+              <p className="text-sm text-muted-foreground leading-relaxed">
                 {appChinaPulpAdd > 200 
                   ? 'Aggressive APP expansion significantly increases wood demand, potentially tightening supply.'
                   : appChinaPulpAdd > 100
@@ -283,9 +283,9 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
               </p>
             </div>
             {/* Market Dynamics */}
-            <div className="p-2 rounded bg-blue-50/50">
-              <h5 className="text-[10px] font-semibold text-blue-700 uppercase tracking-wide mb-1">Market Dynamics</h5>
-              <p className="text-xs text-muted-foreground leading-relaxed">
+            <div className="p-3 rounded bg-blue-50/50">
+              <h5 className="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-2">Market Dynamics</h5>
+              <p className="text-sm text-muted-foreground leading-relaxed">
                 {competitorsDelaying > competitorsExpanding
                   ? `Strong APP expansion triggers ${competitorsDelaying} competitor delays. Exporters shift ${Math.round(avgChinaShare * 100)}% allocation to China.`
                   : `Balanced expansion environment with ${competitorsExpanding} competitors expanding alongside APP.`
@@ -293,9 +293,9 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
               </p>
             </div>
             {/* Downstream Risks */}
-            <div className="p-2 rounded bg-purple-50/50">
-              <h5 className="text-[10px] font-semibold text-purple-700 uppercase tracking-wide mb-1">Downstream Risk</h5>
-              <p className="text-xs text-muted-foreground leading-relaxed">
+            <div className="p-3 rounded bg-purple-50/50">
+              <h5 className="text-xs font-semibold text-purple-700 uppercase tracking-wide mb-2">Downstream Risk</h5>
+              <p className="text-sm text-muted-foreground leading-relaxed">
                 {segmentOutcomes.some(s => s.utilization < 75)
                   ? 'Some segments facing oversupply. Risk of margin compression in underutilized markets.'
                   : 'Downstream demand sufficient to absorb planned capacity additions.'
