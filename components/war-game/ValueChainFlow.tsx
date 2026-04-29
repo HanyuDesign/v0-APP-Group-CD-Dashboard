@@ -77,8 +77,8 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
     <div className="flex gap-4">
       {/* Left tabs panel - sticky when scrolling */}
       <div className="w-64 flex-shrink-0">
-        <div className="sticky top-4 space-y-3">
-        <div className="rounded-lg border border-border/50 bg-card/50 overflow-hidden">
+        <div className="sticky top-4 space-y-3 z-10">
+          <div className="rounded-lg border border-border/50 bg-card/50 overflow-hidden">
           {/* Tab header */}
           <div className="px-4 py-3 bg-secondary/30 border-b border-border/50">
             <h3 className="text-sm font-semibold">Value Chain Setup</h3>
