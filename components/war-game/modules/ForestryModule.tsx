@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
-import { TreePine, Globe, Building2, FileText, ChevronUp, ChevronDown } from 'lucide-react'
+import { TreePine, Globe, Building2, FileText } from 'lucide-react'
 import type { ForestrySettings, PolicyLevel, ExportPolicyLevel, RealEstateCondition, PolicyStartYear } from '@/lib/types/war-game'
 import {
   Select,
@@ -19,82 +19,6 @@ interface ForestryModuleProps {
 }
 
 const YEARS: PolicyStartYear[] = [2026, 2027, 2028, 2029, 2030, 2031]
-
-// Base supply values
-const CHINA_BASE_SUPPLY = 750 // kt
-const VIETNAM_BASE_SUPPLY = 400 // kt
-
-// Policy impact multipliers
-const CHINA_POLICY_IMPACT = {
-  tight: -150,
-  baseline: 0,
-  relaxed: 150,
-}
-
-const REAL_ESTATE_IMPACT = {
-  downturn: 100, // More wood available (less construction demand)
-  stable: 0,
-  recovery: -100, // Less wood available (diverted to construction)
-}
-
-const VIETNAM_POLICY_IMPACT = {
-  restricted: -120,
-  baseline: 0,
-  expanded: 120,
-}
-
-// Calculate China woodchip supply for each year
-function calculateChinaYearlySupply(
-  loggingPolicy: PolicyLevel,
-  policyStartYear: PolicyStartYear,
-  realEstateCondition: RealEstateCondition
-): Record<PolicyStartYear, { supply: number; delta: number; isPolicyActive: boolean }> {
-  const result: Record<PolicyStartYear, { supply: number; delta: number; isPolicyActive: boolean }> = {} as any
-  
-  for (const year of YEARS) {
-    const isPolicyActive = year >= policyStartYear
-    let supply = CHINA_BASE_SUPPLY
-    
-    // Real estate always applies (global assumption)
-    supply += REAL_ESTATE_IMPACT[realEstateCondition]
-    
-    // Policy only applies from start year
-    if (isPolicyActive) {
-      supply += CHINA_POLICY_IMPACT[loggingPolicy]
-    }
-    
-    const baselineSupply = CHINA_BASE_SUPPLY + REAL_ESTATE_IMPACT[realEstateCondition]
-    const delta = isPolicyActive ? CHINA_POLICY_IMPACT[loggingPolicy] : 0
-    
-    result[year] = { supply, delta, isPolicyActive }
-  }
-  
-  return result
-}
-
-// Calculate Vietnam supply for each year
-function calculateVietnamYearlySupply(
-  exportPolicy: ExportPolicyLevel,
-  policyStartYear: PolicyStartYear
-): Record<PolicyStartYear, { supply: number; delta: number; isPolicyActive: boolean }> {
-  const result: Record<PolicyStartYear, { supply: number; delta: number; isPolicyActive: boolean }> = {} as any
-  
-  for (const year of YEARS) {
-    const isPolicyActive = year >= policyStartYear
-    let supply = VIETNAM_BASE_SUPPLY
-    
-    // Policy only applies from start year
-    if (isPolicyActive) {
-      supply += VIETNAM_POLICY_IMPACT[exportPolicy]
-    }
-    
-    const delta = isPolicyActive ? VIETNAM_POLICY_IMPACT[exportPolicy] : 0
-    
-    result[year] = { supply, delta, isPolicyActive }
-  }
-  
-  return result
-}
 
 // Segmented button component for policy selection
 function SegmentedControl<T extends string>({
@@ -132,18 +56,6 @@ export function ForestryModule({
   settings,
   onChange,
 }: ForestryModuleProps) {
-  // Calculate yearly supplies
-  const chinaSupply = calculateChinaYearlySupply(
-    settings.chinaLoggingPolicy,
-    settings.chinaLoggingPolicyStartYear,
-    settings.chinaRealEstateCondition
-  )
-  
-  const vietnamSupply = calculateVietnamYearlySupply(
-    settings.vietnamExportPolicy,
-    settings.vietnamExportPolicyStartYear
-  )
-
   return (
     <Card className="h-full border-border/50 bg-card/80">
       <CardHeader className="pb-3">
@@ -220,59 +132,6 @@ export function ForestryModule({
                   />
                 </div>
               </div>
-
-              {/* China Supply Output Table */}
-              <div className="mt-4 rounded-lg border border-success/30 bg-success/5 p-3">
-                <p className="text-xs font-semibold text-success mb-2">China Woodchip Supply</p>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs">
-                    <thead>
-                      <tr className="border-b border-success/20">
-                        <th className="text-left py-1.5 px-1 font-medium text-muted-foreground">Year</th>
-                        {YEARS.map((year) => (
-                          <th key={year} className={cn(
-                            'text-center py-1.5 px-1 font-medium',
-                            chinaSupply[year].isPolicyActive && settings.chinaLoggingPolicy !== 'baseline'
-                              ? 'text-success'
-                              : 'text-muted-foreground'
-                          )}>
-                            {year}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="py-2 px-1 text-muted-foreground">Supply (kt)</td>
-                        {YEARS.map((year) => {
-                          const data = chinaSupply[year]
-                          return (
-                            <td key={year} className={cn(
-                              'text-center py-2 px-1 font-mono font-semibold',
-                              data.isPolicyActive && data.delta !== 0
-                                ? data.delta > 0 ? 'text-emerald-600' : 'text-amber-600'
-                                : 'text-foreground'
-                            )}>
-                              <div className="flex flex-col items-center">
-                                <span>{data.supply}</span>
-                                {data.isPolicyActive && data.delta !== 0 && (
-                                  <span className={cn(
-                                    'text-[10px] flex items-center',
-                                    data.delta > 0 ? 'text-emerald-600' : 'text-amber-600'
-                                  )}>
-                                    {data.delta > 0 ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                                    {data.delta > 0 ? '+' : ''}{data.delta}
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-                          )
-                        })}
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
             </div>
 
             {/* Vietnam Export Policy */}
@@ -311,59 +170,6 @@ export function ForestryModule({
                     labels={{ restricted: 'Restricted', baseline: 'Baseline', expanded: 'Expanded' }}
                     onChange={(value) => onChange({ ...settings, vietnamExportPolicy: value })}
                   />
-                </div>
-              </div>
-
-              {/* Vietnam Supply Output Table */}
-              <div className="mt-4 rounded-lg border border-chart-2/30 bg-chart-2/5 p-3">
-                <p className="text-xs font-semibold text-chart-2 mb-2">Vietnam Supply to China</p>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs">
-                    <thead>
-                      <tr className="border-b border-chart-2/20">
-                        <th className="text-left py-1.5 px-1 font-medium text-muted-foreground">Year</th>
-                        {YEARS.map((year) => (
-                          <th key={year} className={cn(
-                            'text-center py-1.5 px-1 font-medium',
-                            vietnamSupply[year].isPolicyActive && settings.vietnamExportPolicy !== 'baseline'
-                              ? 'text-chart-2'
-                              : 'text-muted-foreground'
-                          )}>
-                            {year}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="py-2 px-1 text-muted-foreground">Supply (kt)</td>
-                        {YEARS.map((year) => {
-                          const data = vietnamSupply[year]
-                          return (
-                            <td key={year} className={cn(
-                              'text-center py-2 px-1 font-mono font-semibold',
-                              data.isPolicyActive && data.delta !== 0
-                                ? data.delta > 0 ? 'text-emerald-600' : 'text-amber-600'
-                                : 'text-foreground'
-                            )}>
-                              <div className="flex flex-col items-center">
-                                <span>{data.supply}</span>
-                                {data.isPolicyActive && data.delta !== 0 && (
-                                  <span className={cn(
-                                    'text-[10px] flex items-center',
-                                    data.delta > 0 ? 'text-emerald-600' : 'text-amber-600'
-                                  )}>
-                                    {data.delta > 0 ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                                    {data.delta > 0 ? '+' : ''}{data.delta}
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-                          )
-                        })}
-                      </tr>
-                    </tbody>
-                  </table>
                 </div>
               </div>
             </div>
