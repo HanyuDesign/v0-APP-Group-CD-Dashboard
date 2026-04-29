@@ -387,15 +387,12 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
               <nav className="flex items-start justify-between overflow-x-auto">
                 {PULP_NAV_ITEMS.map((item, index) => {
                   const Icon = item.icon
-                  const activeIndex = PULP_NAV_ITEMS.findIndex(i => i.id === activeSection)
-                  const isCompleted = index < activeIndex
                   const isActive = activeSection === item.id
-                  const isPending = index > activeIndex
                   const isLast = index === PULP_NAV_ITEMS.length - 1
                   
                   return (
                     <div key={item.id} className="flex items-start flex-1">
-                      {/* Step Content */}
+                      {/* Module Content */}
                       <button
                         onClick={() => scrollToSection(item.id)}
                         className="flex flex-col items-start gap-2 text-left hover:opacity-80 transition-opacity"
@@ -404,15 +401,11 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                         <div className="flex items-center">
                           <div className={cn(
                             'w-8 h-8 rounded-full flex items-center justify-center transition-all',
-                            isCompleted && 'bg-teal-500',
-                            isActive && 'border-[3px] border-blue-500 bg-white',
-                            isPending && 'bg-blue-100'
+                            isActive 
+                              ? 'border-[3px] border-blue-500 bg-white' 
+                              : 'bg-blue-100'
                           )}>
-                            {isCompleted ? (
-                              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                              </svg>
-                            ) : isActive ? (
+                            {isActive ? (
                               <div className="w-3 h-3 rounded-full bg-blue-500" />
                             ) : (
                               <Icon className="w-4 h-4 text-blue-300" />
@@ -424,9 +417,9 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                             <div className="flex-1 h-0.5 min-w-[40px] mx-2">
                               <div className={cn(
                                 'h-full',
-                                isCompleted && 'bg-teal-500',
-                                isActive && 'bg-gradient-to-r from-blue-500 via-blue-500 to-gray-200',
-                                isPending && 'bg-gray-200'
+                                isActive 
+                                  ? 'bg-gradient-to-r from-blue-500 via-blue-500 to-gray-200' 
+                                  : 'bg-gray-200'
                               )} 
                               style={isActive ? { backgroundSize: '50% 100%', backgroundRepeat: 'no-repeat' } : undefined}
                               />
@@ -434,24 +427,16 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                           )}
                         </div>
                         
-                        {/* Step Label */}
+                        {/* Module Label */}
                         <div className="mt-1">
                           <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                            Step {index + 1}
+                            Module {index + 1}
                           </p>
                           <p className={cn(
                             'text-sm font-semibold mt-0.5',
                             isActive ? 'text-foreground' : 'text-muted-foreground'
                           )}>
                             {item.label}
-                          </p>
-                          <p className={cn(
-                            'text-xs mt-0.5',
-                            isCompleted && 'text-teal-500',
-                            isActive && 'text-blue-500',
-                            isPending && 'text-muted-foreground'
-                          )}>
-                            {isCompleted ? 'Completed' : isActive ? 'In Progress' : 'Pending'}
                           </p>
                         </div>
                       </button>
