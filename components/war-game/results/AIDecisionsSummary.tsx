@@ -684,7 +684,7 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
               <Card 
                 id="export-reallocation"
                 ref={(el) => { sectionRefs.current['export-reallocation'] = el }}
-                className="border-teal-200 bg-gradient-to-r from-teal-50 to-cyan-50 scroll-mt-16"
+                className="border-border/50 scroll-mt-16"
               >
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
@@ -890,7 +890,7 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
               <Card 
                 id="market-impact"
                 ref={(el) => { sectionRefs.current['market-impact'] = el }}
-                className="border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 scroll-mt-16"
+                className="border-border/50 scroll-mt-16"
               >
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm flex items-center gap-2 text-blue-800">
