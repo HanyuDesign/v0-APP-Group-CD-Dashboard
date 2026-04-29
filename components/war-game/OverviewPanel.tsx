@@ -1,7 +1,7 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Trees, Factory, Package, ClipboardList, FileText, Bath, Info } from 'lucide-react'
+import { Trees, Factory, Package, ClipboardList, FileText, Bath, Info, TrendingUp, TrendingDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { POLICY_LABELS } from '@/lib/data/initial-data'
 import type { SimulationInput, YearlyCapacity } from '@/lib/types/war-game'
