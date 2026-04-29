@@ -75,8 +75,9 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
 
   return (
     <div className="flex gap-4">
-      {/* Left tabs panel */}
+      {/* Left tabs panel - sticky when scrolling */}
       <div className="w-64 flex-shrink-0">
+        <div className="sticky top-4 space-y-3">
         <div className="rounded-lg border border-border/50 bg-card/50 overflow-hidden">
           {/* Tab header */}
           <div className="px-4 py-3 bg-secondary/30 border-b border-border/50">
@@ -157,7 +158,7 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
         </div>
 
         {/* Reset & Run Simulation buttons - Vertical layout */}
-        <div className="flex flex-col gap-2 mt-3">
+        <div className="flex flex-col gap-2">
           <Button
             variant="outline"
             onClick={onReset}
@@ -191,68 +192,33 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
             )}
           </Button>
         </div>
+        </div>
       </div>
 
       {/* Right content panel */}
-      <div className="flex-1 min-w-0 flex flex-col">
-        <div className="flex-1">
-          {activeTab === 'forestry' && (
-            <ForestryModule
-              settings={input.forestry}
-              onChange={handleForestryChange}
-            />
-          )}
-          {activeTab === 'pulp' && (
-            <PulpModule
-              settings={input.appCapacity}
-              onChange={handleAppCapacityChange}
-              competitorChanges={result?.competitorChanges}
-            />
-          )}
-          {activeTab === 'downstream' && (
-            <DownstreamModule
-              settings={input.downstream}
-              onChange={handleDownstreamChange}
-            />
-          )}
-          {activeTab === 'overview' && (
-            <OverviewPanel input={input} />
-          )}
-        </div>
-        
-        {/* Navigation buttons - at bottom of right panel */}
-        <div className="flex justify-end gap-2 mt-4 w-1/4 ml-auto">
-          <button
-            onClick={() => {
-              const prevIndex = Math.max(0, currentTabIndex - 1)
-              setActiveTab(TABS[prevIndex].key)
-            }}
-            disabled={currentTabIndex === 0}
-            className={cn(
-              'flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors h-10 border',
-              currentTabIndex === 0
-                ? 'bg-secondary/30 text-muted-foreground cursor-not-allowed border-transparent'
-                : 'bg-white hover:bg-secondary/50 text-foreground border-border'
-            )}
-          >
-            Previous
-          </button>
-          <button
-            onClick={() => {
-              const nextIndex = Math.min(TABS.length - 1, currentTabIndex + 1)
-              setActiveTab(TABS[nextIndex].key)
-            }}
-            disabled={currentTabIndex === TABS.length - 1}
-            className={cn(
-              'flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors h-10',
-              currentTabIndex === TABS.length - 1
-                ? 'bg-secondary/30 text-muted-foreground cursor-not-allowed'
-                : 'bg-red-100 hover:bg-red-200 text-red-700 border border-red-200'
-            )}
-          >
-            Next
-          </button>
-        </div>
+      <div className="flex-1 min-w-0">
+        {activeTab === 'forestry' && (
+          <ForestryModule
+            settings={input.forestry}
+            onChange={handleForestryChange}
+          />
+        )}
+        {activeTab === 'pulp' && (
+          <PulpModule
+            settings={input.appCapacity}
+            onChange={handleAppCapacityChange}
+            competitorChanges={result?.competitorChanges}
+          />
+        )}
+        {activeTab === 'downstream' && (
+          <DownstreamModule
+            settings={input.downstream}
+            onChange={handleDownstreamChange}
+          />
+        )}
+        {activeTab === 'overview' && (
+          <OverviewPanel input={input} />
+        )}
       </div>
     </div>
   )
