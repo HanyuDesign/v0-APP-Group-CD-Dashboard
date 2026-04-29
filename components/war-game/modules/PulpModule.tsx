@@ -28,16 +28,34 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
   // Get APP China player for color
   const appChina = PLAYERS.find(p => p.id === 'app-china')!
 
-  // Handle APP capacity input change
+  // Handle APP capacity input change - allows negative values for capacity reductions
   const handleAPPCapacityChange = (year: Year, value: string) => {
-    const numValue = Math.max(0, parseInt(value) || 0)
-    onChange({
-      ...settings,
-      appChina: {
-        ...settings.appChina,
-        [year]: numValue,
-      },
-    })
+    // Allow empty input, negative values, and positive values
+    // Limit to 5 digits (excluding minus sign)
+    const trimmed = value.trim()
+    if (trimmed === '' || trimmed === '-') {
+      onChange({
+        ...settings,
+        appChina: {
+          ...settings.appChina,
+          [year]: 0,
+        },
+      })
+      return
+    }
+    
+    const numValue = parseInt(trimmed, 10)
+    if (!isNaN(numValue)) {
+      // Limit to 5 digits (e.g., -99999 to 99999)
+      const clampedValue = Math.max(-99999, Math.min(99999, numValue))
+      onChange({
+        ...settings,
+        appChina: {
+          ...settings.appChina,
+          [year]: clampedValue,
+        },
+      })
+    }
   }
 
   // Get competitor color by playerId
@@ -100,10 +118,13 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
                           type="number"
                           value={settings.appChina[year] || ''}
                           onChange={(e) => handleAPPCapacityChange(year, e.target.value)}
-                          className="h-7 w-20 text-left text-sm font-mono bg-white border-2 border-[#cc0000]/40 focus:border-[#cc0000] p-0 pl-1"
+                          className={cn(
+                            "h-7 w-20 text-left text-sm font-mono bg-white border-2 p-0 pl-1",
+                            settings.appChina[year] < 0 
+                              ? "border-red-400 focus:border-red-500 text-red-600" 
+                              : "border-[#cc0000]/40 focus:border-[#cc0000]"
+                          )}
                           placeholder="0"
-                          min={0}
-                          max={99999}
                         />
                         <span className="text-xs text-muted-foreground">kt</span>
                       </div>
@@ -115,7 +136,7 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
           </Table>
           
           <p className="mt-3 text-xs text-muted-foreground">
-            Enter planned capacity additions for each year (kt/year). 2026 shows existing capacity.
+            Enter planned capacity changes (kt/year). Positive = additions, negative = reductions/delays. 2026 shows existing capacity.
           </p>
         </div>
 
@@ -159,9 +180,10 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
                           'text-sm font-mono',
                           isBase && 'font-semibold',
                           !isBase && value > 0 && 'text-success font-medium',
+                          !isBase && value < 0 && 'text-red-600 font-medium',
                           !isBase && value === 0 && 'text-muted-foreground'
                         )}>
-                          {isBase ? value : (value > 0 ? `+${value}` : '-')}
+                          {isBase ? value : (value > 0 ? `+${value}` : value < 0 ? value : '-')}
                         </span>
                       </TableCell>
                     )

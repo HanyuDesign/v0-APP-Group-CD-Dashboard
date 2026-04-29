@@ -119,19 +119,24 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                         <span className="font-medium text-muted-foreground">{competitor.name}</span>
                       </div>
                     </td>
-                    {years.map(year => (
-                      <td key={year} className="text-center py-2 px-2 font-mono">
-                        {year === 2026 ? (
-                          <span className="text-muted-foreground">{competitor.capacity[year]}</span>
-                        ) : (
-                          <span className={cn(
-                            competitor.capacity[year] > 0 ? 'text-green-600' : 'text-muted-foreground'
-                          )}>
-                            {competitor.capacity[year] > 0 ? `+${competitor.capacity[year]}` : competitor.capacity[year] || '-'}
-                          </span>
-                        )}
-                      </td>
-                    ))}
+                    {years.map(year => {
+                      const value = competitor.capacity[year]
+                      return (
+                        <td key={year} className="text-center py-2 px-2 font-mono">
+                          {year === 2026 ? (
+                            <span className="text-muted-foreground">{value}</span>
+                          ) : (
+                            <span className={cn(
+                              value > 0 && 'text-green-600',
+                              value < 0 && 'text-red-600',
+                              value === 0 && 'text-muted-foreground'
+                            )}>
+                              {value > 0 ? `+${value}` : value < 0 ? value : '-'}
+                            </span>
+                          )}
+                        </td>
+                      )
+                    })}
                   </tr>
                 ))}
                 {/* APP China row - highlighted */}
