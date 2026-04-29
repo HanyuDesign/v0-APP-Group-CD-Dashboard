@@ -21,6 +21,7 @@ interface PulpModuleProps {
   onChange: (settings: APPCapacitySettings) => void
   competitorChanges?: PlayerCapacityChange[]
   inputMode: InputMode
+  onInputModeChange: (mode: InputMode) => void
 }
 
 const YEARS = [2026, 2027, 2028, 2029, 2030, 2031] as const
@@ -78,7 +79,7 @@ function CapacityInput({
   )
 }
 
-export function PulpModule({ settings, onChange, inputMode }: PulpModuleProps) {
+export function PulpModule({ settings, onChange, inputMode, onInputModeChange }: PulpModuleProps) {
   // Get APP China player for color
   const appChina = PLAYERS.find(p => p.id === 'app-china')!
   
@@ -141,13 +142,57 @@ export function PulpModule({ settings, onChange, inputMode }: PulpModuleProps) {
     return player?.color || '#6c757d'
   }
 
+  // Calculate competitor total capacity from additions
+  const calculateCompetitorTotalCapacity = (additions: YearlyCapacity): YearlyCapacity => {
+    let cumulative = additions[2026]
+    return {
+      2026: additions[2026],
+      2027: cumulative + Math.max(0, additions[2027]),
+      2028: cumulative + Math.max(0, additions[2027]) + Math.max(0, additions[2028]),
+      2029: cumulative + Math.max(0, additions[2027]) + Math.max(0, additions[2028]) + Math.max(0, additions[2029]),
+      2030: cumulative + Math.max(0, additions[2027]) + Math.max(0, additions[2028]) + Math.max(0, additions[2029]) + Math.max(0, additions[2030]),
+      2031: cumulative + Math.max(0, additions[2027]) + Math.max(0, additions[2028]) + Math.max(0, additions[2029]) + Math.max(0, additions[2030]) + Math.max(0, additions[2031]),
+    }
+  }
+
   return (
     <Card className="h-full border-border/50 bg-card/80">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Factory className="h-5 w-5 text-primary" />
-          Pulp Capacity & Players
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Factory className="h-5 w-5 text-primary" />
+            Pulp Capacity & Players
+          </CardTitle>
+          
+          {/* View Mode Segmented Control */}
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-muted-foreground font-medium">View Mode</span>
+            <div className="flex rounded-lg border border-border bg-muted/30 p-1">
+              <button
+                onClick={() => onInputModeChange('incremental')}
+                className={cn(
+                  "px-3 py-1.5 text-sm font-medium rounded-md transition-all",
+                  inputMode === 'incremental'
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-muted-foreground hover:bg-muted/50"
+                )}
+              >
+                Annual Additions (kt/year)
+              </button>
+              <button
+                onClick={() => onInputModeChange('total')}
+                className={cn(
+                  "px-3 py-1.5 text-sm font-medium rounded-md transition-all",
+                  inputMode === 'total'
+                    ? "bg-green-600 text-white shadow-sm"
+                    : "text-muted-foreground hover:bg-muted/50"
+                )}
+              >
+                Total Capacity (kt)
+              </button>
+            </div>
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* APP Capacity Decisions - Highlight Table */}
@@ -218,8 +263,8 @@ export function PulpModule({ settings, onChange, inputMode }: PulpModuleProps) {
           
           <p className="mt-3 text-xs text-muted-foreground">
             {inputMode === 'incremental' 
-              ? "Enter yearly capacity additions (kt/year). 2026 shows base capacity."
-              : "Enter total installed capacity per year. 2026 shows base capacity."
+              ? "Showing yearly capacity additions. 2026 shows base capacity."
+              : "Showing total installed capacity over time."
             }
           </p>
         </div>
@@ -244,42 +289,66 @@ export function PulpModule({ settings, onChange, inputMode }: PulpModuleProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {COMPETITOR_CAPACITY_PROJECTIONS.map((competitor) => (
-                <TableRow key={competitor.playerId} className="border-border/30">
-                  <TableCell className="font-medium">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="h-3 w-3 rounded-full"
-                        style={{ backgroundColor: getCompetitorColor(competitor.playerId) }}
-                      />
-                      <span className="text-sm">{competitor.playerName}</span>
-                    </div>
-                  </TableCell>
-                  {YEARS.map((year, index) => {
-                    const value = competitor.capacity[year]
-                    const isBase = index === 0
-                    // Only show positive values for additions (no negative)
-                    const displayValue = isBase ? value : Math.max(0, value)
-                    return (
-                      <TableCell key={year} className="text-center">
-                        <span className={cn(
-                          'text-sm font-mono',
-                          isBase && 'font-semibold',
-                          !isBase && displayValue > 0 && 'text-success font-medium',
-                          !isBase && displayValue === 0 && 'text-muted-foreground'
-                        )}>
-                          {isBase ? displayValue : (displayValue > 0 ? `+${displayValue}` : '-')}
-                        </span>
-                      </TableCell>
-                    )
-                  })}
-                </TableRow>
-              ))}
+              {COMPETITOR_CAPACITY_PROJECTIONS.map((competitor) => {
+                // Calculate total capacity for this competitor
+                const competitorTotals = calculateCompetitorTotalCapacity(competitor.capacity)
+                
+                return (
+                  <TableRow key={competitor.playerId} className="border-border/30">
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="h-3 w-3 rounded-full"
+                          style={{ backgroundColor: getCompetitorColor(competitor.playerId) }}
+                        />
+                        <span className="text-sm">{competitor.playerName}</span>
+                      </div>
+                    </TableCell>
+                    {YEARS.map((year, index) => {
+                      const isBase = index === 0
+                      
+                      if (inputMode === 'incremental') {
+                        // Show additions view
+                        const value = competitor.capacity[year]
+                        const displayValue = isBase ? value : Math.max(0, value)
+                        return (
+                          <TableCell key={year} className="text-center">
+                            <span className={cn(
+                              'text-sm font-mono',
+                              isBase && 'font-semibold',
+                              !isBase && displayValue > 0 && 'text-success font-medium',
+                              !isBase && displayValue === 0 && 'text-muted-foreground'
+                            )}>
+                              {isBase ? displayValue : (displayValue > 0 ? `+${displayValue}` : '-')}
+                            </span>
+                          </TableCell>
+                        )
+                      } else {
+                        // Show total capacity view
+                        const totalValue = competitorTotals[year]
+                        return (
+                          <TableCell key={year} className="text-center">
+                            <span className={cn(
+                              'text-sm font-mono',
+                              isBase && 'font-semibold'
+                            )}>
+                              {totalValue}
+                            </span>
+                          </TableCell>
+                        )
+                      }
+                    })}
+                  </TableRow>
+                )
+              })}
             </TableBody>
           </Table>
           
           <p className="mt-3 text-xs text-muted-foreground">
-            2026 shows base capacity. Subsequent years reflect publicly announced capacity additions.
+            {inputMode === 'incremental' 
+              ? "Showing yearly capacity additions. 2026 shows base capacity."
+              : "Showing total installed capacity over time."
+            }
           </p>
         </div>
       </CardContent>
