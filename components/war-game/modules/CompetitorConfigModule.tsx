@@ -256,69 +256,116 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
 
   return (
     <div className="flex gap-4 h-[calc(100vh-280px)] min-h-[600px]">
-      {/* LEFT SIDEBAR - Competitor Selection */}
-      <div className="w-64 flex-shrink-0 space-y-3">
-        <div className="text-sm font-semibold text-foreground px-3 mb-4">
-          Competitors
+      {/* LEFT SIDEBAR - Competitor Selection (matching ValueChainFlow style) */}
+      <div className="w-64 flex-shrink-0">
+        <div className="sticky top-4 space-y-3 z-10">
+          <div className="rounded-lg border border-border/50 bg-card/50 overflow-hidden">
+            {/* Sidebar header */}
+            <div className="px-4 py-3 bg-secondary/30 border-b border-border/50">
+              <h3 className="text-sm font-semibold">Competitor Selection</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Configure each player</p>
+            </div>
+            
+            {/* Competitor list */}
+            <div className="p-2 space-y-1">
+              {config.map((competitor, index) => {
+                const isSelected = selectedCompetitor === competitor.playerId
+                
+                return (
+                  <button
+                    key={competitor.playerId}
+                    onClick={() => setSelectedCompetitor(competitor.playerId)}
+                    className={cn(
+                      'w-full flex items-center gap-3 px-3 py-3 rounded-lg text-left transition-all',
+                      isSelected 
+                        ? 'bg-primary text-primary-foreground shadow-sm' 
+                        : 'hover:bg-secondary/50'
+                    )}
+                  >
+                    {/* Index number */}
+                    <div className={cn(
+                      'flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold flex-shrink-0',
+                      isSelected 
+                        ? 'bg-primary-foreground/20 text-primary-foreground' 
+                        : competitor.isEdited 
+                          ? 'bg-amber-100 text-amber-600' 
+                          : 'bg-secondary text-muted-foreground'
+                    )}>
+                      {competitor.isEdited ? '✓' : index + 1}
+                    </div>
+                    
+                    {/* Competitor info */}
+                    <div className="flex-1 min-w-0">
+                      <div className={cn(
+                        'text-sm font-medium truncate',
+                        isSelected ? 'text-primary-foreground' : ''
+                      )}>
+                        {competitor.playerName}
+                      </div>
+                      <div className={cn(
+                        'text-xs truncate',
+                        isSelected ? 'text-primary-foreground/70' : 'text-muted-foreground'
+                      )}>
+                        {competitor.isEdited ? 'Modified' : 'Default settings'}
+                      </div>
+                    </div>
+                    
+                    {/* Arrow indicator */}
+                    <ChevronRight className={cn(
+                      'h-4 w-4 flex-shrink-0 transition-transform',
+                      isSelected ? 'text-primary-foreground translate-x-0.5' : 'text-muted-foreground'
+                    )} />
+                  </button>
+                )
+              })}
+            </div>
+            
+            {/* Add Competitor Button */}
+            <div className="p-2 border-t border-border/50">
+              <button className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-left transition-all border border-dashed border-border/50 text-muted-foreground hover:border-border hover:text-foreground hover:bg-secondary/30">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-secondary text-muted-foreground flex-shrink-0">
+                  <Plus className="h-4 w-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium">Add Competitor</div>
+                  <div className="text-xs text-muted-foreground">Create custom player</div>
+                </div>
+              </button>
+            </div>
+          </div>
         </div>
-        {config.map((competitor) => (
-          <button
-            key={competitor.playerId}
-            onClick={() => setSelectedCompetitor(competitor.playerId)}
-            className={cn(
-              'w-full px-4 py-3 rounded-lg text-left transition-all flex items-center justify-between',
-              selectedCompetitor === competitor.playerId
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'bg-muted/50 text-foreground hover:bg-muted'
-            )}
-          >
-            <span className="font-semibold text-base">{competitor.playerName}</span>
-            {competitor.isEdited && (
-              <span className={cn(
-                'h-2.5 w-2.5 rounded-full',
-                selectedCompetitor === competitor.playerId ? 'bg-primary-foreground/50' : 'bg-amber-500'
-              )} />
-            )}
-          </button>
-        ))}
-        
-        {/* Add Competitor Button */}
-        <button className="w-full px-4 py-3 rounded-lg text-left transition-all flex items-center gap-2 border border-dashed border-border/50 text-muted-foreground hover:border-border hover:text-foreground">
-          <Plus className="h-5 w-5" />
-          <span className="text-base">Add Competitor</span>
-        </button>
       </div>
       
       {/* RIGHT PANEL - Main Content */}
       {selectedConfig && selectedStrategy && derivedCapacity && derivedMetrics && (
-        <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+        <div className="flex-1 overflow-y-auto space-y-5 pr-2">
           {/* Section 1: Strategy Summary (Read-only) */}
           <Card className="border-border/50">
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100">
-                  <Shield className="h-3.5 w-3.5 text-slate-600" />
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100">
+                  <Shield className="h-4 w-4 text-slate-600" />
                 </div>
-                <CardTitle className="text-sm font-semibold">Strategy Summary</CardTitle>
-                <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">Read-only</span>
+                <CardTitle className="text-base font-semibold">Strategy Summary</CardTitle>
+                <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">Read-only</span>
               </div>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="flex items-start gap-4">
+              <div className="flex items-start gap-6">
                 <div className="flex-1">
-                  <h4 className="font-semibold text-sm text-foreground mb-2">{selectedConfig.playerName} Strategy:</h4>
+                  <h4 className="font-semibold text-sm text-foreground mb-3">{selectedConfig.playerName} Strategy:</h4>
                   <div className="flex flex-wrap gap-2">
                     {selectedConfig.strategy.split(', ').map((item, idx) => (
-                      <span key={idx} className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-muted text-xs text-muted-foreground">
-                        <ChevronRight className="h-3 w-3" />
+                      <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-muted text-sm text-muted-foreground">
+                        <ChevronRight className="h-3.5 w-3.5" />
                         {item}
                       </span>
                     ))}
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-[10px] text-muted-foreground">Base Capacity</div>
-                  <div className="text-lg font-bold text-foreground">{selectedStrategy.baseCapacity} kt</div>
+                  <div className="text-xs text-muted-foreground mb-1">Base Capacity</div>
+                  <div className="text-xl font-bold text-foreground">{selectedStrategy.baseCapacity} kt</div>
                 </div>
               </div>
             </CardContent>
@@ -326,24 +373,24 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
 
           {/* Section 2: Behavior Settings (User-adjustable) */}
           <Card className="border-border/50">
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-100">
-                  <Target className="h-3.5 w-3.5 text-blue-600" />
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100">
+                  <Target className="h-4 w-4 text-blue-600" />
                 </div>
-                <CardTitle className="text-sm font-semibold">Behavior Settings</CardTitle>
-                <span className="text-[10px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">User Input</span>
+                <CardTitle className="text-base font-semibold">Behavior Settings</CardTitle>
+                <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">User Input</span>
               </div>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-6">
                 {/* Capacity Reaction Style */}
-                <div className="space-y-2">
-                  <label className="text-xs font-medium flex items-center gap-1.5 text-muted-foreground">
-                    <Gauge className="h-3 w-3" />
+                <div className="space-y-3">
+                  <label className="text-sm font-medium flex items-center gap-2 text-foreground">
+                    <Gauge className="h-4 w-4 text-muted-foreground" />
                     Capacity Reaction Style
                   </label>
-                  <div className="flex gap-1">
+                  <div className="flex gap-2">
                     {(Object.keys(REACTION_STYLE_LABELS) as CapacityReactionStyle[]).map((style) => (
                       <TooltipProvider key={style}>
                         <Tooltip>
@@ -351,7 +398,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                             <button
                               onClick={() => handleSettingChange(selectedConfig.playerId, 'capacityReactionStyle', style)}
                               className={cn(
-                                'flex-1 px-2 py-1.5 text-xs font-medium rounded-md border transition-all',
+                                'flex-1 px-3 py-2 text-sm font-medium rounded-md border transition-all',
                                 selectedConfig.behaviorSettings.capacityReactionStyle === style
                                   ? 'bg-blue-50 border-blue-200 text-blue-700'
                                   : 'bg-background border-border/50 text-muted-foreground hover:border-border'
@@ -361,7 +408,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                             </button>
                           </TooltipTrigger>
                           <TooltipContent side="bottom">
-                            <p className="text-xs">{REACTION_STYLE_LABELS[style].description}</p>
+                            <p className="text-sm">{REACTION_STYLE_LABELS[style].description}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -370,12 +417,12 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                 </div>
 
                 {/* Reaction Timing */}
-                <div className="space-y-2">
-                  <label className="text-xs font-medium flex items-center gap-1.5 text-muted-foreground">
-                    <Clock className="h-3 w-3" />
+                <div className="space-y-3">
+                  <label className="text-sm font-medium flex items-center gap-2 text-foreground">
+                    <Clock className="h-4 w-4 text-muted-foreground" />
                     Reaction Timing
                   </label>
-                  <div className="flex gap-1">
+                  <div className="flex gap-2">
                     {(Object.keys(TIMING_LABELS) as ReactionTiming[]).map((timing) => (
                       <TooltipProvider key={timing}>
                         <Tooltip>
@@ -383,7 +430,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                             <button
                               onClick={() => handleSettingChange(selectedConfig.playerId, 'reactionTiming', timing)}
                               className={cn(
-                                'flex-1 px-2 py-1.5 text-xs font-medium rounded-md border transition-all',
+                                'flex-1 px-3 py-2 text-sm font-medium rounded-md border transition-all',
                                 selectedConfig.behaviorSettings.reactionTiming === timing
                                   ? 'bg-blue-50 border-blue-200 text-blue-700'
                                   : 'bg-background border-border/50 text-muted-foreground hover:border-border'
@@ -393,7 +440,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                             </button>
                           </TooltipTrigger>
                           <TooltipContent side="bottom">
-                            <p className="text-xs">{TIMING_LABELS[timing].description}</p>
+                            <p className="text-sm">{TIMING_LABELS[timing].description}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -402,13 +449,13 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                 </div>
 
                 {/* Follow Ratio Slider */}
-                <div className="space-y-2">
-                  <label className="text-xs font-medium flex items-center justify-between text-muted-foreground">
-                    <span className="flex items-center gap-1.5">
-                      <Users className="h-3 w-3" />
+                <div className="space-y-3">
+                  <label className="text-sm font-medium flex items-center justify-between text-foreground">
+                    <span className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-muted-foreground" />
                       Follow Ratio to APP
                     </span>
-                    <span className="text-blue-600 font-semibold">{selectedConfig.behaviorSettings.followRatio}%</span>
+                    <span className="text-blue-600 font-semibold text-base">{selectedConfig.behaviorSettings.followRatio}%</span>
                   </label>
                   <Slider
                     value={[selectedConfig.behaviorSettings.followRatio]}
@@ -418,19 +465,19 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                     step={5}
                     className="w-full"
                   />
-                  <div className="flex justify-between text-[10px] text-muted-foreground">
+                  <div className="flex justify-between text-xs text-muted-foreground">
                     <span>0%</span>
                     <span>80%</span>
                   </div>
                 </div>
 
                 {/* Utilization Target */}
-                <div className="space-y-2">
-                  <label className="text-xs font-medium flex items-center gap-1.5 text-muted-foreground">
-                    <Gauge className="h-3 w-3" />
+                <div className="space-y-3">
+                  <label className="text-sm font-medium flex items-center gap-2 text-foreground">
+                    <Gauge className="h-4 w-4 text-muted-foreground" />
                     Utilization Target
                   </label>
-                  <div className="flex gap-1">
+                  <div className="flex gap-2">
                     {(Object.keys(UTILIZATION_LABELS) as UtilizationTarget[]).map((target) => (
                       <TooltipProvider key={target}>
                         <Tooltip>
@@ -438,7 +485,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                             <button
                               onClick={() => handleSettingChange(selectedConfig.playerId, 'utilizationTarget', target)}
                               className={cn(
-                                'flex-1 px-2 py-1.5 text-xs font-medium rounded-md border transition-all',
+                                'flex-1 px-3 py-2 text-sm font-medium rounded-md border transition-all',
                                 selectedConfig.behaviorSettings.utilizationTarget === target
                                   ? 'bg-blue-50 border-blue-200 text-blue-700'
                                   : 'bg-background border-border/50 text-muted-foreground hover:border-border'
@@ -448,7 +495,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                             </button>
                           </TooltipTrigger>
                           <TooltipContent side="bottom">
-                            <p className="text-xs">{UTILIZATION_LABELS[target].description}</p>
+                            <p className="text-sm">{UTILIZATION_LABELS[target].description}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -461,43 +508,43 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
 
           {/* Section 3: Derived Actions (Auto-calculated) */}
           <Card className="border-border/50">
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-100">
-                  <Lightbulb className="h-3.5 w-3.5 text-amber-600" />
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100">
+                  <Lightbulb className="h-4 w-4 text-amber-600" />
                 </div>
-                <CardTitle className="text-sm font-semibold">Derived Actions</CardTitle>
-                <span className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Auto-calculated</span>
+                <CardTitle className="text-base font-semibold">Derived Actions</CardTitle>
+                <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded">Auto-calculated</span>
               </div>
             </CardHeader>
-            <CardContent className="pt-0 space-y-4">
+            <CardContent className="pt-0 space-y-5">
               {/* A. Upstream (Woodchip Strategy) */}
-              <div className="rounded-lg border border-border/50 p-3">
-                <div className="flex items-center gap-2 mb-3">
-                  <TreePine className="h-4 w-4 text-green-600" />
-                  <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">A. Upstream (Woodchip Strategy)</h4>
+              <div className="rounded-lg border border-border/50 p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <TreePine className="h-5 w-5 text-green-600" />
+                  <h4 className="text-sm font-semibold text-foreground">A. Upstream (Woodchip Strategy)</h4>
                 </div>
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="text-center p-2 rounded-md bg-muted/50">
-                    <div className="text-[10px] text-muted-foreground mb-1">Import Volume Change</div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center p-3 rounded-md bg-muted/50">
+                    <div className="text-xs text-muted-foreground mb-2">Import Volume Change</div>
                     <div className={cn(
-                      'text-sm font-bold flex items-center justify-center gap-1',
+                      'text-base font-bold flex items-center justify-center gap-1',
                       derivedMetrics.upstream.importChangePercent > 0 ? 'text-emerald-600' : 
                       derivedMetrics.upstream.importChangePercent < 0 ? 'text-amber-600' : 'text-foreground'
                     )}>
-                      {derivedMetrics.upstream.importChangePercent > 0 ? <TrendingUp className="h-3 w-3" /> : 
-                       derivedMetrics.upstream.importChangePercent < 0 ? <TrendingDown className="h-3 w-3" /> : null}
+                      {derivedMetrics.upstream.importChangePercent > 0 ? <TrendingUp className="h-4 w-4" /> : 
+                       derivedMetrics.upstream.importChangePercent < 0 ? <TrendingDown className="h-4 w-4" /> : null}
                       {derivedMetrics.upstream.importChangePercent > 0 ? '+' : ''}{derivedMetrics.upstream.importChangePercent}%
                     </div>
                   </div>
-                  <div className="text-center p-2 rounded-md bg-muted/50">
-                    <div className="text-[10px] text-muted-foreground mb-1">Domestic Sourcing</div>
-                    <div className="text-xs font-medium text-foreground">{derivedMetrics.upstream.domesticSourcing}</div>
+                  <div className="text-center p-3 rounded-md bg-muted/50">
+                    <div className="text-xs text-muted-foreground mb-2">Domestic Sourcing</div>
+                    <div className="text-sm font-medium text-foreground">{derivedMetrics.upstream.domesticSourcing}</div>
                   </div>
-                  <div className="text-center p-2 rounded-md bg-muted/50">
-                    <div className="text-[10px] text-muted-foreground mb-1">Cost Impact</div>
+                  <div className="text-center p-3 rounded-md bg-muted/50">
+                    <div className="text-xs text-muted-foreground mb-2">Cost Impact</div>
                     <div className={cn(
-                      'text-xs font-medium capitalize',
+                      'text-sm font-medium capitalize',
                       derivedMetrics.upstream.costImpact === 'elevated' ? 'text-red-600' :
                       derivedMetrics.upstream.costImpact === 'controlled' ? 'text-emerald-600' : 'text-amber-600'
                     )}>
@@ -508,29 +555,29 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
               </div>
 
               {/* B. Pulp Capacity Response */}
-              <div className="rounded-lg border border-border/50 p-3">
-                <div className="flex items-center gap-2 mb-3">
-                  <Factory className="h-4 w-4 text-blue-600" />
-                  <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">B. Pulp Capacity Response</h4>
+              <div className="rounded-lg border border-border/50 p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <Factory className="h-5 w-5 text-blue-600" />
+                  <h4 className="text-sm font-semibold text-foreground">B. Pulp Capacity Response</h4>
                 </div>
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <div className="text-center p-2 rounded-md bg-muted/50">
-                    <div className="text-[10px] text-muted-foreground mb-1">Total Capacity Addition</div>
-                    <div className="text-sm font-bold text-foreground">+{derivedMetrics.pulp.addition} kt</div>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="text-center p-3 rounded-md bg-muted/50">
+                    <div className="text-xs text-muted-foreground mb-2">Total Capacity Addition</div>
+                    <div className="text-base font-bold text-foreground">+{derivedMetrics.pulp.addition} kt</div>
                   </div>
-                  <div className="text-center p-2 rounded-md bg-muted/50">
-                    <div className="text-[10px] text-muted-foreground mb-1">Timing</div>
-                    <div className="text-xs font-medium text-foreground">{derivedMetrics.pulp.timing}</div>
+                  <div className="text-center p-3 rounded-md bg-muted/50">
+                    <div className="text-xs text-muted-foreground mb-2">Timing</div>
+                    <div className="text-sm font-medium text-foreground">{derivedMetrics.pulp.timing}</div>
                   </div>
                 </div>
                 
                 {/* Projected Capacity - Editable */}
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-[10px] text-muted-foreground font-medium">Projected Capacity (kt)</div>
-                    <div className="text-[10px] text-blue-600">Click to edit</div>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-xs text-muted-foreground font-medium">Projected Capacity (kt)</div>
+                    <div className="text-xs text-blue-600">Click to edit</div>
                   </div>
-                  <div className="grid grid-cols-6 gap-1">
+                  <div className="grid grid-cols-6 gap-2">
                     {years.map(year => {
                       const isEditing = editingCapacity === year
                       const value = derivedCapacity[year]
@@ -538,13 +585,13 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                       
                       return (
                         <div key={year} className="text-center">
-                          <div className="text-[10px] text-muted-foreground mb-1">{year}</div>
+                          <div className="text-xs text-muted-foreground mb-1">{year}</div>
                           {isEditing ? (
                             <div className="flex gap-0.5">
                               <Input
                                 type="number"
                                 defaultValue={value}
-                                className="h-7 text-xs text-center px-1"
+                                className="h-8 text-sm text-center px-1"
                                 autoFocus
                                 onBlur={(e) => handleCapacityOverride(year, parseInt(e.target.value) || value)}
                                 onKeyDown={(e) => {
@@ -560,14 +607,14 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                             <button
                               onClick={() => setEditingCapacity(year)}
                               className={cn(
-                                'w-full py-1.5 text-xs font-mono font-semibold rounded transition-all',
+                                'w-full py-2 text-sm font-mono font-semibold rounded transition-all',
                                 isOverridden 
                                   ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
                                   : 'bg-muted/50 text-foreground hover:bg-muted'
                               )}
                             >
                               {value}
-                              {isOverridden && <span className="ml-0.5 text-[8px]">*</span>}
+                              {isOverridden && <span className="ml-0.5 text-[10px]">*</span>}
                             </button>
                           )}
                         </div>
@@ -578,72 +625,72 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
               </div>
 
               {/* C. Downstream Allocation */}
-              <div className="rounded-lg border border-border/50 p-3">
-                <div className="flex items-center gap-2 mb-3">
-                  <Package className="h-4 w-4 text-purple-600" />
-                  <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">C. Downstream Allocation</h4>
+              <div className="rounded-lg border border-border/50 p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <Package className="h-5 w-5 text-purple-600" />
+                  <h4 className="text-sm font-semibold text-foreground">C. Downstream Allocation</h4>
                 </div>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-3 gap-4">
                   {/* Paper */}
-                  <div className="p-2 rounded-md bg-muted/50">
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <FileText className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-[10px] font-medium text-muted-foreground">Paper</span>
+                  <div className="p-3 rounded-md bg-muted/50">
+                    <div className="flex items-center gap-2 mb-3">
+                      <FileText className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium text-foreground">Paper</span>
                     </div>
-                    <div className="space-y-1">
+                    <div className="space-y-2">
                       <div className={cn(
-                        'text-xs font-medium flex items-center gap-1',
+                        'text-sm font-medium flex items-center gap-1',
                         derivedMetrics.downstream.paper.change === 'expand' ? 'text-emerald-600' :
                         derivedMetrics.downstream.paper.change === 'reduce' ? 'text-amber-600' : 'text-foreground'
                       )}>
-                        {derivedMetrics.downstream.paper.change === 'expand' ? <TrendingUp className="h-3 w-3" /> :
-                         derivedMetrics.downstream.paper.change === 'reduce' ? <TrendingDown className="h-3 w-3" /> :
-                         <Minus className="h-3 w-3" />}
+                        {derivedMetrics.downstream.paper.change === 'expand' ? <TrendingUp className="h-4 w-4" /> :
+                         derivedMetrics.downstream.paper.change === 'reduce' ? <TrendingDown className="h-4 w-4" /> :
+                         <Minus className="h-4 w-4" />}
                         {derivedMetrics.downstream.paper.change.charAt(0).toUpperCase() + derivedMetrics.downstream.paper.change.slice(1)}
                       </div>
-                      <div className="text-[10px] text-muted-foreground">{derivedMetrics.downstream.paper.intent}</div>
+                      <div className="text-xs text-muted-foreground">{derivedMetrics.downstream.paper.intent}</div>
                     </div>
                   </div>
                   
                   {/* Packaging */}
-                  <div className="p-2 rounded-md bg-muted/50">
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <Package className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-[10px] font-medium text-muted-foreground">Packaging</span>
+                  <div className="p-3 rounded-md bg-muted/50">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Package className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium text-foreground">Packaging</span>
                     </div>
-                    <div className="space-y-1">
+                    <div className="space-y-2">
                       <div className={cn(
-                        'text-xs font-medium flex items-center gap-1',
+                        'text-sm font-medium flex items-center gap-1',
                         derivedMetrics.downstream.packaging.change === 'expand' ? 'text-emerald-600' :
                         derivedMetrics.downstream.packaging.change === 'reduce' ? 'text-amber-600' : 'text-foreground'
                       )}>
-                        {derivedMetrics.downstream.packaging.change === 'expand' ? <TrendingUp className="h-3 w-3" /> :
-                         derivedMetrics.downstream.packaging.change === 'reduce' ? <TrendingDown className="h-3 w-3" /> :
-                         <Minus className="h-3 w-3" />}
+                        {derivedMetrics.downstream.packaging.change === 'expand' ? <TrendingUp className="h-4 w-4" /> :
+                         derivedMetrics.downstream.packaging.change === 'reduce' ? <TrendingDown className="h-4 w-4" /> :
+                         <Minus className="h-4 w-4" />}
                         {derivedMetrics.downstream.packaging.change.charAt(0).toUpperCase() + derivedMetrics.downstream.packaging.change.slice(1)}
                       </div>
-                      <div className="text-[10px] text-muted-foreground">{derivedMetrics.downstream.packaging.intent}</div>
+                      <div className="text-xs text-muted-foreground">{derivedMetrics.downstream.packaging.intent}</div>
                     </div>
                   </div>
                   
                   {/* Tissue */}
-                  <div className="p-2 rounded-md bg-muted/50">
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <Bath className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-[10px] font-medium text-muted-foreground">Tissue</span>
+                  <div className="p-3 rounded-md bg-muted/50">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Bath className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium text-foreground">Tissue</span>
                     </div>
-                    <div className="space-y-1">
+                    <div className="space-y-2">
                       <div className={cn(
-                        'text-xs font-medium flex items-center gap-1',
+                        'text-sm font-medium flex items-center gap-1',
                         derivedMetrics.downstream.tissue.change === 'expand' ? 'text-emerald-600' :
                         derivedMetrics.downstream.tissue.change === 'reduce' ? 'text-amber-600' : 'text-foreground'
                       )}>
-                        {derivedMetrics.downstream.tissue.change === 'expand' ? <TrendingUp className="h-3 w-3" /> :
-                         derivedMetrics.downstream.tissue.change === 'reduce' ? <TrendingDown className="h-3 w-3" /> :
-                         <Minus className="h-3 w-3" />}
+                        {derivedMetrics.downstream.tissue.change === 'expand' ? <TrendingUp className="h-4 w-4" /> :
+                         derivedMetrics.downstream.tissue.change === 'reduce' ? <TrendingDown className="h-4 w-4" /> :
+                         <Minus className="h-4 w-4" />}
                         {derivedMetrics.downstream.tissue.change.charAt(0).toUpperCase() + derivedMetrics.downstream.tissue.change.slice(1)}
                       </div>
-                      <div className="text-[10px] text-muted-foreground">{derivedMetrics.downstream.tissue.intent}</div>
+                      <div className="text-xs text-muted-foreground">{derivedMetrics.downstream.tissue.intent}</div>
                     </div>
                   </div>
                 </div>
