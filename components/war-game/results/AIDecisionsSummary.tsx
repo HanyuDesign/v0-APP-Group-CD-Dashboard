@@ -761,139 +761,93 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                     })
 
                     return (
-                      <div className="flex gap-4">
-                        {/* Main Table */}
-                        <div className="flex-1 overflow-x-auto">
+                      <div className="space-y-4">
+                        {/* Simplified China-Focused Table - Exporters as Columns */}
+                        <div className="overflow-x-auto">
                           <table className="w-full text-sm">
                             <thead>
-                              <tr className="border-b border-teal-200">
-                                <th className="text-left py-2 px-3 font-medium text-teal-700 w-32">Exporter</th>
-                                <th className="text-center py-2 px-3 font-medium text-[#cc0000] bg-red-50/50">China</th>
-                                <th className="text-center py-2 px-3 font-medium text-blue-700">Europe</th>
-                                <th className="text-center py-2 px-3 font-medium text-orange-700">India</th>
-                                <th className="text-center py-2 px-3 font-medium text-gray-600">Rest</th>
-                                <th className="text-center py-2 px-3 font-medium text-teal-700">Total</th>
+                              <tr className="border-b-2 border-teal-200">
+                                <th className="text-left py-3 px-3 font-medium text-teal-700 w-40">Metric</th>
+                                {exporterData.map(exp => (
+                                  <th key={exp.playerId} className="text-center py-3 px-4 font-medium">
+                                    <div className="flex flex-col items-center gap-1">
+                                      <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: exp.color }} />
+                                      <span className="text-foreground">{exp.name}</span>
+                                      <span className="text-[10px] text-muted-foreground font-normal">{exp.nameEn}</span>
+                                    </div>
+                                  </th>
+                                ))}
+                                <th className="text-center py-3 px-4 font-semibold text-teal-800 bg-teal-50">Total</th>
                               </tr>
                             </thead>
                             <tbody>
-                              {exporterData.map(exp => (
-                                <tr key={exp.playerId} className="border-b border-teal-100 hover:bg-teal-50/50">
-                                  <td className="py-3 px-3">
-                                    <div className="flex items-center gap-2">
-                                      <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: exp.color }} />
-                                      <div>
-                                        <span className="font-medium block">{exp.name}</span>
-                                        <span className="text-[10px] text-muted-foreground">{exp.nameEn}</span>
-                                      </div>
-                                    </div>
+                              {/* China Export Volume Row */}
+                              <tr className="border-b border-teal-100 bg-red-50/30">
+                                <td className="py-3 px-3">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-medium text-[#cc0000]">China Export</span>
+                                    <span className="text-[10px] text-muted-foreground">(kt)</span>
+                                  </div>
+                                </td>
+                                {exporterData.map(exp => (
+                                  <td key={exp.playerId} className="text-center py-3 px-4">
+                                    <span className="font-mono font-semibold text-[#cc0000] text-base">{exp.china.vol}</span>
                                   </td>
-                                  {/* China */}
-                                  <td className="text-center py-3 px-3 bg-red-50/30">
-                                    <div className="space-y-0.5">
-                                      <span className="font-mono font-semibold text-[#cc0000] block">{exp.china.vol} kt</span>
-                                      <span className={cn(
-                                        'text-[10px] font-medium flex items-center justify-center gap-0.5',
-                                        exp.china.delta > 0 && 'text-emerald-600',
-                                        exp.china.delta < 0 && 'text-amber-600',
-                                        exp.china.delta === 0 && 'text-muted-foreground'
-                                      )}>
-                                        {exp.china.delta > 0 && <ChevronUp className="h-3 w-3" />}
-                                        {exp.china.delta < 0 && <ChevronDown className="h-3 w-3" />}
-                                        {exp.china.delta > 0 ? `+${exp.china.delta}` : exp.china.delta < 0 ? exp.china.delta : '-'}
-                                      </span>
-                                    </div>
-                                  </td>
-                                  {/* Europe */}
-                                  <td className="text-center py-3 px-3">
-                                    <div className="space-y-0.5">
-                                      <span className="font-mono block">{exp.europe.vol} kt</span>
-                                      <span className={cn(
-                                        'text-[10px] font-medium flex items-center justify-center gap-0.5',
-                                        exp.europe.delta > 0 && 'text-emerald-600',
-                                        exp.europe.delta < 0 && 'text-amber-600',
-                                        exp.europe.delta === 0 && 'text-muted-foreground'
-                                      )}>
-                                        {exp.europe.delta > 0 && <ChevronUp className="h-3 w-3" />}
-                                        {exp.europe.delta < 0 && <ChevronDown className="h-3 w-3" />}
-                                        {exp.europe.delta > 0 ? `+${exp.europe.delta}` : exp.europe.delta < 0 ? exp.europe.delta : '-'}
-                                      </span>
-                                    </div>
-                                  </td>
-                                  {/* India */}
-                                  <td className="text-center py-3 px-3">
-                                    <div className="space-y-0.5">
-                                      <span className="font-mono block">{exp.india.vol} kt</span>
-                                      <span className={cn(
-                                        'text-[10px] font-medium flex items-center justify-center gap-0.5',
-                                        exp.india.delta > 0 && 'text-emerald-600',
-                                        exp.india.delta < 0 && 'text-amber-600',
-                                        exp.india.delta === 0 && 'text-muted-foreground'
-                                      )}>
-                                        {exp.india.delta > 0 && <ChevronUp className="h-3 w-3" />}
-                                        {exp.india.delta < 0 && <ChevronDown className="h-3 w-3" />}
-                                        {exp.india.delta > 0 ? `+${exp.india.delta}` : exp.india.delta < 0 ? exp.india.delta : '-'}
-                                      </span>
-                                    </div>
-                                  </td>
-                                  {/* Rest */}
-                                  <td className="text-center py-3 px-3">
-                                    <div className="space-y-0.5">
-                                      <span className="font-mono block">{exp.rest.vol} kt</span>
-                                      <span className={cn(
-                                        'text-[10px] font-medium flex items-center justify-center gap-0.5',
-                                        exp.rest.delta > 0 && 'text-emerald-600',
-                                        exp.rest.delta < 0 && 'text-amber-600',
-                                        exp.rest.delta === 0 && 'text-muted-foreground'
-                                      )}>
-                                        {exp.rest.delta > 0 && <ChevronUp className="h-3 w-3" />}
-                                        {exp.rest.delta < 0 && <ChevronDown className="h-3 w-3" />}
-                                        {exp.rest.delta > 0 ? `+${exp.rest.delta}` : exp.rest.delta < 0 ? exp.rest.delta : '-'}
-                                      </span>
-                                    </div>
-                                  </td>
-                                  {/* Total */}
-                                  <td className="text-center py-3 px-3">
-                                    <span className="font-mono font-semibold">{exp.total} kt</span>
-                                  </td>
-                                </tr>
-                              ))}
-                              {/* Totals Row */}
-                              <tr className="bg-teal-100/50 font-semibold">
-                                <td className="py-2.5 px-3 text-teal-800">Total</td>
-                                <td className="text-center py-2.5 px-3 bg-red-100/50">
-                                  <span className="font-mono text-[#cc0000]">
-                                    {exporterData.reduce((sum, e) => sum + e.china.vol, 0)} kt
+                                ))}
+                                <td className="text-center py-3 px-4 bg-teal-50">
+                                  <span className="font-mono font-bold text-[#cc0000] text-base">
+                                    {exporterData.reduce((sum, e) => sum + e.china.vol, 0)}
                                   </span>
                                 </td>
-                                <td className="text-center py-2.5 px-3">
-                                  <span className="font-mono">
-                                    {exporterData.reduce((sum, e) => sum + e.europe.vol, 0)} kt
-                                  </span>
+                              </tr>
+                              {/* China Export Change Row */}
+                              <tr className="border-b border-teal-100">
+                                <td className="py-3 px-3">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-medium text-teal-700">Change vs Baseline</span>
+                                    <span className="text-[10px] text-muted-foreground">(kt)</span>
+                                  </div>
                                 </td>
-                                <td className="text-center py-2.5 px-3">
-                                  <span className="font-mono">
-                                    {exporterData.reduce((sum, e) => sum + e.india.vol, 0)} kt
-                                  </span>
-                                </td>
-                                <td className="text-center py-2.5 px-3">
-                                  <span className="font-mono">
-                                    {exporterData.reduce((sum, e) => sum + e.rest.vol, 0)} kt
-                                  </span>
-                                </td>
-                                <td className="text-center py-2.5 px-3">
-                                  <span className="font-mono">
-                                    {exporterData.reduce((sum, e) => sum + e.total, 0)} kt
-                                  </span>
+                                {exporterData.map(exp => (
+                                  <td key={exp.playerId} className="text-center py-3 px-4">
+                                    <span className={cn(
+                                      'font-mono font-semibold text-base flex items-center justify-center gap-1',
+                                      exp.china.delta > 0 && 'text-emerald-600',
+                                      exp.china.delta < 0 && 'text-amber-600',
+                                      exp.china.delta === 0 && 'text-muted-foreground'
+                                    )}>
+                                      {exp.china.delta > 0 && <ChevronUp className="h-4 w-4" />}
+                                      {exp.china.delta < 0 && <ChevronDown className="h-4 w-4" />}
+                                      {exp.china.delta > 0 ? `+${exp.china.delta}` : exp.china.delta < 0 ? exp.china.delta : '-'}
+                                    </span>
+                                  </td>
+                                ))}
+                                <td className="text-center py-3 px-4 bg-teal-50">
+                                  {(() => {
+                                    const totalDelta = exporterData.reduce((sum, e) => sum + e.china.delta, 0)
+                                    return (
+                                      <span className={cn(
+                                        'font-mono font-bold text-base flex items-center justify-center gap-1',
+                                        totalDelta > 0 && 'text-emerald-600',
+                                        totalDelta < 0 && 'text-amber-600',
+                                        totalDelta === 0 && 'text-muted-foreground'
+                                      )}>
+                                        {totalDelta > 0 && <ChevronUp className="h-4 w-4" />}
+                                        {totalDelta < 0 && <ChevronDown className="h-4 w-4" />}
+                                        {totalDelta > 0 ? `+${totalDelta}` : totalDelta < 0 ? totalDelta : '-'}
+                                      </span>
+                                    )
+                                  })()}
                                 </td>
                               </tr>
                             </tbody>
                           </table>
                         </div>
 
-                        {/* Right Summary Panel */}
-                        <div className="w-64 space-y-3 border-l border-teal-200 pl-4">
+                        {/* Bottom Summary Strip */}
+                        <div className="grid grid-cols-3 gap-4 pt-2">
                           <div className="rounded-lg bg-white p-3 border border-teal-200">
-                            <p className="text-[10px] text-teal-600 mb-1">China Demand Gap</p>
+                            <p className="text-xs text-teal-600 mb-1">China Demand Gap</p>
                             <p className={cn(
                               'text-xl font-bold',
                               chinaDemandGap > 200 ? 'text-emerald-600' : chinaDemandGap > 0 ? 'text-amber-600' : 'text-red-600'
@@ -905,7 +859,7 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                             </p>
                           </div>
                           <div className="rounded-lg bg-white p-3 border border-teal-200">
-                            <p className="text-[10px] text-teal-600 mb-1">China Price Index</p>
+                            <p className="text-xs text-teal-600 mb-1">China Price Index</p>
                             <div className="flex items-center gap-2">
                               <p className={cn(
                                 'text-xl font-bold',
@@ -916,14 +870,14 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                               <span className="text-xs text-muted-foreground">vs Global</span>
                             </div>
                           </div>
-                          <div className="space-y-2 pt-2 border-t border-teal-200">
-                            <p className="text-[10px] font-semibold text-teal-700">Reallocation Reasoning</p>
-                            {exporterData.slice(0, 3).map(exp => (
-                              <div key={exp.playerId} className="text-[10px] text-muted-foreground">
-                                <span className="font-medium text-foreground">{exp.name}:</span>{' '}
-                                <span className="italic line-clamp-2">{exp.reasoning}</span>
-                              </div>
-                            ))}
+                          <div className="rounded-lg bg-white p-3 border border-teal-200">
+                            <p className="text-xs text-teal-600 mb-1">Total China Imports</p>
+                            <p className="text-xl font-bold text-[#cc0000]">
+                              {exporterData.reduce((sum, e) => sum + e.china.vol, 0)} kt
+                            </p>
+                            <p className="text-[10px] text-muted-foreground mt-1">
+                              From {exporterData.length} exporters
+                            </p>
                           </div>
                         </div>
                       </div>
