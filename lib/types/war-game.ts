@@ -1,5 +1,8 @@
 // 战争模拟工具类型定义
 
+// Input mode for capacity values
+export type InputMode = 'incremental' | 'total'
+
 // 政策等级
 export type PolicyLevel = 'tight' | 'baseline' | 'relaxed'
 export type ExportPolicyLevel = 'restricted' | 'baseline' | 'expanded'

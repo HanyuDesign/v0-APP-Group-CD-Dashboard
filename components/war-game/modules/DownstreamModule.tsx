@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import {
@@ -19,20 +19,20 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { FileText, Package, Bath, TrendingDown, TrendingUp, Minus, Factory, ToggleLeft, ToggleRight } from 'lucide-react'
-import type { DownstreamSettings, DemandScenario, YearlyCapacity } from '@/lib/types/war-game'
+import { FileText, Package, Bath, TrendingDown, TrendingUp, Minus, Factory } from 'lucide-react'
+import type { DownstreamSettings, DemandScenario, YearlyCapacity, InputMode } from '@/lib/types/war-game'
 import { POLICY_LABELS, DOWNSTREAM_COMPETITOR_SUPPLY, PLAYERS } from '@/lib/data/initial-data'
 import { cn } from '@/lib/utils'
 
 interface DownstreamModuleProps {
   settings: DownstreamSettings
   onChange: (settings: DownstreamSettings) => void
+  inputMode: InputMode
 }
 
 const demandOptions: DemandScenario[] = ['low', 'base', 'high']
 const years = [2026, 2027, 2028, 2029, 2030, 2031] as const
 type Year = typeof years[number]
-type InputMode = 'incremental' | 'total'
 
 interface DemandCardProps {
   title: string
@@ -274,27 +274,6 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange, inp
               ))}
             </TableRow>
 
-            {/* Auto-calculated derived row */}
-            <TableRow className="bg-muted/20 border-t border-border/30">
-              <TableCell className="font-medium py-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-muted-foreground italic">
-                    {inputMode === 'incremental' ? 'Total Capacity' : 'Annual Additions'}
-                  </span>
-                  <span className="px-1 py-0.5 text-[8px] font-medium bg-muted text-muted-foreground rounded">Auto</span>
-                </div>
-              </TableCell>
-              {years.map((year, idx) => (
-                <TableCell key={year} className="text-center py-2">
-                  <span className="text-xs font-mono text-muted-foreground">
-                    {inputMode === 'incremental' 
-                      ? totalCapacity[year]
-                      : (idx === 0 ? '-' : (appSupply[year] > 0 ? `+${appSupply[year]}` : '-'))
-                    }
-                  </span>
-                </TableCell>
-              ))}
-            </TableRow>
           </TableBody>
         </Table>
       </div>
@@ -302,7 +281,7 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange, inp
       {/* Note about data sources */}
       <div className="px-4 py-2 bg-muted/20 border-t border-border/30">
         <p className="text-[11px] text-muted-foreground">
-          Competitor capacity is AI-driven; APP capacity is user-defined.
+          2026 shows base capacity. Subsequent years reflect publicly announced additions.
         </p>
       </div>
     </div>
@@ -312,10 +291,8 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange, inp
 export function DownstreamModule({
   settings,
   onChange,
+  inputMode,
 }: DownstreamModuleProps) {
-  // Input mode state: incremental (additions per year) or total (absolute capacity)
-  const [inputMode, setInputMode] = useState<InputMode>('incremental')
-
   const handleAppSupplyChange = (segment: 'paper' | 'board' | 'tissue', year: keyof YearlyCapacity, value: number) => {
     onChange({
       ...settings,
@@ -330,11 +307,6 @@ export function DownstreamModule({
         },
       },
     })
-  }
-
-  // Toggle mode without losing data
-  const toggleMode = () => {
-    setInputMode(inputMode === 'incremental' ? 'total' : 'incremental')
   }
 
   return (
@@ -383,49 +355,15 @@ export function DownstreamModule({
 
         {/* PART 2: Supply Block */}
         <div className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4">
-          {/* Header with toggle */}
+          {/* Header */}
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-base font-bold flex items-center gap-2 text-red-800">
               <span className="flex items-center justify-center h-6 w-6 rounded-full bg-red-600 text-white text-xs font-bold">2</span>
               <Factory className="h-4 w-4" />
               Supply Capacity Additions (kt)
             </h3>
-            
-            {/* Input Mode Toggle */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">Input Mode:</span>
-              <button
-                onClick={toggleMode}
-                className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
-                  "border-2 hover:shadow-sm",
-                  inputMode === 'incremental' 
-                    ? "bg-blue-50 border-blue-300 text-blue-700" 
-                    : "bg-green-50 border-green-300 text-green-700"
-                )}
-              >
-                {inputMode === 'incremental' ? (
-                  <>
-                    <ToggleLeft className="h-4 w-4" />
-                    Incremental Additions
-                  </>
-                ) : (
-                  <>
-                    <ToggleRight className="h-4 w-4" />
-                    Total Capacity
-                  </>
-                )}
-              </button>
-            </div>
+            <span className="px-2 py-0.5 text-[10px] font-medium bg-red-100 text-red-700 rounded uppercase">User Input</span>
           </div>
-
-          {/* Helper text */}
-          <p className="text-xs text-muted-foreground mb-4">
-            {inputMode === 'incremental' 
-              ? "Enter yearly capacity additions (kt/year). 2026 shows base capacity."
-              : "Enter total installed capacity per year. 2026 shows base capacity."
-            }
-          </p>
           
           <div className="space-y-6">
             {/* Paper Supply */}

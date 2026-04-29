@@ -16,6 +16,7 @@ import type {
   ForestrySettings,
   APPCapacitySettings,
   DownstreamSettings,
+  InputMode,
 } from '@/lib/types/war-game'
 
 interface ValueChainFlowProps {
@@ -58,6 +59,7 @@ const TABS: { key: TabKey; label: string; icon: React.ReactNode; description: st
 
 export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, onReset, isRunning }: ValueChainFlowProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('forestry')
+  const [inputMode, setInputMode] = useState<InputMode>('incremental')
 
   const handleForestryChange = (forestry: ForestrySettings) => {
     onInputChange({ ...input, forestry })
@@ -197,6 +199,49 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
 
       {/* Right content panel */}
       <div className="flex-1 min-w-0">
+        {/* Global Input Perspective Control - shown for pulp and downstream tabs */}
+        {(activeTab === 'pulp' || activeTab === 'downstream') && (
+          <div className="mb-4 p-4 rounded-lg bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-semibold text-slate-700">Input Perspective</h4>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {inputMode === 'incremental' 
+                    ? "Enter yearly capacity additions; system calculates total capacity"
+                    : "Enter total installed capacity; system calculates yearly additions"
+                  }
+                </p>
+              </div>
+              
+              {/* Segmented Control */}
+              <div className="flex rounded-lg border border-slate-300 bg-white p-1 shadow-sm">
+                <button
+                  onClick={() => setInputMode('incremental')}
+                  className={cn(
+                    "px-4 py-2 text-sm font-medium rounded-md transition-all",
+                    inputMode === 'incremental'
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "text-slate-600 hover:bg-slate-100"
+                  )}
+                >
+                  Annual Additions (kt/year)
+                </button>
+                <button
+                  onClick={() => setInputMode('total')}
+                  className={cn(
+                    "px-4 py-2 text-sm font-medium rounded-md transition-all",
+                    inputMode === 'total'
+                      ? "bg-green-600 text-white shadow-sm"
+                      : "text-slate-600 hover:bg-slate-100"
+                  )}
+                >
+                  Total Capacity (kt)
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {activeTab === 'forestry' && (
           <ForestryModule
             settings={input.forestry}
@@ -208,12 +253,14 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
             settings={input.appCapacity}
             onChange={handleAppCapacityChange}
             competitorChanges={result?.competitorChanges}
+            inputMode={inputMode}
           />
         )}
         {activeTab === 'downstream' && (
           <DownstreamModule
             settings={input.downstream}
             onChange={handleDownstreamChange}
+            inputMode={inputMode}
           />
         )}
         {activeTab === 'overview' && (

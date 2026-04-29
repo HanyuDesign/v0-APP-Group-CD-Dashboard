@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import {
@@ -11,8 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Factory, Package, Users, ToggleLeft, ToggleRight } from 'lucide-react'
-import type { APPCapacitySettings, PlayerCapacityChange, YearlyCapacity } from '@/lib/types/war-game'
+import { Factory, Package, Users } from 'lucide-react'
+import type { APPCapacitySettings, PlayerCapacityChange, YearlyCapacity, InputMode } from '@/lib/types/war-game'
 import { PLAYERS, COMPETITOR_CAPACITY_PROJECTIONS } from '@/lib/data/initial-data'
 import { cn } from '@/lib/utils'
 
@@ -20,12 +20,11 @@ interface PulpModuleProps {
   settings: APPCapacitySettings
   onChange: (settings: APPCapacitySettings) => void
   competitorChanges?: PlayerCapacityChange[]
+  inputMode: InputMode
 }
 
 const YEARS = [2026, 2027, 2028, 2029, 2030, 2031] as const
 type Year = typeof YEARS[number]
-
-type InputMode = 'incremental' | 'total'
 
 // Positive-only capacity input component
 function CapacityInput({ 
@@ -79,10 +78,7 @@ function CapacityInput({
   )
 }
 
-export function PulpModule({ settings, onChange }: PulpModuleProps) {
-  // Input mode state: incremental (additions per year) or total (absolute capacity)
-  const [inputMode, setInputMode] = useState<InputMode>('incremental')
-  
+export function PulpModule({ settings, onChange, inputMode }: PulpModuleProps) {
   // Get APP China player for color
   const appChina = PLAYERS.find(p => p.id === 'app-china')!
   
@@ -139,11 +135,6 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
     })
   }
 
-  // Toggle mode without losing data (conversion happens automatically)
-  const toggleMode = () => {
-    setInputMode(inputMode === 'incremental' ? 'total' : 'incremental')
-  }
-
   // Get competitor color by playerId
   const getCompetitorColor = (playerId: string) => {
     const player = PLAYERS.find(p => p.id === playerId)
@@ -161,39 +152,11 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
       <CardContent className="space-y-6">
         {/* APP Capacity Decisions - Highlight Table */}
         <div className="rounded-lg border-2 border-primary/40 bg-primary/5 p-4">
-          {/* Header with toggle */}
-          <div className="mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Package className="h-4 w-4 text-primary" />
-              <span className="font-semibold text-primary">APP Capacity Decisions</span>
-            </div>
-            
-            {/* Input Mode Toggle */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">Input Mode:</span>
-              <button
-                onClick={toggleMode}
-                className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
-                  "border-2 hover:shadow-sm",
-                  inputMode === 'incremental' 
-                    ? "bg-blue-50 border-blue-300 text-blue-700" 
-                    : "bg-green-50 border-green-300 text-green-700"
-                )}
-              >
-                {inputMode === 'incremental' ? (
-                  <>
-                    <ToggleLeft className="h-4 w-4" />
-                    Incremental Additions
-                  </>
-                ) : (
-                  <>
-                    <ToggleRight className="h-4 w-4" />
-                    Total Capacity
-                  </>
-                )}
-              </button>
-            </div>
+          {/* Header */}
+          <div className="mb-4 flex items-center gap-2">
+            <Package className="h-4 w-4 text-primary" />
+            <span className="font-semibold text-primary">APP Capacity Decisions</span>
+            <span className="ml-auto px-2 py-0.5 text-[10px] font-medium bg-primary/10 text-primary rounded uppercase">User Input</span>
           </div>
           
           <Table>
@@ -250,30 +213,6 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
                 ))}
               </TableRow>
 
-              {/* Auto-calculated derived row */}
-              <TableRow className="bg-muted/30 border-primary/10">
-                <TableCell className="font-medium py-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground italic">
-                      {inputMode === 'incremental' ? 'Total Capacity' : 'Annual Additions'}
-                    </span>
-                    <span className="px-1.5 py-0.5 text-[8px] font-medium bg-muted text-muted-foreground rounded">Auto-calculated</span>
-                  </div>
-                </TableCell>
-                {YEARS.map((year, index) => (
-                  <TableCell key={year} className="text-center py-2">
-                    <span className={cn(
-                      "text-sm font-mono",
-                      index === 0 ? "text-muted-foreground" : "text-muted-foreground/80"
-                    )}>
-                      {inputMode === 'incremental' 
-                        ? totalCapacity[year]
-                        : (index === 0 ? '-' : (settings.appChina[year] > 0 ? `+${settings.appChina[year]}` : '-'))
-                      }
-                    </span>
-                  </TableCell>
-                ))}
-              </TableRow>
             </TableBody>
           </Table>
           
@@ -285,12 +224,12 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
           </p>
         </div>
 
-        {/* Competitor Capacity Distribution - Table */}
+        {/* Competitor Announced Capacity Plans - Table */}
         <div className="rounded-lg bg-secondary/30 p-4">
           <div className="mb-4 flex items-center gap-2">
             <Users className="h-4 w-4 text-muted-foreground" />
-            <span className="font-semibold text-sm">Competitor Capacity Distribution</span>
-            <span className="ml-auto text-xs text-muted-foreground">(AI Projected)</span>
+            <span className="font-semibold text-sm">Competitor Announced Capacity Plans</span>
+            <span className="ml-auto px-2 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground rounded uppercase">Reference</span>
           </div>
           
           <Table>
@@ -340,7 +279,7 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
           </Table>
           
           <p className="mt-3 text-xs text-muted-foreground">
-            2026 shows base capacity. Subsequent years show projected capacity additions based on AI analysis.
+            2026 shows base capacity. Subsequent years reflect publicly announced capacity additions.
           </p>
         </div>
       </CardContent>
