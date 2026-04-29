@@ -384,62 +384,58 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
               ref={navRef}
               className="sticky top-0 z-10 bg-white rounded-xl shadow-lg mb-4 py-6 px-8"
             >
-              <nav className="flex items-start justify-between overflow-x-auto">
+              <nav className="flex items-center overflow-x-auto">
                 {PULP_NAV_ITEMS.map((item, index) => {
                   const Icon = item.icon
                   const isActive = activeSection === item.id
                   const isLast = index === PULP_NAV_ITEMS.length - 1
                   
                   return (
-                    <div key={item.id} className="flex items-start flex-1">
-                      {/* Module Content */}
+                    <div key={item.id} className="flex items-center">
+                      {/* Module Content - Horizontal Layout */}
                       <button
                         onClick={() => scrollToSection(item.id)}
-                        className="flex flex-col items-start gap-2 text-left hover:opacity-80 transition-opacity"
+                        className="flex items-center gap-3 hover:opacity-80 transition-opacity"
                       >
                         {/* Circle Indicator */}
-                        <div className="flex items-center">
-                          <div className={cn(
-                            'w-8 h-8 rounded-full flex items-center justify-center transition-all',
-                            isActive 
-                              ? 'border-[3px] border-blue-500 bg-white' 
-                              : 'bg-blue-100'
-                          )}>
-                            {isActive ? (
-                              <div className="w-3 h-3 rounded-full bg-blue-500" />
-                            ) : (
-                              <Icon className="w-4 h-4 text-blue-300" />
-                            )}
-                          </div>
-                          
-                          {/* Connecting Line */}
-                          {!isLast && (
-                            <div className="flex-1 h-0.5 min-w-[40px] mx-2">
-                              <div className={cn(
-                                'h-full',
-                                isActive 
-                                  ? 'bg-gradient-to-r from-blue-500 via-blue-500 to-gray-200' 
-                                  : 'bg-gray-200'
-                              )} 
-                              style={isActive ? { backgroundSize: '50% 100%', backgroundRepeat: 'no-repeat' } : undefined}
-                              />
-                            </div>
+                        <div className={cn(
+                          'w-10 h-10 rounded-full flex items-center justify-center transition-all shrink-0',
+                          isActive 
+                            ? 'border-[3px] border-blue-500 bg-white' 
+                            : 'bg-blue-100'
+                        )}>
+                          {isActive ? (
+                            <div className="w-3.5 h-3.5 rounded-full bg-blue-500" />
+                          ) : (
+                            <Icon className="w-4 h-4 text-blue-400" />
                           )}
                         </div>
                         
-                        {/* Module Label */}
-                        <div className="mt-1">
+                        {/* Module Label - Horizontal beside icon */}
+                        <div className="text-left">
                           <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
                             Module {index + 1}
                           </p>
                           <p className={cn(
-                            'text-sm font-semibold mt-0.5',
+                            'text-sm font-semibold whitespace-nowrap',
                             isActive ? 'text-foreground' : 'text-muted-foreground'
                           )}>
                             {item.label}
                           </p>
                         </div>
                       </button>
+                      
+                      {/* Extended Connecting Line */}
+                      {!isLast && (
+                        <div className="h-0.5 min-w-[60px] w-full max-w-[120px] mx-4">
+                          <div className={cn(
+                            'h-full w-full',
+                            isActive 
+                              ? 'bg-gradient-to-r from-blue-400 to-gray-200' 
+                              : 'bg-gray-200'
+                          )} />
+                        </div>
+                      )}
                     </div>
                   )
                 })}
