@@ -30,7 +30,7 @@ const STEPS: { key: SimulationStep; label: string; shortLabel: string; descripti
     key: 'reaction-input', 
     label: 'Reaction Input', 
     shortLabel: 'Reactions',
-    description: 'Define market reaction behaviors'
+    description: 'Review AI-generated market reactions'
   },
   { 
     key: 'results', 
@@ -212,6 +212,8 @@ export default function InputPage() {
           <ReactionInputModule
             settings={reactionSettings}
             onChange={handleReactionSettingsChange}
+            competitorConfig={competitorConfig}
+            marketInput={input}
           />
         )}
       </main>
