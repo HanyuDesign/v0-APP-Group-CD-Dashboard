@@ -371,15 +371,15 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
             </CardContent>
           </Card>
 
-          {/* Section 2: Behavior Settings (User-adjustable) */}
-          <Card className="border-border/50">
+          {/* Section 2: Behavior Settings (User-adjustable) - Red theme for input area */}
+          <Card className="border-red-200 bg-red-50/30">
             <CardHeader className="pb-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100">
-                  <Target className="h-4 w-4 text-blue-600" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
+                  <Target className="h-4 w-4 text-red-600" />
                 </div>
                 <CardTitle className="text-base font-semibold">Behavior Settings</CardTitle>
-                <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">User Input</span>
+                <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded font-medium">User Input</span>
               </div>
             </CardHeader>
             <CardContent className="pt-0">
@@ -400,8 +400,8 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                               className={cn(
                                 'flex-1 px-3 py-2 text-sm font-medium rounded-md border transition-all',
                                 selectedConfig.behaviorSettings.capacityReactionStyle === style
-                                  ? 'bg-blue-50 border-blue-200 text-blue-700'
-                                  : 'bg-background border-border/50 text-muted-foreground hover:border-border'
+                                  ? 'bg-red-100 border-red-300 text-red-700'
+                                  : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
                               )}
                             >
                               {REACTION_STYLE_LABELS[style].label}
@@ -432,8 +432,8 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                               className={cn(
                                 'flex-1 px-3 py-2 text-sm font-medium rounded-md border transition-all',
                                 selectedConfig.behaviorSettings.reactionTiming === timing
-                                  ? 'bg-blue-50 border-blue-200 text-blue-700'
-                                  : 'bg-background border-border/50 text-muted-foreground hover:border-border'
+                                  ? 'bg-red-100 border-red-300 text-red-700'
+                                  : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
                               )}
                             >
                               {TIMING_LABELS[timing].label}
@@ -455,7 +455,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                       <Users className="h-4 w-4 text-muted-foreground" />
                       Follow Ratio to APP
                     </span>
-                    <span className="text-blue-600 font-semibold text-base">{selectedConfig.behaviorSettings.followRatio}%</span>
+                    <span className="text-red-600 font-semibold text-base">{selectedConfig.behaviorSettings.followRatio}%</span>
                   </label>
                   <Slider
                     value={[selectedConfig.behaviorSettings.followRatio]}
@@ -487,8 +487,8 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                               className={cn(
                                 'flex-1 px-3 py-2 text-sm font-medium rounded-md border transition-all',
                                 selectedConfig.behaviorSettings.utilizationTarget === target
-                                  ? 'bg-blue-50 border-blue-200 text-blue-700'
-                                  : 'bg-background border-border/50 text-muted-foreground hover:border-border'
+                                  ? 'bg-red-100 border-red-300 text-red-700'
+                                  : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
                               )}
                             >
                               {UTILIZATION_LABELS[target].label}
@@ -574,7 +574,13 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                 {/* Projected Capacity - Editable */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <div className="text-xs text-muted-foreground font-medium">Projected Capacity (kt)</div>
+                    <div className="flex items-center gap-2">
+                      <div className="text-xs text-muted-foreground font-medium">Projected Capacity (kt)</div>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-100 text-amber-700 text-[10px] font-medium">
+                        <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+                        Auto-calculated
+                      </span>
+                    </div>
                     <div className="text-xs text-blue-600">Click to edit</div>
                   </div>
                   <div className="grid grid-cols-6 gap-2">
