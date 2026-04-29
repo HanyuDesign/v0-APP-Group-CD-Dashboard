@@ -1267,6 +1267,32 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
+                      {/* AI Insight Box */}
+                      <div className="p-4 rounded-lg bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200">
+                        <div className="flex items-start gap-3">
+                          <div className="p-2 rounded-full bg-indigo-100">
+                            <Lightbulb className="h-4 w-4 text-indigo-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="text-sm font-semibold text-indigo-900 mb-1">AI Insight</h4>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
+                              {(() => {
+                                const segmentName = segmentLabels[outcome.segment]
+                                if (hasExcess && cannibalizationRisk === 'High') {
+                                  return `${segmentName} faces significant oversupply (+${gap}kt). APP's aggressive expansion risks cannibalizing existing sales and triggering price wars. Consider phased capacity deployment or export diversification to mitigate margin erosion.`
+                                } else if (hasExcess && cannibalizationRisk !== 'High') {
+                                  return `${segmentName} shows moderate surplus (+${gap}kt). Market can absorb new capacity without severe disruption. Focus on product differentiation and customer retention to maintain margins during transition.`
+                                } else if (gap < -50) {
+                                  return `${segmentName} presents supply shortage (${gap}kt). Strong demand fundamentals support capacity expansion. APP can capture premium pricing and market share gains with timely execution.`
+                                } else {
+                                  return `${segmentName} market is balanced. Current supply-demand equilibrium suggests stable pricing. APP should monitor competitor moves and demand signals for strategic timing of any capacity adjustments.`
+                                }
+                              })()}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      
                       {/* SECTION 1: Supply vs Demand */}
                       <div className="rounded-lg border border-border/50 bg-white/50 p-4">
                         <p className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Supply vs Demand</p>
