@@ -846,7 +846,7 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
 
                         {/* Bottom Summary Strip */}
                         <div className="grid grid-cols-3 gap-4 pt-2">
-                          <div className="rounded-lg bg-white p-3 border border-teal-200">
+                          <div className="rounded-lg bg-teal-50 p-3 border border-teal-200">
                             <p className="text-xs text-teal-600 mb-1">China Demand Gap</p>
                             <p className={cn(
                               'text-xl font-bold',
@@ -858,7 +858,7 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                               {chinaDemandGap > 200 ? 'High demand attracts imports' : chinaDemandGap > 0 ? 'Moderate demand' : 'Oversupply reduces imports'}
                             </p>
                           </div>
-                          <div className="rounded-lg bg-white p-3 border border-teal-200">
+                          <div className="rounded-lg bg-teal-50 p-3 border border-teal-200">
                             <p className="text-xs text-teal-600 mb-1">China Price Index</p>
                             <div className="flex items-center gap-2">
                               <p className={cn(
@@ -870,7 +870,7 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                               <span className="text-xs text-muted-foreground">vs Global</span>
                             </div>
                           </div>
-                          <div className="rounded-lg bg-white p-3 border border-teal-200">
+                          <div className="rounded-lg bg-teal-50 p-3 border border-teal-200">
                             <p className="text-xs text-teal-600 mb-1">Total China Imports</p>
                             <p className="text-xl font-bold text-[#cc0000]">
                               {exporterData.reduce((sum, e) => sum + e.china.vol, 0)} kt
@@ -973,7 +973,7 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                   {/* Bottom KPI Strip */}
                   <div className="grid grid-cols-3 gap-4 pt-2 border-t border-blue-200">
                     {/* Total Net Supply Change */}
-                    <div className="rounded-lg bg-white p-3 border border-blue-200">
+                    <div className="rounded-lg bg-blue-50 p-3 border border-blue-200">
                       <p className="text-xs text-blue-600 mb-1">5-Year Net Supply</p>
                       {(() => {
                         const totalNet = years.slice(1).reduce((total, year) => {
@@ -995,7 +995,7 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                       })()}
                     </div>
                     {/* Market Balance */}
-                    <div className="rounded-lg bg-white p-3 border border-blue-200">
+                    <div className="rounded-lg bg-blue-50 p-3 border border-blue-200">
                       <p className="text-xs text-blue-600 mb-1">Market Balance</p>
                       {(() => {
                         const totalNet = years.slice(1).reduce((total, year) => {
@@ -1020,7 +1020,7 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
                       })()}
                     </div>
                     {/* Price Trend */}
-                    <div className="rounded-lg bg-white p-3 border border-blue-200">
+                    <div className="rounded-lg bg-blue-50 p-3 border border-blue-200">
                       <p className="text-xs text-blue-600 mb-1">Price Trend</p>
                       {(() => {
                         const totalNet = years.slice(1).reduce((total, year) => {
