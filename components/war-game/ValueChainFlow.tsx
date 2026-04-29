@@ -219,6 +219,7 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
             settings={input.downstream}
             onChange={handleDownstreamChange}
             inputMode={inputMode}
+            onInputModeChange={setInputMode}
           />
         )}
         {activeTab === 'overview' && (

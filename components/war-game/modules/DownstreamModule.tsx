@@ -28,6 +28,7 @@ interface DownstreamModuleProps {
   settings: DownstreamSettings
   onChange: (settings: DownstreamSettings) => void
   inputMode: InputMode
+  onInputModeChange: (mode: InputMode) => void
 }
 
 const demandOptions: DemandScenario[] = ['low', 'base', 'high']
@@ -181,6 +182,19 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange, inp
   // Calculate total capacity from incremental additions
   const totalCapacity = useMemo(() => calculateTotalCapacity(appSupply), [appSupply])
 
+  // Calculate competitor total capacity from additions
+  const calculateCompetitorTotalCapacity = (additions: YearlyCapacity): YearlyCapacity => {
+    let cumulative = additions[2026]
+    return {
+      2026: additions[2026],
+      2027: cumulative + Math.max(0, additions[2027]),
+      2028: cumulative + Math.max(0, additions[2027]) + Math.max(0, additions[2028]),
+      2029: cumulative + Math.max(0, additions[2027]) + Math.max(0, additions[2028]) + Math.max(0, additions[2029]),
+      2030: cumulative + Math.max(0, additions[2027]) + Math.max(0, additions[2028]) + Math.max(0, additions[2029]) + Math.max(0, additions[2030]),
+      2031: cumulative + Math.max(0, additions[2027]) + Math.max(0, additions[2028]) + Math.max(0, additions[2029]) + Math.max(0, additions[2030]) + Math.max(0, additions[2031]),
+    }
+  }
+
   // Handle total capacity input change (convert back to incremental)
   const handleTotalChange = (year: Year, value: number) => {
     const newTotal = { ...totalCapacity, [year]: value }
@@ -208,9 +222,11 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange, inp
             </TableRow>
           </TableHeader>
           <TableBody>
-            {/* Competitor rows (AI-driven, read-only) - only positive values */}
+            {/* Competitor rows - dual view based on inputMode */}
             {competitors.map(comp => {
               const player = PLAYERS.find(p => p.id === comp.playerId)
+              const competitorTotals = calculateCompetitorTotalCapacity(comp.capacity)
+              
               return (
                 <TableRow key={comp.playerId} className="border-border/30 hover:bg-muted/10">
                   <TableCell className="font-medium py-2.5">
@@ -222,20 +238,38 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange, inp
                       <span className="text-sm">{comp.playerName}</span>
                     </div>
                   </TableCell>
-                  {years.map(year => {
-                    // Only show positive values (no negative)
-                    const value = Math.max(0, comp.capacity[year])
-                    return (
-                      <TableCell key={year} className="text-center py-2.5">
-                        <span className={cn(
-                          'text-sm font-mono inline-block w-[68px]',
-                          value > 0 && 'text-success',
-                          value === 0 && 'text-muted-foreground'
-                        )}>
-                          {value > 0 ? `+${value}` : '-'}
-                        </span>
-                      </TableCell>
-                    )
+                  {years.map((year, idx) => {
+                    const isBase = idx === 0
+                    
+                    if (inputMode === 'incremental') {
+                      // Show additions view
+                      const value = Math.max(0, comp.capacity[year])
+                      return (
+                        <TableCell key={year} className="text-center py-2.5">
+                          <span className={cn(
+                            'text-sm font-mono inline-block w-[68px]',
+                            isBase && 'font-semibold',
+                            !isBase && value > 0 && 'text-success',
+                            !isBase && value === 0 && 'text-muted-foreground'
+                          )}>
+                            {isBase ? value : (value > 0 ? `+${value}` : '-')}
+                          </span>
+                        </TableCell>
+                      )
+                    } else {
+                      // Show total capacity view
+                      const totalValue = competitorTotals[year]
+                      return (
+                        <TableCell key={year} className="text-center py-2.5">
+                          <span className={cn(
+                            'text-sm font-mono inline-block w-[68px]',
+                            isBase && 'font-semibold'
+                          )}>
+                            {totalValue}
+                          </span>
+                        </TableCell>
+                      )
+                    }
                   })}
                 </TableRow>
               )
@@ -278,10 +312,13 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange, inp
         </Table>
       </div>
 
-      {/* Note about data sources */}
+      {/* Dynamic helper text based on mode */}
       <div className="px-4 py-2 bg-muted/20 border-t border-border/30">
         <p className="text-[11px] text-muted-foreground">
-          2026 shows base capacity. Subsequent years reflect publicly announced additions.
+          {inputMode === 'incremental' 
+            ? "Showing yearly capacity additions. 2026 shows base capacity."
+            : "Showing total installed capacity over time."
+          }
         </p>
       </div>
     </div>
@@ -292,6 +329,7 @@ export function DownstreamModule({
   settings,
   onChange,
   inputMode,
+  onInputModeChange,
 }: DownstreamModuleProps) {
   const handleAppSupplyChange = (segment: 'paper' | 'board' | 'tissue', year: keyof YearlyCapacity, value: number) => {
     onChange({
@@ -355,14 +393,42 @@ export function DownstreamModule({
 
         {/* PART 2: Supply Block */}
         <div className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4">
-          {/* Header */}
+          {/* Header with View Mode Switch */}
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-base font-bold flex items-center gap-2 text-red-800">
               <span className="flex items-center justify-center h-6 w-6 rounded-full bg-red-600 text-white text-xs font-bold">2</span>
               <Factory className="h-4 w-4" />
               Supply Capacity Additions (kt)
             </h3>
-            <span className="px-2 py-0.5 text-[10px] font-medium bg-red-100 text-red-700 rounded uppercase">User Input</span>
+            
+            {/* View Mode Segmented Control */}
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-muted-foreground font-medium">View Mode</span>
+              <div className="flex rounded-lg border border-border bg-white p-1">
+                <button
+                  onClick={() => onInputModeChange('incremental')}
+                  className={cn(
+                    "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
+                    inputMode === 'incremental'
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "text-muted-foreground hover:bg-muted/50"
+                  )}
+                >
+                  Annual Additions (kt/year)
+                </button>
+                <button
+                  onClick={() => onInputModeChange('total')}
+                  className={cn(
+                    "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
+                    inputMode === 'total'
+                      ? "bg-green-600 text-white shadow-sm"
+                      : "text-muted-foreground hover:bg-muted/50"
+                  )}
+                >
+                  Total Capacity (kt)
+                </button>
+              </div>
+            </div>
           </div>
           
           <div className="space-y-6">
