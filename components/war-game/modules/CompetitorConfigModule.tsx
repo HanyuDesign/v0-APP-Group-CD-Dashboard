@@ -257,8 +257,8 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
   return (
     <div className="flex gap-4 h-[calc(100vh-280px)] min-h-[600px]">
       {/* LEFT SIDEBAR - Competitor Selection */}
-      <div className="w-56 flex-shrink-0 space-y-2">
-        <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider px-2 mb-3">
+      <div className="w-64 flex-shrink-0 space-y-3">
+        <div className="text-sm font-semibold text-foreground px-3 mb-4">
           Competitors
         </div>
         {config.map((competitor) => (
@@ -266,16 +266,16 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
             key={competitor.playerId}
             onClick={() => setSelectedCompetitor(competitor.playerId)}
             className={cn(
-              'w-full px-3 py-2.5 rounded-lg text-left transition-all flex items-center justify-between',
+              'w-full px-4 py-3 rounded-lg text-left transition-all flex items-center justify-between',
               selectedCompetitor === competitor.playerId
                 ? 'bg-primary text-primary-foreground shadow-sm'
                 : 'bg-muted/50 text-foreground hover:bg-muted'
             )}
           >
-            <span className="font-medium text-sm">{competitor.playerName}</span>
+            <span className="font-semibold text-base">{competitor.playerName}</span>
             {competitor.isEdited && (
               <span className={cn(
-                'h-2 w-2 rounded-full',
+                'h-2.5 w-2.5 rounded-full',
                 selectedCompetitor === competitor.playerId ? 'bg-primary-foreground/50' : 'bg-amber-500'
               )} />
             )}
@@ -283,9 +283,9 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
         ))}
         
         {/* Add Competitor Button */}
-        <button className="w-full px-3 py-2.5 rounded-lg text-left transition-all flex items-center gap-2 border border-dashed border-border/50 text-muted-foreground hover:border-border hover:text-foreground">
-          <Plus className="h-4 w-4" />
-          <span className="text-sm">Add Competitor</span>
+        <button className="w-full px-4 py-3 rounded-lg text-left transition-all flex items-center gap-2 border border-dashed border-border/50 text-muted-foreground hover:border-border hover:text-foreground">
+          <Plus className="h-5 w-5" />
+          <span className="text-base">Add Competitor</span>
         </button>
       </div>
       
