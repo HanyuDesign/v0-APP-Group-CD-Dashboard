@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
-import { FileText, Package, Bath, Bot, Building2, Lightbulb, TrendingUp, TrendingDown, Minus, Globe, Factory, BarChart3, ArrowUp, ArrowDown, ArrowRight, ChevronUp, ChevronDown } from 'lucide-react'
+import { FileText, Package, Bath, Bot, Building2, Lightbulb, TrendingUp, TrendingDown, Minus, Globe, Factory, BarChart3, ArrowUp, ArrowDown, ArrowRight, ArrowLeft, ChevronUp, ChevronDown, Trees, Users } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { AIBadge } from '../shared/AIBadge'
 import { TrafficLight } from '../shared/TrafficLight'
@@ -115,89 +115,171 @@ export function AIDecisionsSummary({ result }: AIDecisionsSummaryProps) {
         </div>
       </div>
 
-      {/* AI Insights Overview - High-tech light purple theme */}
-      <Card className="border-purple-300 bg-gradient-to-br from-purple-50 via-violet-50 to-indigo-50 shadow-lg shadow-purple-200/50">
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-sm text-purple-700">
-            <Lightbulb className="h-4 w-4 text-purple-600" />
-            AI Strategic Insights
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-4 gap-4 mb-4">
-            {/* APP Strategy Summary */}
-            <div className="rounded-lg bg-purple-100 border border-purple-200 p-3">
-              <p className="text-xs text-purple-600 mb-1">APP Expansion</p>
-              <p className="text-xl font-bold text-purple-700">+{appChinaPulpAdd} kt</p>
-              <p className="text-xs text-purple-500">Pulp capacity</p>
-            </div>
-            
-            {/* Competitor Response Summary */}
-            <div className="rounded-lg bg-white/80 border border-purple-200 p-3">
-              <p className="text-xs text-purple-600 mb-1">Competitor Response</p>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1">
-                  <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
-                  <span className="text-xl font-bold text-gray-800">{competitorsExpanding}</span>
+      {/* AI Strategic Insights - Value Chain Flow */}
+      <div className="rounded-lg border-2 border-indigo-200 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 overflow-hidden">
+        <div className="px-4 py-3 border-b border-indigo-200 bg-indigo-100/50 flex items-center gap-2">
+          <Lightbulb className="h-5 w-5 text-indigo-600" />
+          <h3 className="font-bold text-indigo-900">AI Strategic Insights</h3>
+          <span className="ml-auto text-xs text-indigo-600 bg-indigo-100 px-2 py-0.5 rounded">Value Chain Analysis</span>
+        </div>
+        
+        <div className="p-4">
+          {/* 3-Stage Horizontal Flow */}
+          <div className="grid grid-cols-[1fr_auto_1.2fr_auto_1fr] gap-2 items-stretch">
+            {/* Stage 1: Forestry (LEFT) */}
+            <div className="rounded-lg border border-green-200 bg-white p-3">
+              <div className="flex items-center gap-2 mb-3">
+                <Trees className="h-4 w-4 text-green-600" />
+                <h4 className="font-semibold text-sm text-green-800">Forestry & Woodchip Supply</h4>
+              </div>
+              <div className="space-y-2">
+                <div className="text-center p-2 rounded bg-green-50">
+                  <div className="text-xs text-muted-foreground">Total Supply Impact</div>
+                  <div className="text-xl font-bold text-green-700">
+                    {appChinaPulpAdd > 200 ? 'High Demand' : appChinaPulpAdd > 100 ? 'Moderate' : 'Stable'}
+                  </div>
+                  <span className={cn(
+                    'text-xs px-1.5 py-0.5 rounded font-medium',
+                    appChinaPulpAdd > 200 ? 'bg-red-100 text-red-600' : appChinaPulpAdd > 100 ? 'bg-amber-100 text-amber-600' : 'bg-green-100 text-green-600'
+                  )}>
+                    {appChinaPulpAdd > 200 ? 'Tight' : appChinaPulpAdd > 100 ? 'Balanced' : 'Abundant'}
+                  </span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Minus className="h-3.5 w-3.5 text-gray-400" />
-                  <span className="text-xl font-bold text-gray-800">{competitorsMaintaining}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <TrendingDown className="h-3.5 w-3.5 text-amber-500" />
-                  <span className="text-xl font-bold text-gray-800">{competitorsDelaying}</span>
+                <div className="text-center p-2 rounded bg-muted/30">
+                  <div className="text-[10px] text-muted-foreground">Wood Demand from APP</div>
+                  <div className="text-sm font-semibold">+{Math.round(appChinaPulpAdd * 2.2)} kt/yr</div>
                 </div>
               </div>
-              <p className="text-xs text-purple-500 mt-1">
-                Net: {totalCompetitorPulpChange > 0 ? '+' : ''}{totalCompetitorPulpChange} kt pulp
-              </p>
             </div>
             
-            {/* Exporter Summary */}
-            <div className="rounded-lg bg-white/80 border border-purple-200 p-3">
-              <p className="text-xs text-purple-600 mb-1">Exporter China Focus</p>
-              <p className="text-xl font-bold text-gray-800">{Math.round(avgChinaShare * 100)}%</p>
-              <p className="text-xs text-purple-500">{totalChinaExports} kt to China</p>
+            {/* Arrow: Pulp <- Forestry */}
+            <div className="flex flex-col items-center justify-center px-1">
+              <ArrowLeft className="h-5 w-5 text-green-500" />
+              <div className="text-[9px] text-muted-foreground text-center mt-1 leading-tight">
+                Drives<br/>wood demand
+              </div>
             </div>
             
-            {/* Market Balance Summary */}
-            <div className="rounded-lg bg-white/80 border border-purple-200 p-3">
-              <p className="text-xs text-purple-600 mb-1">Downstream Health</p>
-              <div className="flex items-center gap-2">
-                {segmentOutcomes.map(s => (
-                  <div
-                    key={s.segment}
-                    className={cn(
-                      'h-7 w-7 rounded-full flex items-center justify-center',
-                      s.utilization >= 90 && 'bg-emerald-500',
-                      s.utilization >= 80 && s.utilization < 90 && 'bg-amber-500',
-                      s.utilization < 80 && 'bg-red-500'
-                    )}
-                  >
-                    <span className="text-xl font-bold text-white">
-                      {s.segment.charAt(0).toUpperCase()}
+            {/* Stage 2: Pulp (CENTER - Primary Driver) */}
+            <div className="rounded-lg border-2 border-blue-300 bg-white p-3 shadow-sm">
+              <div className="flex items-center gap-2 mb-3">
+                <Factory className="h-4 w-4 text-blue-600" />
+                <h4 className="font-semibold text-sm text-blue-800">Pulp Capacity & Market Response</h4>
+              </div>
+              <div className="space-y-2">
+                {/* APP Expansion */}
+                <div className="p-2 rounded bg-red-50 border border-red-200">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-red-700 font-medium">APP Capacity Decision</span>
+                    <span className="text-sm font-bold text-red-700">+{appChinaPulpAdd} kt</span>
+                  </div>
+                </div>
+                {/* Competitor Response */}
+                <div className="p-2 rounded bg-blue-50 border border-blue-100">
+                  <div className="flex items-center gap-1 mb-1">
+                    <Users className="h-3 w-3 text-blue-600" />
+                    <span className="text-xs text-blue-700 font-medium">Competitor Response</span>
+                  </div>
+                  <div className="text-sm">
+                    <span className="font-semibold text-blue-800">{competitorsExpanding} expanding, {competitorsDelaying} delaying</span>
+                    <span className={cn(
+                      'ml-2 font-bold',
+                      totalCompetitorPulpChange >= 0 ? 'text-green-600' : 'text-red-600'
+                    )}>
+                      {totalCompetitorPulpChange >= 0 ? '+' : ''}{totalCompetitorPulpChange} kt
                     </span>
                   </div>
-                ))}
+                </div>
+                {/* Exporter Allocation */}
+                <div className="p-2 rounded bg-indigo-50 border border-indigo-100">
+                  <div className="flex items-center gap-1 mb-1">
+                    <Globe className="h-3 w-3 text-indigo-600" />
+                    <span className="text-xs text-indigo-700 font-medium">Exporter China Allocation</span>
+                  </div>
+                  <div className="text-sm">
+                    <span className="font-semibold text-indigo-800">{Math.round(avgChinaShare * 100)}%</span>
+                    <span className="text-muted-foreground ml-1">({totalChinaExports} kt to China)</span>
+                  </div>
+                </div>
               </div>
-              <p className="text-xs text-purple-500 mt-1">
-                Avg util: {Math.round(segmentOutcomes.reduce((s, o) => s + o.utilization, 0) / segmentOutcomes.length)}%
-              </p>
+            </div>
+            
+            {/* Arrow: Pulp -> Downstream */}
+            <div className="flex flex-col items-center justify-center px-1">
+              <ArrowRight className="h-5 w-5 text-purple-500" />
+              <div className="text-[9px] text-muted-foreground text-center mt-1 leading-tight">
+                Requires<br/>absorption
+              </div>
+            </div>
+            
+            {/* Stage 3: Downstream (RIGHT) */}
+            <div className="rounded-lg border border-purple-200 bg-white p-3">
+              <div className="flex items-center gap-2 mb-3">
+                <Package className="h-4 w-4 text-purple-600" />
+                <h4 className="font-semibold text-sm text-purple-800">Downstream Absorption</h4>
+              </div>
+              <div className="space-y-2">
+                {segmentOutcomes.map(s => {
+                  const Icon = segmentIcons[s.segment] || Package
+                  return (
+                    <div key={s.segment} className="p-2 rounded bg-purple-50/50 border border-purple-100">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium flex items-center gap-1">
+                          {Icon} {segmentLabels[s.segment]}
+                        </span>
+                        <span className="text-xs">{s.utilization}% util</span>
+                      </div>
+                      <div className={cn(
+                        'text-[10px] mt-0.5',
+                        s.utilization >= 85 ? 'text-green-600' :
+                        s.utilization >= 70 ? 'text-amber-600' : 'text-red-600'
+                      )}>
+                        Margin Pressure: {s.utilization >= 85 ? 'Low' : s.utilization >= 70 ? 'Medium' : 'High'}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           </div>
           
-          {/* Insight bullets */}
-          <div className="space-y-2 border-t border-purple-200 pt-3">
-            {insights.map((insight, index) => (
-              <div key={index} className="flex items-start gap-2 text-sm">
-                <span className="text-purple-600 font-bold mt-0.5">•</span>
-                <p className="text-gray-700">{insight}</p>
-              </div>
-            ))}
+          {/* Bottom Insights Layer - 3 Columns */}
+          <div className="grid grid-cols-3 gap-3 mt-4 pt-3 border-t border-indigo-200">
+            {/* Upstream Insights */}
+            <div className="p-2 rounded bg-green-50/50">
+              <h5 className="text-[10px] font-semibold text-green-700 uppercase tracking-wide mb-1">Upstream Insight</h5>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {appChinaPulpAdd > 200 
+                  ? 'Aggressive APP expansion significantly increases wood demand, potentially tightening supply.'
+                  : appChinaPulpAdd > 100
+                    ? 'Moderate capacity expansion maintains balanced wood supply.'
+                    : 'Conservative capacity plans keep wood demand stable.'
+                }
+              </p>
+            </div>
+            {/* Market Dynamics */}
+            <div className="p-2 rounded bg-blue-50/50">
+              <h5 className="text-[10px] font-semibold text-blue-700 uppercase tracking-wide mb-1">Market Dynamics</h5>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {competitorsDelaying > competitorsExpanding
+                  ? `Strong APP expansion triggers ${competitorsDelaying} competitor delays. Exporters shift ${Math.round(avgChinaShare * 100)}% allocation to China.`
+                  : `Balanced expansion environment with ${competitorsExpanding} competitors expanding alongside APP.`
+                }
+              </p>
+            </div>
+            {/* Downstream Risks */}
+            <div className="p-2 rounded bg-purple-50/50">
+              <h5 className="text-[10px] font-semibold text-purple-700 uppercase tracking-wide mb-1">Downstream Risk</h5>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {segmentOutcomes.some(s => s.utilization < 75)
+                  ? 'Some segments facing oversupply. Risk of margin compression in underutilized markets.'
+                  : 'Downstream demand sufficient to absorb planned capacity additions.'
+                }
+              </p>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Tabbed Section: Pulp Capacity Decisions & Downstream Outcomes */}
       <Tabs defaultValue="pulp" className="w-full">
