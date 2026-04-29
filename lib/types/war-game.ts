@@ -30,11 +30,22 @@ export interface Player {
   tissueCapacity: number
 }
 
-// 林业与木片政策设置
+// Policy start year type
+export type PolicyStartYear = 2026 | 2027 | 2028 | 2029 | 2030 | 2031
+
+// 林业与木片政策设置 - Time-based policy inputs
 export interface ForestrySettings {
-  chinaLoggingPolicy: PolicyLevel
+  // Section 1: Micro Demand Driver (China) - Global assumption
   chinaRealEstateCondition: RealEstateCondition
+  
+  // Section 2: Policy Drivers (Time-based)
+  // China Logging Policy
+  chinaLoggingPolicy: PolicyLevel
+  chinaLoggingPolicyStartYear: PolicyStartYear
+  
+  // Vietnam Export Policy
   vietnamExportPolicy: ExportPolicyLevel
+  vietnamExportPolicyStartYear: PolicyStartYear
 }
 
 // Yearly capacity by player

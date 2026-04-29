@@ -153,11 +153,16 @@ export const PLAYERS: Player[] = [
   },
 ]
 
-// Default forestry settings
+// Default forestry settings - Time-based policy inputs
 export const DEFAULT_FORESTRY_SETTINGS: ForestrySettings = {
-  chinaLoggingPolicy: 'baseline',
+  // Section 1: Micro Demand Driver (China)
   chinaRealEstateCondition: 'stable',
+  
+  // Section 2: Policy Drivers (Time-based)
+  chinaLoggingPolicy: 'baseline',
+  chinaLoggingPolicyStartYear: 2026,
   vietnamExportPolicy: 'baseline',
+  vietnamExportPolicyStartYear: 2026,
 }
 
 // Default APP capacity settings
