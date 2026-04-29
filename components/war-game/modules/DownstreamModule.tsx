@@ -1,7 +1,7 @@
 'use client'
 
+import * as React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
@@ -93,24 +93,109 @@ interface SupplySectionProps {
   onAppSupplyChange: (year: keyof YearlyCapacity, value: number) => void
 }
 
+// Validated numeric input for capacity (allows negative, max 5 digits)
+function CapacityInput({ 
+  value, 
+  onChange, 
+  year,
+  tabIndex 
+}: { 
+  value: number
+  onChange: (value: number) => void
+  year: number
+  tabIndex?: number
+}) {
+  const [localValue, setLocalValue] = React.useState<string>(value === 0 ? '' : String(value))
+  const [isInvalid, setIsInvalid] = React.useState(false)
+
+  // Sync local value when prop changes
+  React.useEffect(() => {
+    setLocalValue(value === 0 ? '' : String(value))
+  }, [value])
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value
+    
+    // Allow empty input
+    if (input === '' || input === '-') {
+      setLocalValue(input)
+      setIsInvalid(false)
+      if (input === '') onChange(0)
+      return
+    }
+
+    // Validate: allow only numbers with optional leading minus
+    const regex = /^-?\d*$/
+    if (!regex.test(input)) {
+      setIsInvalid(true)
+      return
+    }
+
+    // Check max 5 digits (excluding minus sign)
+    const digitsOnly = input.replace('-', '')
+    if (digitsOnly.length > 5) {
+      setIsInvalid(true)
+      return
+    }
+
+    setIsInvalid(false)
+    setLocalValue(input)
+    
+    const numValue = parseInt(input, 10)
+    if (!isNaN(numValue)) {
+      onChange(numValue)
+    }
+  }
+
+  const handleBlur = () => {
+    // Clean up on blur
+    if (localValue === '-' || localValue === '') {
+      setLocalValue('')
+      onChange(0)
+    }
+    setIsInvalid(false)
+  }
+
+  return (
+    <input
+      type="text"
+      inputMode="numeric"
+      value={localValue}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      placeholder="0"
+      tabIndex={tabIndex}
+      className={cn(
+        'h-8 w-[68px] text-sm text-center px-1 mx-auto rounded-md font-mono transition-all',
+        'bg-white border focus:outline-none focus:ring-2',
+        isInvalid 
+          ? 'border-red-500 focus:border-red-500 focus:ring-red-200' 
+          : 'border-[#cc0000]/30 focus:border-[#cc0000] focus:ring-[#cc0000]/20',
+        'hover:border-[#cc0000]/50'
+      )}
+    />
+  )
+}
+
 function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange }: SupplySectionProps) {
   const competitors = DOWNSTREAM_COMPETITOR_SUPPLY[segment]
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
+    <div className="rounded-lg border border-border/60 bg-white/80 overflow-hidden">
+      {/* Sub-module header */}
+      <div className="flex items-center gap-2 px-4 py-2.5 bg-muted/40 border-b border-border/50">
         {icon}
-        <span className="font-medium text-sm">{title}</span>
+        <span className="font-semibold text-sm">{title}</span>
       </div>
 
       {/* Combined Competitor + APP China Supply Table */}
-      <div className="rounded-lg border border-border/50 overflow-hidden">
+      <div className="overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/30">
-              <TableHead className="text-sm font-semibold w-36">Player</TableHead>
+            <TableRow className="bg-muted/20">
+              <TableHead className="text-xs font-semibold w-40 py-2">Player</TableHead>
               {years.map(year => (
-                <TableHead key={year} className="text-sm text-center font-semibold w-[72px]">{year}</TableHead>
+                <TableHead key={year} className="text-xs text-center font-semibold w-[76px] py-2">{year}</TableHead>
               ))}
             </TableRow>
           </TableHeader>
@@ -119,8 +204,8 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange }: S
             {competitors.map(comp => {
               const player = PLAYERS.find(p => p.id === comp.playerId)
               return (
-                <TableRow key={comp.playerId} className="border-border/30">
-                  <TableCell className="font-medium py-2">
+                <TableRow key={comp.playerId} className="border-border/30 hover:bg-muted/10">
+                  <TableCell className="font-medium py-2.5">
                     <div className="flex items-center gap-2">
                       <span
                         className="h-2.5 w-2.5 rounded-full flex-shrink-0"
@@ -132,9 +217,9 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange }: S
                   {years.map(year => {
                     const value = comp.capacity[year]
                     return (
-                      <TableCell key={year} className="text-center py-2">
+                      <TableCell key={year} className="text-center py-2.5">
                         <span className={cn(
-                          'text-sm font-mono',
+                          'text-sm font-mono inline-block w-[68px]',
                           value > 0 && 'text-success',
                           value < 0 && 'text-destructive',
                           value === 0 && 'text-muted-foreground'
@@ -149,21 +234,21 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange }: S
             })}
 
             {/* APP China row (user input) - highlighted */}
-            <TableRow className="bg-[#cc0000]/5 border-t-2 border-[#cc0000]/30">
-              <TableCell className="font-medium py-2">
+            <TableRow className="bg-[#cc0000]/5 border-t-2 border-[#cc0000]/20">
+              <TableCell className="font-medium py-2.5">
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full flex-shrink-0 bg-[#cc0000]" />
                   <span className="text-sm font-semibold text-[#cc0000]">APP China</span>
-                  <span className="px-1.5 py-0.5 text-[10px] font-medium bg-[#cc0000]/10 text-[#cc0000] rounded">User Input</span>
+                  <span className="px-1.5 py-0.5 text-[9px] font-semibold bg-[#cc0000]/10 text-[#cc0000] rounded uppercase tracking-wide">User Input</span>
                 </div>
               </TableCell>
-              {years.map(year => (
-                <TableCell key={year} className="text-center py-2 px-1">
-                  <Input
-                    type="number"
-                    value={appSupply[year] || ''}
-                    onChange={(e) => onAppSupplyChange(year, parseInt(e.target.value) || 0)}
-                    className="h-7 w-16 text-sm text-center px-1 mx-auto bg-white border border-[#cc0000]/30 focus:border-[#cc0000] focus:ring-1 focus:ring-[#cc0000]/20 font-mono"
+              {years.map((year, idx) => (
+                <TableCell key={year} className="text-center py-2.5 px-1">
+                  <CapacityInput
+                    value={appSupply[year]}
+                    onChange={(value) => onAppSupplyChange(year, value)}
+                    year={year}
+                    tabIndex={idx + 1}
                   />
                 </TableCell>
               ))}
@@ -173,9 +258,11 @@ function SupplySection({ segment, title, icon, appSupply, onAppSupplyChange }: S
       </div>
 
       {/* Note about data sources */}
-      <p className="text-[11px] text-muted-foreground italic">
-        Competitor capacity is AI-driven; APP capacity is user-defined.
-      </p>
+      <div className="px-4 py-2 bg-muted/20 border-t border-border/30">
+        <p className="text-[11px] text-muted-foreground">
+          Competitor capacity is AI-driven; APP capacity is user-defined.
+        </p>
+      </div>
     </div>
   )
 }
