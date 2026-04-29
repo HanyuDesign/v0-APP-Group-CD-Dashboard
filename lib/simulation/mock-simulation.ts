@@ -13,33 +13,23 @@ import type {
   PriceLevel,
 } from '@/lib/types/war-game'
 import { PLAYERS, IRR_HURDLE } from '@/lib/data/initial-data'
+import { calculateWoodchipSupply } from './computations'
 
 // Simulation delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
-// Calculate woodchip market outcome
+// Calculate woodchip market outcome using time-based policies
 function calculateWoodchipOutcome(input: SimulationInput): WoodchipOutcome {
-  const { chinaLoggingPolicy, chinaRealEstateCondition, vietnamExportPolicy } = input.forestry
+  // Use the computation layer to get yearly supply
+  const yearlySupply = calculateWoodchipSupply(input.forestry)
+  
+  // Use 2028 as reference year for market assessment (mid-term outlook)
+  const refYearData = yearlySupply.find(y => y.year === 2028) || yearlySupply[2]
   
   let availability: UtilizationLevel = 'medium'
   let priceLevel: PriceLevel = 'medium'
   
-  // Calculate China domestic supply (base 800 kt)
-  let domesticSupply = 800
-  if (chinaLoggingPolicy === 'tight') domesticSupply -= 150
-  else if (chinaLoggingPolicy === 'relaxed') domesticSupply += 150
-  
-  // Real estate impact (construction waste wood recycling)
-  if (chinaRealEstateCondition === 'downturn') domesticSupply -= 100
-  else if (chinaRealEstateCondition === 'recovery') domesticSupply += 100
-  
-  // Calculate Vietnam import (base 400 kt)
-  let vietnamImport = 400
-  if (vietnamExportPolicy === 'restricted') vietnamImport -= 120
-  else if (vietnamExportPolicy === 'expanded') vietnamImport += 120
-  
-  // Total supply and availability assessment
-  const totalSupply = domesticSupply + vietnamImport
+  const totalSupply = refYearData.totalSupply
   if (totalSupply <= 950) {
     availability = 'low'
     priceLevel = 'high'
@@ -51,7 +41,12 @@ function calculateWoodchipOutcome(input: SimulationInput): WoodchipOutcome {
     priceLevel = 'medium'
   }
   
-  return { availability, priceLevel, domesticSupply, vietnamImport }
+  return { 
+    availability, 
+    priceLevel, 
+    domesticSupply: refYearData.chinaSupply, 
+    vietnamImport: refYearData.vietnamSupply 
+  }
 }
 
 // AI simulate competitor responses

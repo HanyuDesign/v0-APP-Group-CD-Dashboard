@@ -6,13 +6,15 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ResultsPanel } from '@/components/war-game/results/ResultsPanel'
 import { OverviewPanel } from '@/components/war-game/OverviewPanel'
-import { Zap, ArrowLeft, History, Download, Share2, ClipboardList, ChevronDown, ChevronUp } from 'lucide-react'
+import { Zap, ArrowLeft, History, Download, Share2, ClipboardList, ChevronDown, ChevronUp, Bug } from 'lucide-react'
 import { useSimulation } from '@/lib/context/SimulationContext'
+import { computeAllFromInput } from '@/lib/simulation/computations'
 
 export default function ResultsPage() {
   const router = useRouter()
   const { input, result, status, history } = useSimulation()
   const [showOverview, setShowOverview] = useState(false)
+  const [showDebug, setShowDebug] = useState(false)
 
   // Redirect to input page if no results
   useEffect(() => {
@@ -134,6 +136,16 @@ export default function ResultsPage() {
                 <Share2 className="mr-1.5 h-4 w-4" />
                 Share Report
               </Button>
+              <div className="h-6 w-px bg-border" />
+              <Button
+                variant={showDebug ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setShowDebug(!showDebug)}
+                className="gap-1.5"
+              >
+                <Bug className="h-4 w-4" />
+                Debug
+              </Button>
             </div>
           </div>
         </div>
@@ -160,7 +172,56 @@ export default function ResultsPage() {
       {/* Expandable Overview Panel */}
       {showOverview && (
         <div className="border-b border-border/50 bg-muted/30 px-6 py-4">
-          <OverviewPanel input={input} showHeader={false} />
+          <OverviewPanel input={result?.input || input} showHeader={false} />
+        </div>
+      )}
+
+      {/* Debug Panel - Shows current state and computed values */}
+      {showDebug && result && (
+        <div className="border-b border-border/50 bg-amber-50 px-6 py-4">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Bug className="h-5 w-5 text-amber-600" />
+              <h3 className="font-semibold text-amber-800">Debug: State & Computed Values</h3>
+              <Badge variant="outline" className="bg-amber-100 text-amber-700">Development Only</Badge>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-4 text-sm">
+              {/* Forestry Settings */}
+              <div className="rounded-lg border border-amber-200 bg-white p-3">
+                <h4 className="font-semibold text-amber-700 mb-2">Forestry Settings (from result.input)</h4>
+                <pre className="text-xs bg-amber-50 p-2 rounded overflow-auto max-h-32">
+                  {JSON.stringify(result.input.forestry, null, 2)}
+                </pre>
+              </div>
+              
+              {/* Pulp Capacity */}
+              <div className="rounded-lg border border-amber-200 bg-white p-3">
+                <h4 className="font-semibold text-amber-700 mb-2">APP Capacity (from result.input)</h4>
+                <pre className="text-xs bg-amber-50 p-2 rounded overflow-auto max-h-32">
+                  {JSON.stringify(result.input.appCapacity.appChina, null, 2)}
+                </pre>
+              </div>
+              
+              {/* Computed Values */}
+              <div className="rounded-lg border border-amber-200 bg-white p-3">
+                <h4 className="font-semibold text-amber-700 mb-2">Computed Woodchip Supply</h4>
+                <pre className="text-xs bg-amber-50 p-2 rounded overflow-auto max-h-32">
+                  {JSON.stringify(computeAllFromInput(result.input).woodchipSupply.map(y => ({
+                    year: y.year,
+                    china: y.chinaSupply,
+                    vietnam: y.vietnamSupply,
+                    total: y.totalSupply
+                  })), null, 2)}
+                </pre>
+              </div>
+            </div>
+            
+            <p className="text-xs text-amber-600">
+              This debug panel verifies that the Simulation Results page reads data from the shared state (result.input) 
+              and computes derived values correctly. All displayed values should match your input configuration.
+            </p>
+          </div>
         </div>
       )}
 

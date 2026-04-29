@@ -4,81 +4,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Trees, Factory, Package, ClipboardList, FileText, Bath, Info, TrendingUp, TrendingDown, ChevronUp, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { POLICY_LABELS } from '@/lib/data/initial-data'
-import type { SimulationInput, YearlyCapacity, PolicyLevel, ExportPolicyLevel, RealEstateCondition, PolicyStartYear } from '@/lib/types/war-game'
+import type { SimulationInput, YearlyCapacity } from '@/lib/types/war-game'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { 
+  calculateWoodchipSupply, 
+  YEARS, 
+  CHINA_BASE_SUPPLY, 
+  VIETNAM_BASE_SUPPLY, 
+  REAL_ESTATE_IMPACT 
+} from '@/lib/simulation/computations'
 
 interface OverviewPanelProps {
   input: SimulationInput
   showHeader?: boolean
 }
 
-const years = [2026, 2027, 2028, 2029, 2030, 2031] as const
-type Year = typeof years[number]
-
-// Base supply values for woodchips
-const CHINA_BASE_SUPPLY = 750 // kt
-const VIETNAM_BASE_SUPPLY = 400 // kt
-
-// Policy impact multipliers
-const CHINA_POLICY_IMPACT: Record<PolicyLevel, number> = {
-  tight: -150,
-  baseline: 0,
-  relaxed: 150,
-}
-
-const REAL_ESTATE_IMPACT: Record<RealEstateCondition, number> = {
-  downturn: 100,
-  stable: 0,
-  recovery: -100,
-}
-
-const VIETNAM_POLICY_IMPACT: Record<ExportPolicyLevel, number> = {
-  restricted: -120,
-  baseline: 0,
-  expanded: 120,
-}
-
-// Calculate China woodchip supply for each year
-function calculateChinaYearlySupply(
-  loggingPolicy: PolicyLevel,
-  policyStartYear: PolicyStartYear,
-  realEstateCondition: RealEstateCondition
-): Record<Year, { supply: number; delta: number; isPolicyActive: boolean }> {
-  const result: Record<Year, { supply: number; delta: number; isPolicyActive: boolean }> = {} as Record<Year, { supply: number; delta: number; isPolicyActive: boolean }>
-  
-  for (const year of years) {
-    const isPolicyActive = year >= policyStartYear
-    let supply = CHINA_BASE_SUPPLY
-    supply += REAL_ESTATE_IMPACT[realEstateCondition]
-    if (isPolicyActive) {
-      supply += CHINA_POLICY_IMPACT[loggingPolicy]
-    }
-    const delta = isPolicyActive ? CHINA_POLICY_IMPACT[loggingPolicy] : 0
-    result[year] = { supply, delta, isPolicyActive }
-  }
-  
-  return result
-}
-
-// Calculate Vietnam supply for each year
-function calculateVietnamYearlySupply(
-  exportPolicy: ExportPolicyLevel,
-  policyStartYear: PolicyStartYear
-): Record<Year, { supply: number; delta: number; isPolicyActive: boolean }> {
-  const result: Record<Year, { supply: number; delta: number; isPolicyActive: boolean }> = {} as Record<Year, { supply: number; delta: number; isPolicyActive: boolean }>
-  
-  for (const year of years) {
-    const isPolicyActive = year >= policyStartYear
-    let supply = VIETNAM_BASE_SUPPLY
-    if (isPolicyActive) {
-      supply += VIETNAM_POLICY_IMPACT[exportPolicy]
-    }
-    const delta = isPolicyActive ? VIETNAM_POLICY_IMPACT[exportPolicy] : 0
-    result[year] = { supply, delta, isPolicyActive }
-  }
-  
-  return result
-}
+const years = YEARS
 
 // Helper function to convert additions to cumulative total capacity
 function calculateTotalCapacity(additions: YearlyCapacity): YearlyCapacity {
@@ -95,17 +36,25 @@ function calculateTotalCapacity(additions: YearlyCapacity): YearlyCapacity {
 }
 
 export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) {
-  // Calculate yearly woodchip supplies
-  const chinaSupply = calculateChinaYearlySupply(
-    input.forestry.chinaLoggingPolicy,
-    input.forestry.chinaLoggingPolicyStartYear,
-    input.forestry.chinaRealEstateCondition
-  )
+  // Calculate yearly woodchip supplies using centralized computation
+  const woodchipSupplyData = calculateWoodchipSupply(input.forestry)
   
-  const vietnamSupply = calculateVietnamYearlySupply(
-    input.forestry.vietnamExportPolicy,
-    input.forestry.vietnamExportPolicyStartYear
-  )
+  // Convert to record format for easier access in JSX
+  const chinaSupply: Record<number, { supply: number; delta: number; isPolicyActive: boolean }> = {}
+  const vietnamSupply: Record<number, { supply: number; delta: number; isPolicyActive: boolean }> = {}
+  
+  for (const data of woodchipSupplyData) {
+    chinaSupply[data.year] = {
+      supply: data.chinaSupply,
+      delta: data.chinaDelta,
+      isPolicyActive: data.chinaIsPolicyActive
+    }
+    vietnamSupply[data.year] = {
+      supply: data.vietnamSupply,
+      delta: data.vietnamDelta,
+      isPolicyActive: data.vietnamIsPolicyActive
+    }
+  }
 
   // Competitor data for pulp (base capacity in 2026, additions in subsequent years)
   const competitorPulpAdditions = [

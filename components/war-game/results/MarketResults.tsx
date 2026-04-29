@@ -89,7 +89,8 @@ export function MarketResults({ result }: MarketResultsProps) {
                       {Math.round(outcome.pulpMarketShare)}%
                     </TableCell>
                     <TableCell className={cn('text-right font-mono text-sm py-3', isAppChina && 'font-semibold')}>
-                      ${Math.round(350 + Math.random() * 100)} /t
+                      {/* Cost derived from utilization - lower utilization = higher unit cost */}
+                      ${Math.round(420 - outcome.pulpUtilization * 0.8)} /t
                     </TableCell>
                   </TableRow>
                 )
