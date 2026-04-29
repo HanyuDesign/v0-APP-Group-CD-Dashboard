@@ -142,19 +142,24 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                       <span className="font-bold text-[#cc0000]">APP China</span>
                     </div>
                   </td>
-                  {years.map(year => (
-                    <td key={year} className="text-center py-2 px-2 font-mono font-semibold">
-                      {year === 2026 ? (
-                        <span className="text-[#cc0000]">{input.appCapacity.appChina[year]}</span>
-                      ) : (
-                        <span className={cn(
-                          input.appCapacity.appChina[year] > 0 ? 'text-green-600' : 'text-muted-foreground'
-                        )}>
-                          {input.appCapacity.appChina[year] > 0 ? `+${input.appCapacity.appChina[year]}` : input.appCapacity.appChina[year] || '-'}
-                        </span>
-                      )}
-                    </td>
-                  ))}
+                  {years.map(year => {
+                    const value = input.appCapacity.appChina[year]
+                    return (
+                      <td key={year} className="text-center py-2 px-2 font-mono font-semibold">
+                        {year === 2026 ? (
+                          <span className="text-[#cc0000]">{value}</span>
+                        ) : (
+                          <span className={cn(
+                            value > 0 && 'text-green-600',
+                            value < 0 && 'text-red-600',
+                            value === 0 && 'text-muted-foreground'
+                          )}>
+                            {value > 0 ? `+${value}` : value < 0 ? value : '-'}
+                          </span>
+                        )}
+                      </td>
+                    )
+                  })}
                 </tr>
               </tbody>
             </table>
@@ -261,11 +266,18 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                     ))}
                     <tr className="bg-red-100/50 font-semibold">
                       <td className="py-2 px-2 text-[#cc0000]">APP China</td>
-                      {years.map(y => (
-                        <td key={y} className={cn('text-center py-2 px-2 font-mono', y !== 2026 && input.downstream.supply.paper.appChina[y] > 0 && 'text-green-600')}>
-                          {y === 2026 ? input.downstream.supply.paper.appChina[y] : input.downstream.supply.paper.appChina[y] > 0 ? `+${input.downstream.supply.paper.appChina[y]}` : '-'}
-                        </td>
-                      ))}
+                      {years.map(y => {
+                        const value = input.downstream.supply.paper.appChina[y]
+                        return (
+                          <td key={y} className={cn(
+                            'text-center py-2 px-2 font-mono',
+                            y !== 2026 && value > 0 && 'text-green-600',
+                            y !== 2026 && value < 0 && 'text-red-600'
+                          )}>
+                            {y === 2026 ? value : value > 0 ? `+${value}` : value < 0 ? value : '-'}
+                          </td>
+                        )
+                      })}
                     </tr>
                   </tbody>
                 </table>
@@ -297,11 +309,18 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                     ))}
                     <tr className="bg-red-100/50 font-semibold">
                       <td className="py-2 px-2 text-[#cc0000]">APP China</td>
-                      {years.map(y => (
-                        <td key={y} className={cn('text-center py-2 px-2 font-mono', y !== 2026 && input.downstream.supply.board.appChina[y] > 0 && 'text-green-600')}>
-                          {y === 2026 ? input.downstream.supply.board.appChina[y] : input.downstream.supply.board.appChina[y] > 0 ? `+${input.downstream.supply.board.appChina[y]}` : '-'}
-                        </td>
-                      ))}
+                      {years.map(y => {
+                        const value = input.downstream.supply.board.appChina[y]
+                        return (
+                          <td key={y} className={cn(
+                            'text-center py-2 px-2 font-mono',
+                            y !== 2026 && value > 0 && 'text-green-600',
+                            y !== 2026 && value < 0 && 'text-red-600'
+                          )}>
+                            {y === 2026 ? value : value > 0 ? `+${value}` : value < 0 ? value : '-'}
+                          </td>
+                        )
+                      })}
                     </tr>
                   </tbody>
                 </table>
@@ -333,11 +352,18 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                     ))}
                     <tr className="bg-red-100/50 font-semibold">
                       <td className="py-2 px-2 text-[#cc0000]">APP China</td>
-                      {years.map(y => (
-                        <td key={y} className={cn('text-center py-2 px-2 font-mono', y !== 2026 && input.downstream.supply.tissue.appChina[y] > 0 && 'text-green-600')}>
-                          {y === 2026 ? input.downstream.supply.tissue.appChina[y] : input.downstream.supply.tissue.appChina[y] > 0 ? `+${input.downstream.supply.tissue.appChina[y]}` : '-'}
-                        </td>
-                      ))}
+                      {years.map(y => {
+                        const value = input.downstream.supply.tissue.appChina[y]
+                        return (
+                          <td key={y} className={cn(
+                            'text-center py-2 px-2 font-mono',
+                            y !== 2026 && value > 0 && 'text-green-600',
+                            y !== 2026 && value < 0 && 'text-red-600'
+                          )}>
+                            {y === 2026 ? value : value > 0 ? `+${value}` : value < 0 ? value : '-'}
+                          </td>
+                        )
+                      })}
                     </tr>
                   </tbody>
                 </table>
