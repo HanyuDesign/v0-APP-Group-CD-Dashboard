@@ -17,7 +17,6 @@ import type {
   ForestrySettings,
   APPCapacitySettings,
   DownstreamSettings,
-  InputMode,
 } from '@/lib/types/war-game'
 
 interface ValueChainFlowProps {
@@ -60,7 +59,7 @@ const TABS: { key: TabKey; label: string; icon: React.ReactNode; description: st
 
 export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, onReset, isRunning }: ValueChainFlowProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('forestry')
-  const [inputMode, setInputMode] = useState<InputMode>('incremental')
+
 
   const handleForestryChange = (forestry: ForestrySettings) => {
     onInputChange({ ...input, forestry })
@@ -222,8 +221,6 @@ export function ValueChainFlow({ input, onInputChange, result, onRunSimulation, 
           <DownstreamModule
             settings={input.downstream}
             onChange={handleDownstreamChange}
-            inputMode={inputMode}
-            onInputModeChange={setInputMode}
           />
         )}
         {activeTab === 'overview' && (
