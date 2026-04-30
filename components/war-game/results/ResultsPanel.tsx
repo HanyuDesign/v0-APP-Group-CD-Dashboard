@@ -95,7 +95,7 @@ function StickyNav({
   
   return (
     <div className={cn(
-      'sticky top-0 z-20 py-3 px-4 rounded-lg border backdrop-blur-sm',
+      'py-2.5 px-4 rounded-lg border',
       colors.bg, colors.border
     )}>
       <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
@@ -183,7 +183,7 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
   useEffect(() => {
     const handleScroll = () => {
       const navItems = NAV_ITEMS[activeStage]
-      const scrollPosition = window.scrollY + 150 // Offset for sticky nav
+      const scrollPosition = window.scrollY + 300 // Offset for sticky header
       
       for (let i = navItems.length - 1; i >= 0; i--) {
         const element = document.getElementById(navItems[i].id)
@@ -202,7 +202,7 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
   const handleSectionClick = useCallback((sectionId: string) => {
     const element = document.getElementById(sectionId)
     if (element) {
-      const offset = 120 // Account for sticky header
+      const offset = 280 // Account for sticky header (Strategic Insights + Navigation)
       const elementPosition = element.getBoundingClientRect().top + window.scrollY
       window.scrollTo({
         top: elementPosition - offset,
@@ -252,30 +252,36 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
 
   return (
     <div className="space-y-6">
-      {/* Section 1: Value Chain Insights - Interactive Tabs */}
-      <section>
-        <ValueChainInsights 
-          result={result} 
-          activeStage={activeStage}
-          onStageChange={setActiveStage}
-          stages={VALUE_CHAIN_STAGES}
-        />
-      </section>
+      {/* Sticky Header: Strategic Insights + Detailed Analysis Navigation */}
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm pb-4 -mx-4 px-4 pt-4 border-b border-border/50">
+        {/* Section 1: Value Chain Insights - Interactive Tabs */}
+        <section>
+          <ValueChainInsights 
+            result={result} 
+            activeStage={activeStage}
+            onStageChange={setActiveStage}
+            stages={VALUE_CHAIN_STAGES}
+          />
+        </section>
 
-      {/* Section 2: Detailed Analysis with Sticky Navigation */}
+        {/* Section 2: Detailed Analysis Header + Navigation */}
+        <section className="mt-4">
+          <div className="flex items-center gap-2 mb-3">
+            <h3 className="text-sm font-semibold text-muted-foreground">Detailed Analysis</h3>
+            <span className="h-px flex-1 bg-border" />
+          </div>
+          
+          {/* Navigation Bar */}
+          <StickyNav 
+            activeStage={activeStage} 
+            activeSection={activeSection}
+            onSectionClick={handleSectionClick} 
+          />
+        </section>
+      </div>
+
+      {/* Section 2: Detailed Analysis Content */}
       <section>
-        <div className="flex items-center gap-2 mb-4">
-          <h3 className="text-sm font-semibold text-muted-foreground">Detailed Analysis</h3>
-          <span className="h-px flex-1 bg-border" />
-        </div>
-        
-        {/* Sticky Navigation Bar */}
-        <StickyNav 
-          activeStage={activeStage} 
-          activeSection={activeSection}
-          onSectionClick={handleSectionClick} 
-        />
-        
         {/* Content */}
         <div className={cn('mt-4', status === 'running' && 'opacity-50')}>
           {activeStage === 'forestry' && (
