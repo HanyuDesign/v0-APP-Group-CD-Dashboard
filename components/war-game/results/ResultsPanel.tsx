@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Clock, Trees, Factory, Package } from 'lucide-react'
 import { ValueChainInsights } from './ValueChainInsights'
@@ -75,30 +75,32 @@ interface ResultsPanelProps {
 function StickyNav({ 
   activeStage, 
   activeSection,
-  onSectionClick 
+  onSectionClick,
+  isSticky
 }: { 
   activeStage: ValueChainStage
   activeSection: string
-  onSectionClick: (sectionId: string) => void 
+  onSectionClick: (sectionId: string) => void
+  isSticky: boolean
 }) {
   const navItems = NAV_ITEMS[activeStage]
   
   const getStageColor = () => {
     switch (activeStage) {
       case 'forestry': return { 
-        bg: 'bg-green-50/80', 
+        bg: 'bg-green-50', 
         border: 'border-green-200', 
         active: 'bg-green-600 text-white shadow-sm', 
         inactive: 'text-foreground/80 hover:bg-green-100 border border-transparent hover:border-green-300' 
       }
       case 'pulp': return { 
-        bg: 'bg-blue-50/80', 
+        bg: 'bg-blue-50', 
         border: 'border-blue-200', 
         active: 'bg-blue-600 text-white shadow-sm', 
         inactive: 'text-foreground/80 hover:bg-blue-100 border border-transparent hover:border-blue-300' 
       }
       case 'downstream': return { 
-        bg: 'bg-purple-50/80', 
+        bg: 'bg-purple-50', 
         border: 'border-purple-200', 
         active: 'bg-purple-600 text-white shadow-sm', 
         inactive: 'text-foreground/80 hover:bg-purple-100 border border-transparent hover:border-purple-300' 
@@ -109,10 +111,16 @@ function StickyNav({
   const colors = getStageColor()
   
   return (
-    <div className={cn(
-      'py-3 px-4 rounded-lg border',
-      colors.bg, colors.border
-    )}>
+    <div 
+      className={cn(
+        'sticky z-40 py-3 px-4 rounded-lg border transition-shadow duration-200',
+        colors.bg, colors.border,
+        // Top offset: header (~64px) + step nav (~48px) + some padding
+        'top-[120px]',
+        // Add shadow when sticky is active
+        isSticky && 'shadow-md'
+      )}
+    >
       <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
         <span className="text-sm font-medium text-muted-foreground whitespace-nowrap mr-1">Jump to:</span>
         {navItems.map((item) => (
@@ -185,6 +193,8 @@ function MarketDataTabs({ result, status }: { result: SimulationResult, status: 
 export function ResultsPanel({ result, status }: ResultsPanelProps) {
   const [activeStage, setActiveStage] = useState<ValueChainStage>('pulp')
   const [activeSection, setActiveSection] = useState<string>('')
+  const [isNavSticky, setIsNavSticky] = useState(false)
+  const navRef = useRef<HTMLDivElement>(null)
   
   // Initialize active section when stage changes
   useEffect(() => {
@@ -194,11 +204,19 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
     }
   }, [activeStage])
   
-  // Scroll tracking to update active section
+  // Track if nav is sticky and update active section on scroll
   useEffect(() => {
     const handleScroll = () => {
+      // Check if nav is in sticky position
+      if (navRef.current) {
+        const navRect = navRef.current.getBoundingClientRect()
+        // Nav becomes sticky when its top reaches ~120px from viewport top
+        setIsNavSticky(navRect.top <= 125)
+      }
+      
+      // Update active section based on scroll position
       const navItems = NAV_ITEMS[activeStage]
-      const scrollPosition = window.scrollY + 300 // Offset for sticky header
+      const scrollPosition = window.scrollY + 200 // Offset for nav bar
       
       for (let i = navItems.length - 1; i >= 0; i--) {
         const element = document.getElementById(navItems[i].id)
@@ -217,7 +235,7 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
   const handleSectionClick = useCallback((sectionId: string) => {
     const element = document.getElementById(sectionId)
     if (element) {
-      const offset = 280 // Account for sticky header (Strategic Insights + Navigation)
+      const offset = 180 // Account for sticky nav bar only
       const elementPosition = element.getBoundingClientRect().top + window.scrollY
       window.scrollTo({
         top: elementPosition - offset,
@@ -267,36 +285,33 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
 
   return (
     <div className="space-y-6">
-      {/* Sticky Header: Strategic Insights + Detailed Analysis Navigation */}
-      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm pb-4 -mx-4 px-4 pt-4 border-b border-border/50">
-        {/* Section 1: Value Chain Insights - Interactive Tabs */}
-        <section>
-          <ValueChainInsights 
-            result={result} 
-            activeStage={activeStage}
-            onStageChange={setActiveStage}
-            stages={VALUE_CHAIN_STAGES}
-          />
-        </section>
+      {/* Section 1: Value Chain Insights - Interactive Tabs */}
+      <section>
+        <ValueChainInsights 
+          result={result} 
+          activeStage={activeStage}
+          onStageChange={setActiveStage}
+          stages={VALUE_CHAIN_STAGES}
+        />
+      </section>
 
-        {/* Section 2: Detailed Analysis Header + Navigation */}
-        <section className="mt-4">
-          <div className="flex items-center gap-2 mb-3">
-            <h3 className="text-sm font-semibold text-muted-foreground">Detailed Analysis</h3>
-            <span className="h-px flex-1 bg-border" />
-          </div>
-          
-          {/* Navigation Bar */}
+      {/* Section 2: Detailed Analysis with Sticky Navigation */}
+      <section>
+        <div className="flex items-center gap-2 mb-3">
+          <h3 className="text-sm font-semibold text-muted-foreground">Detailed Analysis</h3>
+          <span className="h-px flex-1 bg-border" />
+        </div>
+        
+        {/* Sticky Navigation Bar - Only this sticks */}
+        <div ref={navRef}>
           <StickyNav 
             activeStage={activeStage} 
             activeSection={activeSection}
-            onSectionClick={handleSectionClick} 
+            onSectionClick={handleSectionClick}
+            isSticky={isNavSticky}
           />
-        </section>
-      </div>
-
-      {/* Section 2: Detailed Analysis Content */}
-      <section>
+        </div>
+        
         {/* Content */}
         <div className={cn('mt-4', status === 'running' && 'opacity-50')}>
           {activeStage === 'forestry' && (

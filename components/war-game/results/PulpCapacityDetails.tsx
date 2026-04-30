@@ -39,7 +39,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
   return (
     <div className="space-y-4">
       {/* Visual Flow Indicator - NEW */}
-      <div id="pulp-value-chain-flow" className="rounded-xl border-2 border-blue-200 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 p-4 scroll-mt-72">
+      <div id="pulp-value-chain-flow" className="rounded-xl border-2 border-blue-200 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 p-4 scroll-mt-40">
         <div className="flex items-center gap-2 mb-4">
           <Lightbulb className="h-5 w-5 text-blue-600" />
           <h3 className="font-bold text-blue-900">Value Chain Impact Flow</h3>
@@ -111,7 +111,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
       </div>
 
       {/* Section 1: APP Capacity Outcome */}
-      <Card id="pulp-app-capacity" className="border-2 border-red-200 bg-red-50/30 scroll-mt-72">
+      <Card id="pulp-app-capacity" className="border-2 border-red-200 bg-red-50/30 scroll-mt-40">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm flex items-center gap-2">
@@ -198,7 +198,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
       </Card>
 
       {/* Section 2: Competitor Response */}
-      <Card id="pulp-competitor-response" className="border-border/50 bg-card/80 scroll-mt-72">
+      <Card id="pulp-competitor-response" className="border-border/50 bg-card/80 scroll-mt-40">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm flex items-center gap-2">
@@ -342,7 +342,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
       </Card>
 
       {/* Section 3: Global Export Reallocation */}
-      <Card id="pulp-export-reallocation" className="border-border/50 bg-card/80 scroll-mt-72">
+      <Card id="pulp-export-reallocation" className="border-border/50 bg-card/80 scroll-mt-40">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm flex items-center gap-2">
@@ -397,7 +397,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
       </Card>
 
       {/* Section 4: Market Impact Summary */}
-      <Card id="pulp-market-impact" className="border-border/50 bg-blue-50/30 scroll-mt-72">
+      <Card id="pulp-market-impact" className="border-border/50 bg-blue-50/30 scroll-mt-40">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2 text-blue-700">
             <BarChart3 className="h-4 w-4 text-blue-600" />
