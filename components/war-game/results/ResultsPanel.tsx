@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Clock, Trees, Factory, Package } from 'lucide-react'
 import { ValueChainInsights } from './ValueChainInsights'
@@ -43,9 +43,80 @@ const VALUE_CHAIN_STAGES = [
   },
 ] as const
 
+// Navigation items for each tab
+const NAV_ITEMS: Record<ValueChainStage, { id: string; label: string }[]> = {
+  forestry: [
+    { id: 'forestry-ai-analysis', label: 'AI Forestry Analysis' },
+    { id: 'forestry-woodchip-supply', label: 'Woodchip Supply Projection' },
+    { id: 'forestry-import-dependency', label: 'Import Dependency Trend' },
+    { id: 'forestry-supply-demand', label: 'Supply-Demand Balance' },
+  ],
+  pulp: [
+    { id: 'pulp-value-chain-flow', label: 'Value Chain Impact Flow' },
+    { id: 'pulp-app-capacity', label: 'APP Capacity Outcome' },
+    { id: 'pulp-competitor-response', label: 'Competitor Response' },
+    { id: 'pulp-export-reallocation', label: 'Global Export Reallocation' },
+    { id: 'pulp-market-impact', label: 'Market Impact Summary' },
+  ],
+  downstream: [
+    { id: 'downstream-health-overview', label: 'Market Health Overview' },
+    { id: 'downstream-paper', label: 'Paper' },
+    { id: 'downstream-board', label: 'Packaging / Carton Board' },
+    { id: 'downstream-tissue', label: 'Tissue' },
+  ],
+}
+
 interface ResultsPanelProps {
   result: SimulationResult | null
   status: SimulationStatus
+}
+
+// Sticky Navigation Component
+function StickyNav({ 
+  activeStage, 
+  activeSection,
+  onSectionClick 
+}: { 
+  activeStage: ValueChainStage
+  activeSection: string
+  onSectionClick: (sectionId: string) => void 
+}) {
+  const navItems = NAV_ITEMS[activeStage]
+  
+  const getStageColor = () => {
+    switch (activeStage) {
+      case 'forestry': return { bg: 'bg-green-50', border: 'border-green-200', active: 'bg-green-600 text-white', hover: 'hover:bg-green-100' }
+      case 'pulp': return { bg: 'bg-blue-50', border: 'border-blue-200', active: 'bg-blue-600 text-white', hover: 'hover:bg-blue-100' }
+      case 'downstream': return { bg: 'bg-purple-50', border: 'border-purple-200', active: 'bg-purple-600 text-white', hover: 'hover:bg-purple-100' }
+    }
+  }
+  
+  const colors = getStageColor()
+  
+  return (
+    <div className={cn(
+      'sticky top-0 z-20 py-3 px-4 rounded-lg border backdrop-blur-sm',
+      colors.bg, colors.border
+    )}>
+      <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+        <span className="text-xs font-medium text-muted-foreground whitespace-nowrap mr-2">Jump to:</span>
+        {navItems.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => onSectionClick(item.id)}
+            className={cn(
+              'px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap',
+              activeSection === item.id
+                ? colors.active
+                : cn('text-foreground/70', colors.hover)
+            )}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 // Market Data Tabs Component
@@ -98,6 +169,48 @@ function MarketDataTabs({ result, status }: { result: SimulationResult, status: 
 
 export function ResultsPanel({ result, status }: ResultsPanelProps) {
   const [activeStage, setActiveStage] = useState<ValueChainStage>('pulp')
+  const [activeSection, setActiveSection] = useState<string>('')
+  
+  // Initialize active section when stage changes
+  useEffect(() => {
+    const firstItem = NAV_ITEMS[activeStage][0]
+    if (firstItem) {
+      setActiveSection(firstItem.id)
+    }
+  }, [activeStage])
+  
+  // Scroll tracking to update active section
+  useEffect(() => {
+    const handleScroll = () => {
+      const navItems = NAV_ITEMS[activeStage]
+      const scrollPosition = window.scrollY + 150 // Offset for sticky nav
+      
+      for (let i = navItems.length - 1; i >= 0; i--) {
+        const element = document.getElementById(navItems[i].id)
+        if (element && element.offsetTop <= scrollPosition) {
+          setActiveSection(navItems[i].id)
+          break
+        }
+      }
+    }
+    
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [activeStage])
+  
+  // Handle section click with smooth scroll
+  const handleSectionClick = useCallback((sectionId: string) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      const offset = 120 // Account for sticky header
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY
+      window.scrollTo({
+        top: elementPosition - offset,
+        behavior: 'smooth'
+      })
+      setActiveSection(sectionId)
+    }
+  }, [])
   
   if (status === 'idle' && !result) {
     return (
@@ -149,46 +262,22 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
         />
       </section>
 
-      {/* Section 2: Dynamic Detailed Analysis Based on Selected Stage */}
+      {/* Section 2: Detailed Analysis with Sticky Navigation */}
       <section>
-        {/* Navigation Tabs */}
         <div className="flex items-center gap-2 mb-4">
           <h3 className="text-sm font-semibold text-muted-foreground">Detailed Analysis</h3>
           <span className="h-px flex-1 bg-border" />
-          <div className="flex gap-1 bg-muted/50 rounded-lg p-1">
-            {VALUE_CHAIN_STAGES.map((stage) => {
-              const Icon = stage.icon
-              const isActive = activeStage === stage.id
-              return (
-                <button
-                  key={stage.id}
-                  onClick={() => setActiveStage(stage.id)}
-                  className={cn(
-                    'flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all',
-                    isActive
-                      ? cn(
-                          'bg-background shadow-sm',
-                          stage.color === 'green' && 'text-green-700',
-                          stage.color === 'blue' && 'text-blue-700',
-                          stage.color === 'purple' && 'text-purple-700'
-                        )
-                      : 'text-muted-foreground hover:text-foreground'
-                  )}
-                >
-                  <Icon className={cn(
-                    'h-4 w-4',
-                    isActive && stage.color === 'green' && 'text-green-600',
-                    isActive && stage.color === 'blue' && 'text-blue-600',
-                    isActive && stage.color === 'purple' && 'text-purple-600'
-                  )} />
-                  {stage.label}
-                </button>
-              )
-            })}
-          </div>
         </div>
         
-        <div className={cn(status === 'running' && 'opacity-50')}>
+        {/* Sticky Navigation Bar */}
+        <StickyNav 
+          activeStage={activeStage} 
+          activeSection={activeSection}
+          onSectionClick={handleSectionClick} 
+        />
+        
+        {/* Content */}
+        <div className={cn('mt-4', status === 'running' && 'opacity-50')}>
           {activeStage === 'forestry' && (
             <ForestryDetails result={result} />
           )}

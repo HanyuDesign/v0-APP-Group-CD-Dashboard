@@ -249,7 +249,7 @@ export function DownstreamDetails({ result }: DownstreamDetailsProps) {
   return (
     <div className="space-y-4">
       {/* Market Health Overview */}
-      <div className="rounded-xl border-2 border-purple-200 bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 p-4">
+      <div id="downstream-health-overview" className="rounded-xl border-2 border-purple-200 bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 p-4 scroll-mt-32">
         <div className="flex items-center gap-2 mb-4">
           <Lightbulb className="h-5 w-5 text-purple-600" />
           <h3 className="font-bold text-purple-900">Downstream Market Health</h3>
@@ -351,28 +351,34 @@ export function DownstreamDetails({ result }: DownstreamDetailsProps) {
       </div>
       
       {/* Paper Market */}
-      <DownstreamTable
-        segmentKey="paper"
-        data={downstreamData.paper}
-        playerOutcomes={playerMarketOutcomes}
-        input={input}
-      />
+      <div id="downstream-paper" className="scroll-mt-32">
+        <DownstreamTable
+          segmentKey="paper"
+          data={downstreamData.paper}
+          playerOutcomes={playerMarketOutcomes}
+          input={input}
+        />
+      </div>
       
       {/* Packaging / Carton Board Market */}
-      <DownstreamTable
-        segmentKey="board"
-        data={downstreamData.board}
-        playerOutcomes={playerMarketOutcomes}
-        input={input}
-      />
+      <div id="downstream-board" className="scroll-mt-32">
+        <DownstreamTable
+          segmentKey="board"
+          data={downstreamData.board}
+          playerOutcomes={playerMarketOutcomes}
+          input={input}
+        />
+      </div>
       
       {/* Tissue Market */}
-      <DownstreamTable
-        segmentKey="tissue"
-        data={downstreamData.tissue}
-        playerOutcomes={playerMarketOutcomes}
-        input={input}
-      />
+      <div id="downstream-tissue" className="scroll-mt-32">
+        <DownstreamTable
+          segmentKey="tissue"
+          data={downstreamData.tissue}
+          playerOutcomes={playerMarketOutcomes}
+          input={input}
+        />
+      </div>
     </div>
   )
 }
