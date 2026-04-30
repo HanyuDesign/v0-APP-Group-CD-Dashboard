@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { 
   Users, Shield, Clock, Gauge, ChevronRight, Info, Lightbulb, 
-  Plus, Factory, Package, FileText, Bath, TrendingUp, TrendingDown,
+  Plus, Factory, Package, FileText, TrendingUp, TrendingDown,
   Minus, Sparkles, Crosshair, DollarSign, AlertTriangle, UserCheck,
   Globe, Home, Target, Wand2
 } from 'lucide-react'
@@ -44,6 +44,32 @@ interface AIStrategyProfile {
   riskAppetite: RiskAppetite
   customerStrategy: CustomerStrategy
 }
+
+// Downstream Strategy types
+type TierStrategy = 'expand' | 'maintain' | 'reduce'
+
+interface SegmentStrategy {
+  premiumTier: TierStrategy
+  midTier: TierStrategy
+  exportPercent: number // 0-100, domestic = 100 - exportPercent
+}
+
+interface DownstreamStrategyInput {
+  paper: SegmentStrategy
+  packaging: SegmentStrategy
+}
+
+const DEFAULT_SEGMENT_STRATEGY: SegmentStrategy = {
+  premiumTier: 'maintain',
+  midTier: 'maintain',
+  exportPercent: 30,
+}
+
+const TIER_STRATEGY_OPTIONS: { value: TierStrategy; label: string }[] = [
+  { value: 'expand', label: 'Expand' },
+  { value: 'maintain', label: 'Maintain' },
+  { value: 'reduce', label: 'Reduce' },
+]
 
 interface AIInterpretation {
   summary: string
@@ -372,6 +398,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
   const [capacityOverrides, setCapacityOverrides] = useState<Record<string, YearlyCapacity>>({})
   const [strategicIntentMap, setStrategicIntentMap] = useState<Record<string, string>>({})
   const [generatedInterpretation, setGeneratedInterpretation] = useState<Record<string, AIInterpretation>>({})
+  const [downstreamStrategy, setDownstreamStrategy] = useState<Record<string, DownstreamStrategyInput>>({})
   
   // Get current competitor's strategic intent and interpretation
   const strategicIntent = strategicIntentMap[selectedCompetitor] || ''
@@ -379,6 +406,30 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
     setStrategicIntentMap(prev => ({ ...prev, [selectedCompetitor]: value }))
   }
   const currentInterpretation = generatedInterpretation[selectedCompetitor]
+  
+  // Get current competitor's downstream strategy
+  const currentDownstream = downstreamStrategy[selectedCompetitor] || {
+    paper: { ...DEFAULT_SEGMENT_STRATEGY },
+    packaging: { ...DEFAULT_SEGMENT_STRATEGY },
+  }
+  
+  // Handle downstream strategy changes
+  const handleDownstreamChange = (
+    segment: 'paper' | 'packaging',
+    field: keyof SegmentStrategy,
+    value: TierStrategy | number
+  ) => {
+    setDownstreamStrategy(prev => ({
+      ...prev,
+      [selectedCompetitor]: {
+        ...currentDownstream,
+        [segment]: {
+          ...currentDownstream[segment],
+          [field]: value,
+        }
+      }
+    }))
+  }
   
   const selectedConfig = config.find(c => c.playerId === selectedCompetitor)
   const selectedStrategy = COMPETITOR_STRATEGIES[selectedCompetitor]
@@ -865,71 +916,155 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                 </div>
               </div>
 
-              {/* Module B: Downstream Allocation */}
+              {/* Module B: Downstream Strategy */}
               <div className="rounded-xl border border-red-200/80 bg-white/60 p-5">
-                <div className="flex items-center gap-2 mb-5">
+                <div className="flex items-center gap-2 mb-4">
                   <Package className="h-5 w-5 text-purple-600" />
-                  <h4 className="text-sm font-semibold text-foreground">Module B: Downstream Allocation</h4>
+                  <h4 className="text-sm font-semibold text-foreground">Module B: Downstream Strategy</h4>
                 </div>
                 
-                <div className="grid grid-cols-3 gap-4">
-                  {/* Segment Allocation */}
-                  <div className="col-span-3 grid grid-cols-3 gap-3">
-                    <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
-                      <div className="flex items-center gap-2 mb-2">
-                        <FileText className="h-4 w-4 text-blue-600" />
-                        <span className="text-xs font-medium text-foreground">Paper</span>
-                      </div>
-                      <div className="text-lg font-bold text-foreground">{derivedAllocation.downstream.paper.percent}%</div>
-                      <div className="text-xs text-muted-foreground">of allocation</div>
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Paper Module */}
+                  <div className="p-4 rounded-lg bg-blue-50/30 border border-blue-200/50">
+                    <div className="flex items-center gap-2 mb-3">
+                      <FileText className="h-4 w-4 text-blue-600" />
+                      <span className="text-sm font-semibold text-foreground">Paper</span>
                     </div>
-                    <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Package className="h-4 w-4 text-orange-600" />
-                        <span className="text-xs font-medium text-foreground">Packaging</span>
+                    
+                    {/* Tier Strategy */}
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">Premium</span>
+                        <div className="flex gap-1">
+                          {TIER_STRATEGY_OPTIONS.map((opt) => (
+                            <button
+                              key={opt.value}
+                              onClick={() => handleDownstreamChange('paper', 'premiumTier', opt.value)}
+                              className={cn(
+                                'px-2 py-1 text-xs font-medium rounded border transition-all',
+                                currentDownstream.paper.premiumTier === opt.value
+                                  ? 'bg-blue-100 border-blue-300 text-blue-700'
+                                  : 'bg-white border-border/50 text-muted-foreground hover:border-blue-200'
+                              )}
+                            >
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                      <div className="text-lg font-bold text-foreground">{derivedAllocation.downstream.packaging.percent}%</div>
-                      <div className="text-xs text-muted-foreground">of allocation</div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">Mid-tier</span>
+                        <div className="flex gap-1">
+                          {TIER_STRATEGY_OPTIONS.map((opt) => (
+                            <button
+                              key={opt.value}
+                              onClick={() => handleDownstreamChange('paper', 'midTier', opt.value)}
+                              className={cn(
+                                'px-2 py-1 text-xs font-medium rounded border transition-all',
+                                currentDownstream.paper.midTier === opt.value
+                                  ? 'bg-blue-100 border-blue-300 text-blue-700'
+                                  : 'bg-white border-border/50 text-muted-foreground hover:border-blue-200'
+                              )}
+                            >
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                    <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Bath className="h-4 w-4 text-pink-600" />
-                        <span className="text-xs font-medium text-foreground">Tissue</span>
+                    
+                    {/* Market Split Slider */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="flex items-center gap-1 text-muted-foreground">
+                          <Home className="h-3 w-3" />
+                          Domestic {100 - currentDownstream.paper.exportPercent}%
+                        </span>
+                        <span className="flex items-center gap-1 text-muted-foreground">
+                          Export {currentDownstream.paper.exportPercent}%
+                          <Globe className="h-3 w-3" />
+                        </span>
                       </div>
-                      <div className="text-lg font-bold text-foreground">{derivedAllocation.downstream.tissue.percent}%</div>
-                      <div className="text-xs text-muted-foreground">of allocation</div>
+                      <Slider
+                        value={[currentDownstream.paper.exportPercent]}
+                        onValueChange={([value]) => handleDownstreamChange('paper', 'exportPercent', value)}
+                        min={0}
+                        max={100}
+                        step={5}
+                        className="w-full"
+                      />
                     </div>
                   </div>
                   
-                  {/* Tier Split */}
-                  <div className="p-3 rounded-lg bg-purple-50/50 border border-purple-200/50">
-                    <div className="text-xs font-medium text-muted-foreground mb-2">Tier Split</div>
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-foreground">Premium</span>
-                        <span className="font-semibold text-purple-700">{derivedAllocation.tierSplit.premium}%</span>
+                  {/* Packaging Module */}
+                  <div className="p-4 rounded-lg bg-orange-50/30 border border-orange-200/50">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Package className="h-4 w-4 text-orange-600" />
+                      <span className="text-sm font-semibold text-foreground">Packaging / Carton Board</span>
+                    </div>
+                    
+                    {/* Tier Strategy */}
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">Premium</span>
+                        <div className="flex gap-1">
+                          {TIER_STRATEGY_OPTIONS.map((opt) => (
+                            <button
+                              key={opt.value}
+                              onClick={() => handleDownstreamChange('packaging', 'premiumTier', opt.value)}
+                              className={cn(
+                                'px-2 py-1 text-xs font-medium rounded border transition-all',
+                                currentDownstream.packaging.premiumTier === opt.value
+                                  ? 'bg-orange-100 border-orange-300 text-orange-700'
+                                  : 'bg-white border-border/50 text-muted-foreground hover:border-orange-200'
+                              )}
+                            >
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-foreground">Mid-tier</span>
-                        <span className="font-semibold text-purple-700">{derivedAllocation.tierSplit.midTier}%</span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">Mid-tier</span>
+                        <div className="flex gap-1">
+                          {TIER_STRATEGY_OPTIONS.map((opt) => (
+                            <button
+                              key={opt.value}
+                              onClick={() => handleDownstreamChange('packaging', 'midTier', opt.value)}
+                              className={cn(
+                                'px-2 py-1 text-xs font-medium rounded border transition-all',
+                                currentDownstream.packaging.midTier === opt.value
+                                  ? 'bg-orange-100 border-orange-300 text-orange-700'
+                                  : 'bg-white border-border/50 text-muted-foreground hover:border-orange-200'
+                              )}
+                            >
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  
-                  {/* Market Split */}
-                  <div className="col-span-2 p-3 rounded-lg bg-blue-50/50 border border-blue-200/50">
-                    <div className="text-xs font-medium text-muted-foreground mb-2">Market Split</div>
-                    <div className="flex gap-4">
-                      <div className="flex items-center gap-2">
-                        <Home className="h-4 w-4 text-blue-600" />
-                        <span className="text-sm text-foreground">Domestic</span>
-                        <span className="font-semibold text-blue-700">{derivedAllocation.marketSplit.domestic}%</span>
+                    
+                    {/* Market Split Slider */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="flex items-center gap-1 text-muted-foreground">
+                          <Home className="h-3 w-3" />
+                          Domestic {100 - currentDownstream.packaging.exportPercent}%
+                        </span>
+                        <span className="flex items-center gap-1 text-muted-foreground">
+                          Export {currentDownstream.packaging.exportPercent}%
+                          <Globe className="h-3 w-3" />
+                        </span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Globe className="h-4 w-4 text-emerald-600" />
-                        <span className="text-sm text-foreground">Export</span>
-                        <span className="font-semibold text-emerald-700">{derivedAllocation.marketSplit.export}%</span>
-                      </div>
+                      <Slider
+                        value={[currentDownstream.packaging.exportPercent]}
+                        onValueChange={([value]) => handleDownstreamChange('packaging', 'exportPercent', value)}
+                        min={0}
+                        max={100}
+                        step={5}
+                        className="w-full"
+                      />
                     </div>
                   </div>
                 </div>
@@ -1038,7 +1173,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                   <h4 className="text-sm font-semibold text-foreground">B. Downstream Allocation Outcome</h4>
                 </div>
                 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   {/* Paper */}
                   <div className="p-4 rounded-lg bg-blue-50/50 border border-blue-200/50">
                     <div className="flex items-center gap-2 mb-3">
@@ -1083,30 +1218,6 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                          derivedAllocation.downstream.packaging.change === 'reduce' ? <TrendingDown className="h-4 w-4" /> :
                          <Minus className="h-4 w-4" />}
                         {derivedAllocation.downstream.packaging.change.charAt(0).toUpperCase() + derivedAllocation.downstream.packaging.change.slice(1)}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Tissue */}
-                  <div className="p-4 rounded-lg bg-pink-50/50 border border-pink-200/50">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Bath className="h-4 w-4 text-pink-600" />
-                      <span className="text-sm font-medium text-foreground">Tissue</span>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">Capacity</span>
-                        <span className="text-sm font-bold text-foreground">+{derivedAllocation.downstream.tissue.capacity} kt</span>
-                      </div>
-                      <div className={cn(
-                        'flex items-center gap-1 text-sm font-medium',
-                        derivedAllocation.downstream.tissue.change === 'expand' ? 'text-emerald-600' :
-                        derivedAllocation.downstream.tissue.change === 'reduce' ? 'text-amber-600' : 'text-foreground'
-                      )}>
-                        {derivedAllocation.downstream.tissue.change === 'expand' ? <TrendingUp className="h-4 w-4" /> :
-                         derivedAllocation.downstream.tissue.change === 'reduce' ? <TrendingDown className="h-4 w-4" /> :
-                         <Minus className="h-4 w-4" />}
-                        {derivedAllocation.downstream.tissue.change.charAt(0).toUpperCase() + derivedAllocation.downstream.tissue.change.slice(1)}
                       </div>
                     </div>
                   </div>
