@@ -6,7 +6,7 @@ import {
   Users, Shield, Clock, Gauge, ChevronRight, Info, Lightbulb, 
   Plus, Factory, Package, FileText, Bath, TrendingUp, TrendingDown,
   Minus, Sparkles, Crosshair, DollarSign, AlertTriangle, UserCheck,
-  Globe, Home, Wand2, Check, Lock, Unlock
+  Globe, Home, Wand2, Check, Lock, Unlock, Target
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
