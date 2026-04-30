@@ -294,7 +294,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border/50">
-                  <th className="text-left py-2 px-3 font-medium text-muted-foreground w-36">Exporter</th>
+                  <th className="text-left py-2 px-3 font-medium text-muted-foreground w-40">Exporter</th>
                   <th className="text-center py-2 px-3 font-medium text-muted-foreground">Total Volume</th>
                   <th className="text-center py-2 px-3 font-medium text-muted-foreground">China Share</th>
                   <th className="text-center py-2 px-3 font-medium text-muted-foreground">China Volume</th>
@@ -302,24 +302,125 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                 </tr>
               </thead>
               <tbody>
-                {exporterAllocations.map(exporter => (
-                  <tr key={exporter.exporterId} className="border-b border-border/30">
-                    <td className="py-2.5 px-3 font-medium">{exporter.exporterId}</td>
-                    <td className="text-center py-2.5 px-3 font-mono">{exporter.totalVolume} kt</td>
-                    <td className="text-center py-2.5 px-3">
-                      <span className={cn(
-                        'font-semibold',
-                        exporter.chinaShare > 0.5 ? 'text-blue-600' : 'text-amber-600'
-                      )}>
-                        {Math.round(exporter.chinaShare * 100)}%
-                      </span>
-                    </td>
-                    <td className="text-center py-2.5 px-3 font-mono text-blue-600">{exporter.chinaVolume} kt</td>
-                    <td className="text-center py-2.5 px-3 font-mono text-muted-foreground">{exporter.rowVolume} kt</td>
-                  </tr>
-                ))}
+                {exporterAllocations.map(allocation => {
+                  const player = PLAYERS.find(p => p.id === allocation.playerId)
+                  const totalVolume = allocation.chinaVolume + allocation.otherRegionsVolume
+                  return (
+                    <tr key={allocation.playerId} className="border-b border-border/30">
+                      <td className="py-2.5 px-3">
+                        <div className="flex items-center gap-2">
+                          {player && <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: player.color }} />}
+                          <span className="font-medium">{player?.name || allocation.playerId}</span>
+                        </div>
+                      </td>
+                      <td className="text-center py-2.5 px-3 font-mono">{totalVolume} kt</td>
+                      <td className="text-center py-2.5 px-3">
+                        <span className={cn(
+                          'font-semibold',
+                          allocation.chinaShare > 0.5 ? 'text-blue-600' : 'text-amber-600'
+                        )}>
+                          {Math.round(allocation.chinaShare * 100)}%
+                        </span>
+                      </td>
+                      <td className="text-center py-2.5 px-3 font-mono text-blue-600">{allocation.chinaVolume} kt</td>
+                      <td className="text-center py-2.5 px-3 font-mono text-muted-foreground">{allocation.otherRegionsVolume} kt</td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Section 4: Market Impacts */}
+      <Card className="border-border/50 bg-card/80">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-emerald-600" />
+              Market Impacts
+            </CardTitle>
+            <AIBadge size="sm" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-3 gap-4">
+            {/* Supply Impact */}
+            <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
+              <div className="text-xs text-blue-600 font-medium mb-2">Supply Impact</div>
+              <div className="text-2xl font-bold text-blue-700">
+                +{appChinaPulpAdd + totalCompetitorPulpChange} kt
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">Net capacity addition</div>
+              <div className="mt-3 pt-3 border-t border-blue-200 space-y-1">
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">APP China</span>
+                  <span className="text-red-600 font-medium">+{appChinaPulpAdd} kt</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Competitors</span>
+                  <span className={cn(
+                    'font-medium',
+                    totalCompetitorPulpChange >= 0 ? 'text-emerald-600' : 'text-amber-600'
+                  )}>
+                    {totalCompetitorPulpChange >= 0 ? '+' : ''}{totalCompetitorPulpChange} kt
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Price Pressure */}
+            <div className="p-4 rounded-lg bg-amber-50 border border-amber-200">
+              <div className="text-xs text-amber-600 font-medium mb-2">Price Pressure</div>
+              <div className={cn(
+                'text-2xl font-bold',
+                (appChinaPulpAdd + totalCompetitorPulpChange) > 400 ? 'text-red-600' : 
+                (appChinaPulpAdd + totalCompetitorPulpChange) > 200 ? 'text-amber-600' : 'text-emerald-600'
+              )}>
+                {(appChinaPulpAdd + totalCompetitorPulpChange) > 400 ? 'High' : 
+                 (appChinaPulpAdd + totalCompetitorPulpChange) > 200 ? 'Moderate' : 'Low'}
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">Expected margin compression</div>
+              <div className="mt-3 pt-3 border-t border-amber-200">
+                <div className="flex items-center gap-2">
+                  {(appChinaPulpAdd + totalCompetitorPulpChange) > 400 ? (
+                    <TrendingDown className="h-4 w-4 text-red-500" />
+                  ) : (appChinaPulpAdd + totalCompetitorPulpChange) > 200 ? (
+                    <TrendingDown className="h-4 w-4 text-amber-500" />
+                  ) : (
+                    <TrendingUp className="h-4 w-4 text-emerald-500" />
+                  )}
+                  <span className="text-xs text-muted-foreground">
+                    {(appChinaPulpAdd + totalCompetitorPulpChange) > 400 
+                      ? 'Significant oversupply risk' 
+                      : (appChinaPulpAdd + totalCompetitorPulpChange) > 200 
+                        ? 'Balanced supply-demand' 
+                        : 'Favorable pricing environment'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Competitive Position */}
+            <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200">
+              <div className="text-xs text-emerald-600 font-medium mb-2">Competitive Position</div>
+              <div className="text-2xl font-bold text-emerald-700">
+                {competitorsDelaying > competitorsExpanding ? 'Strong' : 
+                 competitorsDelaying === competitorsExpanding ? 'Neutral' : 'Challenged'}
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">APP market position outlook</div>
+              <div className="mt-3 pt-3 border-t border-emerald-200 space-y-1">
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Deterred competitors</span>
+                  <span className="text-amber-600 font-medium">{competitorsDelaying}</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Following competitors</span>
+                  <span className="text-emerald-600 font-medium">{competitorsExpanding}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
