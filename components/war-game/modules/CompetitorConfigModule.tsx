@@ -925,17 +925,6 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
             </CardContent>
           </Card>
 
-          {/* Cause-Effect Flow Indicator */}
-          <div className="flex items-center justify-center gap-3 py-2">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="px-2 py-1 rounded bg-indigo-100 text-indigo-700 font-medium">Strategy</span>
-              <ArrowRight className="h-4 w-4" />
-              <span className="px-2 py-1 rounded bg-red-100 text-red-700 font-medium">Behavior</span>
-              <ArrowRight className="h-4 w-4" />
-              <span className="px-2 py-1 rounded bg-amber-100 text-amber-700 font-medium">Outcomes</span>
-            </div>
-          </div>
-
           {/* Helper text */}
           <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/50 border border-border/50">
             <Info className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
