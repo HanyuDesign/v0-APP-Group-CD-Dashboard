@@ -6,10 +6,9 @@ import {
   Users, Shield, Clock, Gauge, ChevronRight, Info, Lightbulb, 
   Plus, Factory, Package, FileText, Bath, TrendingUp, TrendingDown,
   Minus, Sparkles, Crosshair, DollarSign, AlertTriangle, UserCheck,
-  Globe, Home, Wand2, Check, Lock, Unlock, MessageSquare
+  Globe, Home, Wand2, Check, Lock, Unlock
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { Slider } from '@/components/ui/slider'
 import { Input } from '@/components/ui/input'
@@ -634,232 +633,119 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
       {selectedConfig && selectedStrategy && derivedCapacity && derivedAllocation && (
         <div className="flex-1 overflow-y-auto space-y-5 pr-2">
           
-          {/* ========== SECTION 0: Strategic Intent Input (Above Strategy Profile) ========== */}
-          <Card className="border-2 border-cyan-200 bg-gradient-to-r from-cyan-50/50 to-sky-50/50">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-100">
-                    <Wand2 className="h-5 w-5 text-cyan-600" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-base font-semibold">Strategic Intent Input</CardTitle>
-                    <p className="text-xs text-muted-foreground mt-0.5">Define competitive intent to guide AI strategy generation</p>
-                  </div>
-                </div>
-                <span className="text-xs text-cyan-600 bg-cyan-100 px-2.5 py-1 rounded-full font-medium">User Input</span>
+          {/* ========== COMPACT: Strategic Intent + AI Strategy Profile ========== */}
+          <div className="space-y-3">
+            {/* Strategic Intent Input - Single Row Control Bar */}
+            <div className="flex items-center gap-3 p-3 rounded-lg border border-cyan-200 bg-cyan-50/50">
+              <div className="flex items-center gap-2 text-sm font-medium text-cyan-700 whitespace-nowrap">
+                <Wand2 className="h-4 w-4" />
+                Strategic Intent
               </div>
-            </CardHeader>
-            <CardContent className="pt-0 space-y-4">
-              {/* Single Text Input */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium flex items-center gap-2 text-foreground">
-                  <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                  Describe competitor strategy or intent
-                </label>
-                <Textarea
-                  value={currentIntent.textInput}
-                  onChange={(e) => handleIntentTextChange(e.target.value)}
-                  placeholder="e.g., Follow APP with a 1-year delay and maintain high utilization..."
-                  className="min-h-[80px] text-sm resize-none"
-                />
+              <input
+                type="text"
+                value={currentIntent.textInput}
+                onChange={(e) => handleIntentTextChange(e.target.value)}
+                placeholder="e.g., Aggressive expansion, follow APP with 1-year delay, focus on packaging exports..."
+                className="flex-1 h-8 px-3 text-sm rounded-md border border-cyan-200 bg-white focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+              />
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGenerateStrategy}
+                  disabled={!currentIntent.textInput.trim()}
+                  className="h-8 gap-1.5 text-xs"
+                >
+                  <Wand2 className="h-3.5 w-3.5" />
+                  Generate
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleApplyStrategy}
+                  disabled={!currentInterpretation}
+                  className="h-8 gap-1.5 text-xs bg-cyan-600 hover:bg-cyan-700"
+                >
+                  <Check className="h-3.5 w-3.5" />
+                  Apply
+                </Button>
+              </div>
+            </div>
+            
+            {/* Inline AI Interpretation - 1 line only */}
+            {currentInterpretation && (
+              <div className="flex items-center gap-2 px-3 py-1.5 text-sm">
+                <Sparkles className="h-3.5 w-3.5 text-emerald-600 flex-shrink-0" />
+                <span className="text-emerald-700 font-medium">AI Interpretation:</span>
+                <span className="text-emerald-600 truncate">{currentInterpretation.summary}</span>
+              </div>
+            )}
+            
+            {/* AI Strategy Profile - Compact Chips */}
+            <div className={cn(
+              "flex items-center gap-3 p-3 rounded-lg border",
+              previewProfile 
+                ? "border-emerald-200 bg-emerald-50/50" 
+                : "border-indigo-200 bg-indigo-50/50"
+            )}>
+              <div className={cn(
+                "flex items-center gap-2 text-sm font-medium whitespace-nowrap",
+                previewProfile ? "text-emerald-700" : "text-indigo-700"
+              )}>
+                <Sparkles className="h-4 w-4" />
+                {previewProfile ? 'Preview' : 'Strategy'}
               </div>
               
-              {/* Helper Guidance */}
-              <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
-                <p className="text-xs text-muted-foreground mb-2 font-medium">Describe:</p>
-                <ul className="text-xs text-muted-foreground space-y-1 ml-3">
-                  <li>Growth vs profitability focus</li>
-                  <li>Reaction to APP expansion</li>
-                  <li>Risk appetite</li>
-                  <li>Downstream priorities</li>
-                </ul>
-                <p className="text-xs text-muted-foreground mt-2 italic">
-                  Examples: &ldquo;Defensive approach, avoid expansion and protect margins&rdquo; or &ldquo;Aggressively expand in packaging and increase exports&rdquo;
-                </p>
-              </div>
-              
-              {/* AI Interpretation Display */}
-              {currentInterpretation && (
-                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
-                  <p className="text-xs font-medium text-emerald-700 mb-1 flex items-center gap-1.5">
-                    <Sparkles className="h-3.5 w-3.5" />
-                    AI Interpretation:
-                  </p>
-                  <p className="text-sm text-emerald-800">{currentInterpretation.summary}</p>
-                </div>
-              )}
-              
-              {/* AI Action Buttons */}
-              <div className="pt-3 border-t border-cyan-200/50 flex items-center justify-between">
-                <div className="text-xs text-muted-foreground">
-                  {currentInterpretation ? (
-                    <span className="flex items-center gap-1.5 text-emerald-600">
-                      <Check className="h-3.5 w-3.5" />
-                      Strategy generated - review below then Apply
-                    </span>
-                  ) : (
-                    'Describe strategy above, then click Generate'
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleGenerateStrategy}
-                    disabled={!currentIntent.textInput.trim()}
-                    className="gap-1.5"
-                  >
-                    <Wand2 className="h-4 w-4" />
-                    Generate Strategy
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={handleApplyStrategy}
-                    disabled={!currentInterpretation}
-                    className="gap-1.5 bg-cyan-600 hover:bg-cyan-700"
-                  >
-                    <Check className="h-4 w-4" />
-                    Apply Strategy
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          {/* ========== SECTION 1: AI Strategy Profile (Top) ========== */}
-          <Card className={cn(
-            "border-2 bg-gradient-to-r",
-            previewProfile 
-              ? "border-emerald-300 from-emerald-50/50 to-green-50/50" 
-              : "border-indigo-200 from-indigo-50/50 to-purple-50/50"
-          )}>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={cn(
-                    "flex h-9 w-9 items-center justify-center rounded-lg",
-                    previewProfile ? "bg-emerald-100" : "bg-indigo-100"
-                  )}>
-                    <Sparkles className={cn("h-5 w-5", previewProfile ? "text-emerald-600" : "text-indigo-600")} />
-                  </div>
-                  <div>
-                    <CardTitle className="text-base font-semibold">
-                      {previewProfile ? 'Generated Strategy Preview' : 'AI Strategy Profile'}
-                    </CardTitle>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {previewProfile 
-                        ? 'Review the AI-generated strategy before applying' 
-                        : `${selectedConfig.playerName} - AI-generated competitive positioning`}
-                    </p>
-                  </div>
-                </div>
-                <span className={cn(
-                  "text-xs px-2.5 py-1 rounded-full font-medium",
-                  previewProfile 
-                    ? "text-emerald-600 bg-emerald-100" 
-                    : "text-indigo-600 bg-indigo-100"
-                )}>
-                  {previewProfile ? 'Preview' : 'Read-only'}
-                </span>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              {/* 5 Strategy Dimensions - show preview or default */}
+              {/* Strategy Chips */}
               {(() => {
                 const displayProfile = previewProfile || selectedStrategy.aiProfile
                 return (
-                  <div className="grid grid-cols-5 gap-4">
-                    {/* Market Share Focus */}
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                        <Crosshair className="h-3.5 w-3.5" />
-                        Market Share
-                      </div>
-                      <span className={cn(
-                        'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
-                        PROFILE_LABELS.marketShareFocus[displayProfile.marketShareFocus].color,
-                        previewProfile && 'ring-2 ring-emerald-300 ring-offset-1'
-                      )}>
-                        {PROFILE_LABELS.marketShareFocus[displayProfile.marketShareFocus].label}
-                      </span>
-                    </div>
-                    
-                    {/* Profitability Focus */}
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                        <DollarSign className="h-3.5 w-3.5" />
-                        Profitability
-                      </div>
-                      <span className={cn(
-                        'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
-                        PROFILE_LABELS.profitabilityFocus[displayProfile.profitabilityFocus].color,
-                        previewProfile && 'ring-2 ring-emerald-300 ring-offset-1'
-                      )}>
-                        {PROFILE_LABELS.profitabilityFocus[displayProfile.profitabilityFocus].label}
-                      </span>
-                    </div>
-                    
-                    {/* Capacity Strategy */}
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                        <Factory className="h-3.5 w-3.5" />
-                        Capacity
-                      </div>
-                      <span className={cn(
-                        'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
-                        PROFILE_LABELS.capacityStrategy[displayProfile.capacityStrategy].color,
-                        previewProfile && 'ring-2 ring-emerald-300 ring-offset-1'
-                      )}>
-                        {PROFILE_LABELS.capacityStrategy[displayProfile.capacityStrategy].label}
-                      </span>
-                    </div>
-                    
-                    {/* Risk Appetite */}
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                        <AlertTriangle className="h-3.5 w-3.5" />
-                        Risk Appetite
-                      </div>
-                      <span className={cn(
-                        'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
-                        PROFILE_LABELS.riskAppetite[displayProfile.riskAppetite].color,
-                        previewProfile && 'ring-2 ring-emerald-300 ring-offset-1'
-                      )}>
-                        {PROFILE_LABELS.riskAppetite[displayProfile.riskAppetite].label}
-                      </span>
-                    </div>
-                    
-                    {/* Customer Strategy */}
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                        <UserCheck className="h-3.5 w-3.5" />
-                        Customer
-                      </div>
-                      <span className={cn(
-                        'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
-                        PROFILE_LABELS.customerStrategy[displayProfile.customerStrategy].color,
-                        previewProfile && 'ring-2 ring-emerald-300 ring-offset-1'
-                      )}>
-                        {PROFILE_LABELS.customerStrategy[displayProfile.customerStrategy].label}
-                      </span>
-                    </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={cn(
+                      'inline-flex px-2 py-1 rounded text-xs font-medium border',
+                      PROFILE_LABELS.marketShareFocus[displayProfile.marketShareFocus].color,
+                      previewProfile && 'ring-1 ring-emerald-300'
+                    )}>
+                      {PROFILE_LABELS.marketShareFocus[displayProfile.marketShareFocus].label}
+                    </span>
+                    <span className={cn(
+                      'inline-flex px-2 py-1 rounded text-xs font-medium border',
+                      PROFILE_LABELS.profitabilityFocus[displayProfile.profitabilityFocus].color,
+                      previewProfile && 'ring-1 ring-emerald-300'
+                    )}>
+                      {PROFILE_LABELS.profitabilityFocus[displayProfile.profitabilityFocus].label}
+                    </span>
+                    <span className={cn(
+                      'inline-flex px-2 py-1 rounded text-xs font-medium border',
+                      PROFILE_LABELS.capacityStrategy[displayProfile.capacityStrategy].color,
+                      previewProfile && 'ring-1 ring-emerald-300'
+                    )}>
+                      {PROFILE_LABELS.capacityStrategy[displayProfile.capacityStrategy].label}
+                    </span>
+                    <span className={cn(
+                      'inline-flex px-2 py-1 rounded text-xs font-medium border',
+                      PROFILE_LABELS.riskAppetite[displayProfile.riskAppetite].color,
+                      previewProfile && 'ring-1 ring-emerald-300'
+                    )}>
+                      {PROFILE_LABELS.riskAppetite[displayProfile.riskAppetite].label} Risk
+                    </span>
+                    <span className={cn(
+                      'inline-flex px-2 py-1 rounded text-xs font-medium border',
+                      PROFILE_LABELS.customerStrategy[displayProfile.customerStrategy].color,
+                      previewProfile && 'ring-1 ring-emerald-300'
+                    )}>
+                      {PROFILE_LABELS.customerStrategy[displayProfile.customerStrategy].label}
+                    </span>
                   </div>
                 )
               })()}
               
-              {/* Base Capacity */}
-              <div className={cn(
-                "mt-4 pt-4 border-t flex items-center justify-between",
-                previewProfile ? "border-emerald-200/50" : "border-indigo-200/50"
-              )}>
-                <div className="text-sm text-muted-foreground">
-                  <span className="font-medium text-foreground">{selectedConfig.playerName}</span> base capacity
-                </div>
-                <div className="text-xl font-bold text-indigo-700">{selectedStrategy.baseCapacity} kt</div>
+              {/* Base Capacity - Inline Right */}
+              <div className="ml-auto flex items-center gap-2 text-sm whitespace-nowrap">
+                <span className="text-muted-foreground">Base:</span>
+                <span className="font-bold text-indigo-700">{selectedStrategy.baseCapacity} kt</span>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* ========== SECTION 2: Behavior Settings (Middle) ========== */}
           <Card className="border-2 border-red-200 bg-red-50/30">
