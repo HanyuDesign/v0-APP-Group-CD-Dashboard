@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { 
   Brain, Users, ChevronRight, Info, TreePine, Factory, Package, 
   FileText, Bath, TrendingUp, TrendingDown, Upload, X, FileSpreadsheet,
-  Quote, Lightbulb, Edit3, Check, Eye
+  Quote, Lightbulb, Edit3, Check
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
@@ -325,22 +325,6 @@ export function ReactionInputModule({
 
       {/* RIGHT PANEL - Main Content */}
       <div className="flex-1 overflow-y-auto space-y-5 pr-2">
-        {/* Context Label */}
-        {selectedConfig && (
-          <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-purple-50 border border-purple-200">
-            <Eye className="h-5 w-5 text-purple-600" />
-            <div className="flex-1">
-              <span className="text-sm font-semibold text-purple-900">
-                Viewing: {selectedConfig.playerName} — Reaction
-              </span>
-              <p className="text-xs text-purple-600">Single-player perspective based on configured behavior settings</p>
-            </div>
-            <Badge variant="outline" className="bg-purple-100 text-purple-700 border-purple-200">
-              Player View
-            </Badge>
-          </div>
-        )}
-
         {/* Section 1: Reaction Summary */}
         {selectedConfig && reactionSummary && (
           <Card className="border-purple-200 bg-gradient-to-br from-purple-50/50 to-white">
