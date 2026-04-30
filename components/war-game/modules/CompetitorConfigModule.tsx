@@ -3,10 +3,10 @@
 import { useState, useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { 
-  Users, Shield, Target, Clock, Gauge, ChevronRight, Info, Lightbulb, 
+  Users, Shield, Clock, Gauge, ChevronRight, Info, Lightbulb, 
   Plus, Factory, Package, FileText, Bath, TrendingUp, TrendingDown,
   Minus, Sparkles, Crosshair, DollarSign, AlertTriangle, UserCheck,
-  ArrowRight, Globe, Home, Wand2, Check, Lock, Unlock, MessageSquare
+  Globe, Home, Wand2, Check, Lock, Unlock, MessageSquare
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -46,14 +46,14 @@ interface AIStrategyProfile {
   customerStrategy: CustomerStrategy
 }
 
-// Strategic Intent Input types
-type PrimaryGoal = 'maximize-market-share' | 'maximize-profitability' | 'balanced-growth' | 'defensive'
-
+// Strategic Intent Input types - simplified to text-only
 interface StrategicIntentInput {
-  primaryGoal: PrimaryGoal
-  riskAppetite: number // 0-100 slider
-  expansionAggressiveness: number // 0-100 slider
-  notes: string
+  textInput: string
+}
+
+interface AIInterpretation {
+  summary: string
+  profile: AIStrategyProfile
 }
 
 interface LockedFields {
@@ -62,41 +62,77 @@ interface LockedFields {
   downstreamAllocation: boolean
 }
 
-// AI Strategy Generation Logic
-function generateStrategyFromIntent(intent: StrategicIntentInput): AIStrategyProfile {
-  const { primaryGoal, riskAppetite, expansionAggressiveness } = intent
+// AI Strategy Generation Logic - parses text input into structured signals
+function generateStrategyFromText(text: string): AIInterpretation {
+  const lowerText = text.toLowerCase()
   
-  // Map Primary Goal to Market Share Focus
+  // Parse signals from text
+  const isAggressive = /aggressive|expand|growth|attack|offensive|increase capacity/i.test(text)
+  const isDefensive = /defensive|protect|maintain|conservative|cautious|avoid/i.test(text)
+  const isProfitFocused = /profit|margin|cost|efficiency|returns/i.test(text)
+  const isVolumeFocused = /volume|market share|scale|dominat/i.test(text)
+  const hasDelayMention = /delay|lag|wait|1.year|2.year|slow/i.test(text)
+  const hasImmediateMention = /immediate|quick|fast|rapid|now/i.test(text)
+  const hasHighRisk = /high risk|aggressive|bold|ambitious/i.test(text)
+  const hasLowRisk = /low risk|safe|cautious|conservative|careful/i.test(text)
+  const hasExportFocus = /export|international|global|overseas/i.test(text)
+  const hasPackagingFocus = /packaging|carton|board/i.test(text)
+  const hasTissueFocus = /tissue/i.test(text)
+  const hasUtilization = /utilization|capacity util|high util/i.test(text)
+  
+  // Determine Market Share Focus
   const marketShareFocus: MarketShareFocus = 
-    primaryGoal === 'maximize-market-share' ? 'expand' :
-    primaryGoal === 'defensive' ? 'defend' : 'selective'
+    isAggressive || isVolumeFocused ? 'expand' :
+    isDefensive ? 'defend' : 'selective'
   
-  // Map Primary Goal to Profitability Focus
+  // Determine Profitability Focus
   const profitabilityFocus: ProfitabilityFocus = 
-    primaryGoal === 'maximize-profitability' ? 'margin-first' :
-    primaryGoal === 'maximize-market-share' ? 'volume-first' : 'balanced'
+    isProfitFocused ? 'margin-first' :
+    isVolumeFocused ? 'volume-first' : 'balanced'
   
-  // Map Expansion Aggressiveness to Capacity Strategy
+  // Determine Capacity Strategy
   const capacityStrategy: CapacityStrategy = 
-    expansionAggressiveness >= 70 ? 'aggressive' :
-    expansionAggressiveness >= 40 ? 'disciplined' : 'conservative'
+    isAggressive ? 'aggressive' :
+    isDefensive ? 'conservative' : 'disciplined'
   
-  // Map Risk Appetite slider to Risk Appetite category
-  const riskAppetiteCategory: RiskAppetite = 
-    riskAppetite >= 70 ? 'high' :
-    riskAppetite >= 40 ? 'medium' : 'low'
+  // Determine Risk Appetite
+  const riskAppetite: RiskAppetite = 
+    hasHighRisk || isAggressive ? 'high' :
+    hasLowRisk || isDefensive ? 'low' : 'medium'
   
-  // Map based on combination of factors
+  // Determine Customer Strategy
   const customerStrategy: CustomerStrategy = 
-    primaryGoal === 'defensive' ? 'lock-in' :
-    riskAppetite >= 60 ? 'opportunistic' : 'flexible'
+    isDefensive || hasUtilization ? 'lock-in' :
+    isAggressive ? 'opportunistic' : 'flexible'
+  
+  // Generate interpretation summary
+  const summaryParts: string[] = []
+  if (isAggressive) summaryParts.push('aggressive expansion stance')
+  else if (isDefensive) summaryParts.push('defensive positioning')
+  else summaryParts.push('balanced approach')
+  
+  if (isProfitFocused) summaryParts.push('prioritizing margins')
+  else if (isVolumeFocused) summaryParts.push('prioritizing market share')
+  
+  if (hasDelayMention) summaryParts.push('with delayed reaction timing')
+  else if (hasImmediateMention) summaryParts.push('with immediate response')
+  
+  if (hasExportFocus) summaryParts.push('focus on exports')
+  if (hasPackagingFocus) summaryParts.push('emphasis on packaging')
+  
+  const summary = summaryParts.length > 0 
+    ? `Interpreted as ${summaryParts.join(', ')}.`
+    : 'General competitive strategy with balanced parameters.'
   
   return {
-    marketShareFocus,
-    profitabilityFocus,
-    capacityStrategy,
-    riskAppetite: riskAppetiteCategory,
-    customerStrategy,
+    summary,
+    profile: {
+      marketShareFocus,
+      profitabilityFocus,
+      capacityStrategy,
+      riskAppetite,
+      customerStrategy,
+    }
   }
 }
 
@@ -136,12 +172,7 @@ function mapStrategyToBehavior(
   return newSettings
 }
 
-const PRIMARY_GOAL_OPTIONS: { value: PrimaryGoal; label: string; description: string }[] = [
-  { value: 'maximize-market-share', label: 'Maximize Market Share', description: 'Prioritize growth and market position' },
-  { value: 'maximize-profitability', label: 'Maximize Profitability', description: 'Focus on margins and returns' },
-  { value: 'balanced-growth', label: 'Balanced Growth', description: 'Balance share and profitability' },
-  { value: 'defensive', label: 'Defensive', description: 'Protect existing position' },
-]
+
 
 // Default competitor strategies with AI profiles
 const COMPETITOR_STRATEGIES: Record<string, { 
@@ -375,17 +406,14 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
   const [editingCapacity, setEditingCapacity] = useState<number | null>(null)
   const [capacityOverrides, setCapacityOverrides] = useState<Record<string, YearlyCapacity>>({})
   
-  // Strategic Intent Input state
+  // Strategic Intent Input state - simplified to text-only
   const [strategicIntent, setStrategicIntent] = useState<Record<string, StrategicIntentInput>>({})
-  const [generatedProfile, setGeneratedProfile] = useState<Record<string, AIStrategyProfile>>({})
+  const [generatedInterpretation, setGeneratedInterpretation] = useState<Record<string, AIInterpretation>>({})
   const [lockedFields, setLockedFields] = useState<Record<string, LockedFields>>({})
   
   // Get current competitor's strategic intent or default
   const currentIntent = strategicIntent[selectedCompetitor] || {
-    primaryGoal: 'balanced-growth' as PrimaryGoal,
-    riskAppetite: 50,
-    expansionAggressiveness: 50,
-    notes: '',
+    textInput: '',
   }
   
   // Get current competitor's locked fields or default
@@ -395,8 +423,9 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
     downstreamAllocation: false,
   }
   
-  // Check if there's a generated (preview) profile
-  const previewProfile = generatedProfile[selectedCompetitor]
+  // Check if there's a generated interpretation (preview)
+  const currentInterpretation = generatedInterpretation[selectedCompetitor]
+  const previewProfile = currentInterpretation?.profile
   
   const selectedConfig = config.find(c => c.playerId === selectedCompetitor)
   const selectedStrategy = COMPETITOR_STRATEGIES[selectedCompetitor]
@@ -457,37 +486,35 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
     setEditingCapacity(null)
   }
   
-  // Handle strategic intent change
-  const handleIntentChange = (key: keyof StrategicIntentInput, value: PrimaryGoal | number | string) => {
+  // Handle strategic intent text change
+  const handleIntentTextChange = (text: string) => {
     setStrategicIntent(prev => ({
       ...prev,
-      [selectedCompetitor]: {
-        ...currentIntent,
-        [key]: value,
-      }
+      [selectedCompetitor]: { textInput: text }
     }))
-    // Clear any previously generated profile when intent changes
-    setGeneratedProfile(prev => {
+    // Clear any previously generated interpretation when text changes
+    setGeneratedInterpretation(prev => {
       const updated = { ...prev }
       delete updated[selectedCompetitor]
       return updated
     })
   }
   
-  // Generate Strategy (preview)
+  // Generate Strategy (preview) from text
   const handleGenerateStrategy = () => {
-    const profile = generateStrategyFromIntent(currentIntent)
-    setGeneratedProfile(prev => ({
+    if (!currentIntent.textInput.trim()) return
+    const interpretation = generateStrategyFromText(currentIntent.textInput)
+    setGeneratedInterpretation(prev => ({
       ...prev,
-      [selectedCompetitor]: profile,
+      [selectedCompetitor]: interpretation,
     }))
   }
   
   // Apply Strategy to Behavior Settings
   const handleApplyStrategy = () => {
-    if (!previewProfile || !selectedConfig) return
+    if (!currentInterpretation || !selectedConfig) return
     
-    const newSettings = mapStrategyToBehavior(previewProfile, currentLocks, selectedConfig.behaviorSettings)
+    const newSettings = mapStrategyToBehavior(currentInterpretation.profile, currentLocks, selectedConfig.behaviorSettings)
     
     // Clear capacity overrides when applying new strategy
     setCapacityOverrides(prev => {
@@ -508,8 +535,8 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
     })
     onChange(updatedConfig)
     
-    // Clear the preview after applying
-    setGeneratedProfile(prev => {
+    // Clear the interpretation after applying
+    setGeneratedInterpretation(prev => {
       const updated = { ...prev }
       delete updated[selectedCompetitor]
       return updated
@@ -623,133 +650,56 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                 <span className="text-xs text-cyan-600 bg-cyan-100 px-2.5 py-1 rounded-full font-medium">User Input</span>
               </div>
             </CardHeader>
-            <CardContent className="pt-0">
-              <div className="grid grid-cols-2 gap-5">
-                {/* Left Column: Primary Goal & Notes */}
-                <div className="space-y-4">
-                  {/* Primary Goal */}
-                  <div className="space-y-3">
-                    <label className="text-sm font-medium flex items-center gap-2 text-foreground">
-                      <Target className="h-4 w-4 text-muted-foreground" />
-                      Primary Goal
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {PRIMARY_GOAL_OPTIONS.map((option) => (
-                        <TooltipProvider key={option.value}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                onClick={() => handleIntentChange('primaryGoal', option.value)}
-                                className={cn(
-                                  'px-3 py-2.5 text-sm font-medium rounded-lg border transition-all text-left',
-                                  currentIntent.primaryGoal === option.value
-                                    ? 'bg-cyan-100 border-cyan-300 text-cyan-700 shadow-sm'
-                                    : 'bg-white border-border/50 text-muted-foreground hover:border-cyan-200 hover:bg-cyan-50/50'
-                                )}
-                              >
-                                {option.label}
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent side="bottom">
-                              <p className="text-sm">{option.description}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Optional Notes */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium flex items-center gap-2 text-foreground">
-                      <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                      Optional Notes
-                    </label>
-                    <Textarea
-                      value={currentIntent.notes}
-                      onChange={(e) => handleIntentChange('notes', e.target.value)}
-                      placeholder="Add context or specific considerations..."
-                      className="h-20 text-sm resize-none"
-                    />
-                  </div>
-                </div>
-                
-                {/* Right Column: Sliders */}
-                <div className="space-y-5">
-                  {/* Risk Appetite Slider */}
-                  <div className="space-y-3">
-                    <label className="text-sm font-medium flex items-center justify-between text-foreground">
-                      <span className="flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-                        Risk Appetite
-                      </span>
-                      <span className={cn(
-                        'text-sm font-semibold',
-                        currentIntent.riskAppetite >= 70 ? 'text-red-600' :
-                        currentIntent.riskAppetite >= 40 ? 'text-amber-600' : 'text-green-600'
-                      )}>
-                        {currentIntent.riskAppetite >= 70 ? 'High' :
-                         currentIntent.riskAppetite >= 40 ? 'Medium' : 'Low'}
-                      </span>
-                    </label>
-                    <Slider
-                      value={[currentIntent.riskAppetite]}
-                      onValueChange={([value]) => handleIntentChange('riskAppetite', value)}
-                      min={0}
-                      max={100}
-                      step={5}
-                      className="w-full"
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>Low</span>
-                      <span>Medium</span>
-                      <span>High</span>
-                    </div>
-                  </div>
-                  
-                  {/* Expansion Aggressiveness Slider */}
-                  <div className="space-y-3">
-                    <label className="text-sm font-medium flex items-center justify-between text-foreground">
-                      <span className="flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                        Expansion Aggressiveness
-                      </span>
-                      <span className={cn(
-                        'text-sm font-semibold',
-                        currentIntent.expansionAggressiveness >= 70 ? 'text-red-600' :
-                        currentIntent.expansionAggressiveness >= 40 ? 'text-amber-600' : 'text-green-600'
-                      )}>
-                        {currentIntent.expansionAggressiveness >= 70 ? 'Aggressive' :
-                         currentIntent.expansionAggressiveness >= 40 ? 'Moderate' : 'Conservative'}
-                      </span>
-                    </label>
-                    <Slider
-                      value={[currentIntent.expansionAggressiveness]}
-                      onValueChange={([value]) => handleIntentChange('expansionAggressiveness', value)}
-                      min={0}
-                      max={100}
-                      step={5}
-                      className="w-full"
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>Conservative</span>
-                      <span>Moderate</span>
-                      <span>Aggressive</span>
-                    </div>
-                  </div>
-                </div>
+            <CardContent className="pt-0 space-y-4">
+              {/* Single Text Input */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium flex items-center gap-2 text-foreground">
+                  <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                  Describe competitor strategy or intent
+                </label>
+                <Textarea
+                  value={currentIntent.textInput}
+                  onChange={(e) => handleIntentTextChange(e.target.value)}
+                  placeholder="e.g., Follow APP with a 1-year delay and maintain high utilization..."
+                  className="min-h-[80px] text-sm resize-none"
+                />
               </div>
               
+              {/* Helper Guidance */}
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
+                <p className="text-xs text-muted-foreground mb-2 font-medium">Describe:</p>
+                <ul className="text-xs text-muted-foreground space-y-1 ml-3">
+                  <li>Growth vs profitability focus</li>
+                  <li>Reaction to APP expansion</li>
+                  <li>Risk appetite</li>
+                  <li>Downstream priorities</li>
+                </ul>
+                <p className="text-xs text-muted-foreground mt-2 italic">
+                  Examples: &ldquo;Defensive approach, avoid expansion and protect margins&rdquo; or &ldquo;Aggressively expand in packaging and increase exports&rdquo;
+                </p>
+              </div>
+              
+              {/* AI Interpretation Display */}
+              {currentInterpretation && (
+                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+                  <p className="text-xs font-medium text-emerald-700 mb-1 flex items-center gap-1.5">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    AI Interpretation:
+                  </p>
+                  <p className="text-sm text-emerald-800">{currentInterpretation.summary}</p>
+                </div>
+              )}
+              
               {/* AI Action Buttons */}
-              <div className="mt-5 pt-4 border-t border-cyan-200/50 flex items-center justify-between">
+              <div className="pt-3 border-t border-cyan-200/50 flex items-center justify-between">
                 <div className="text-xs text-muted-foreground">
-                  {previewProfile ? (
+                  {currentInterpretation ? (
                     <span className="flex items-center gap-1.5 text-emerald-600">
                       <Check className="h-3.5 w-3.5" />
                       Strategy generated - review below then Apply
                     </span>
                   ) : (
-                    'Configure intent above, then generate strategy'
+                    'Describe strategy above, then click Generate'
                   )}
                 </div>
                 <div className="flex items-center gap-2">
@@ -757,6 +707,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                     variant="outline"
                     size="sm"
                     onClick={handleGenerateStrategy}
+                    disabled={!currentIntent.textInput.trim()}
                     className="gap-1.5"
                   >
                     <Wand2 className="h-4 w-4" />
@@ -765,7 +716,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                   <Button
                     size="sm"
                     onClick={handleApplyStrategy}
-                    disabled={!previewProfile}
+                    disabled={!currentInterpretation}
                     className="gap-1.5 bg-cyan-600 hover:bg-cyan-700"
                   >
                     <Check className="h-4 w-4" />
