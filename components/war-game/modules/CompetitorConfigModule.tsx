@@ -6,9 +6,8 @@ import {
   Users, Shield, Clock, Gauge, ChevronRight, Info, Lightbulb, 
   Plus, Factory, Package, FileText, Bath, TrendingUp, TrendingDown,
   Minus, Sparkles, Crosshair, DollarSign, AlertTriangle, UserCheck,
-  Globe, Home, Wand2, Check, Lock, Unlock, Target
+  Globe, Home, Target
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Slider } from '@/components/ui/slider'
 import { Input } from '@/components/ui/input'
@@ -44,133 +43,6 @@ interface AIStrategyProfile {
   riskAppetite: RiskAppetite
   customerStrategy: CustomerStrategy
 }
-
-// Strategic Intent Input types - simplified to text-only
-interface StrategicIntentInput {
-  textInput: string
-}
-
-interface AIInterpretation {
-  summary: string
-  profile: AIStrategyProfile
-}
-
-interface LockedFields {
-  followRatio: boolean
-  reactionTiming: boolean
-  downstreamAllocation: boolean
-}
-
-// AI Strategy Generation Logic - parses text input into structured signals
-function generateStrategyFromText(text: string): AIInterpretation {
-  const lowerText = text.toLowerCase()
-  
-  // Parse signals from text
-  const isAggressive = /aggressive|expand|growth|attack|offensive|increase capacity/i.test(text)
-  const isDefensive = /defensive|protect|maintain|conservative|cautious|avoid/i.test(text)
-  const isProfitFocused = /profit|margin|cost|efficiency|returns/i.test(text)
-  const isVolumeFocused = /volume|market share|scale|dominat/i.test(text)
-  const hasDelayMention = /delay|lag|wait|1.year|2.year|slow/i.test(text)
-  const hasImmediateMention = /immediate|quick|fast|rapid|now/i.test(text)
-  const hasHighRisk = /high risk|aggressive|bold|ambitious/i.test(text)
-  const hasLowRisk = /low risk|safe|cautious|conservative|careful/i.test(text)
-  const hasExportFocus = /export|international|global|overseas/i.test(text)
-  const hasPackagingFocus = /packaging|carton|board/i.test(text)
-  const hasTissueFocus = /tissue/i.test(text)
-  const hasUtilization = /utilization|capacity util|high util/i.test(text)
-  
-  // Determine Market Share Focus
-  const marketShareFocus: MarketShareFocus = 
-    isAggressive || isVolumeFocused ? 'expand' :
-    isDefensive ? 'defend' : 'selective'
-  
-  // Determine Profitability Focus
-  const profitabilityFocus: ProfitabilityFocus = 
-    isProfitFocused ? 'margin-first' :
-    isVolumeFocused ? 'volume-first' : 'balanced'
-  
-  // Determine Capacity Strategy
-  const capacityStrategy: CapacityStrategy = 
-    isAggressive ? 'aggressive' :
-    isDefensive ? 'conservative' : 'disciplined'
-  
-  // Determine Risk Appetite
-  const riskAppetite: RiskAppetite = 
-    hasHighRisk || isAggressive ? 'high' :
-    hasLowRisk || isDefensive ? 'low' : 'medium'
-  
-  // Determine Customer Strategy
-  const customerStrategy: CustomerStrategy = 
-    isDefensive || hasUtilization ? 'lock-in' :
-    isAggressive ? 'opportunistic' : 'flexible'
-  
-  // Generate interpretation summary
-  const summaryParts: string[] = []
-  if (isAggressive) summaryParts.push('aggressive expansion stance')
-  else if (isDefensive) summaryParts.push('defensive positioning')
-  else summaryParts.push('balanced approach')
-  
-  if (isProfitFocused) summaryParts.push('prioritizing margins')
-  else if (isVolumeFocused) summaryParts.push('prioritizing market share')
-  
-  if (hasDelayMention) summaryParts.push('with delayed reaction timing')
-  else if (hasImmediateMention) summaryParts.push('with immediate response')
-  
-  if (hasExportFocus) summaryParts.push('focus on exports')
-  if (hasPackagingFocus) summaryParts.push('emphasis on packaging')
-  
-  const summary = summaryParts.length > 0 
-    ? `Interpreted as ${summaryParts.join(', ')}.`
-    : 'General competitive strategy with balanced parameters.'
-  
-  return {
-    summary,
-    profile: {
-      marketShareFocus,
-      profitabilityFocus,
-      capacityStrategy,
-      riskAppetite,
-      customerStrategy,
-    }
-  }
-}
-
-// Map Strategy to Behavior Settings
-function mapStrategyToBehavior(
-  profile: AIStrategyProfile,
-  lockedFields: LockedFields,
-  currentSettings: CompetitorBehaviorSettings
-): CompetitorBehaviorSettings {
-  const newSettings = { ...currentSettings }
-  
-  // Capacity Reaction Style - always update (not lockable)
-  newSettings.capacityReactionStyle = 
-    profile.capacityStrategy === 'aggressive' ? 'aggressive' :
-    profile.capacityStrategy === 'conservative' ? 'defensive' : 'follow-the-leader'
-  
-  // Follow Ratio
-  if (!lockedFields.followRatio) {
-    newSettings.followRatio = 
-      profile.capacityStrategy === 'aggressive' ? 120 :
-      profile.capacityStrategy === 'disciplined' ? 70 :
-      profile.riskAppetite === 'low' ? 30 : 50
-  }
-  
-  // Reaction Timing
-  if (!lockedFields.reactionTiming) {
-    newSettings.reactionTiming = 
-      profile.riskAppetite === 'high' ? 'immediate' :
-      profile.riskAppetite === 'low' ? '2-year-lag' : '1-year-lag'
-  }
-  
-  // Utilization Target
-  newSettings.utilizationTarget = 
-    profile.profitabilityFocus === 'margin-first' ? 'high' :
-    profile.profitabilityFocus === 'volume-first' ? 'flexible' : 'balanced'
-  
-  return newSettings
-}
-
 
 
 // Default competitor strategies with AI profiles
@@ -405,27 +277,6 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
   const [editingCapacity, setEditingCapacity] = useState<number | null>(null)
   const [capacityOverrides, setCapacityOverrides] = useState<Record<string, YearlyCapacity>>({})
   
-  // Strategic Intent Input state - simplified to text-only
-  const [strategicIntent, setStrategicIntent] = useState<Record<string, StrategicIntentInput>>({})
-  const [generatedInterpretation, setGeneratedInterpretation] = useState<Record<string, AIInterpretation>>({})
-  const [lockedFields, setLockedFields] = useState<Record<string, LockedFields>>({})
-  
-  // Get current competitor's strategic intent or default
-  const currentIntent = strategicIntent[selectedCompetitor] || {
-    textInput: '',
-  }
-  
-  // Get current competitor's locked fields or default
-  const currentLocks = lockedFields[selectedCompetitor] || {
-    followRatio: false,
-    reactionTiming: false,
-    downstreamAllocation: false,
-  }
-  
-  // Check if there's a generated interpretation (preview)
-  const currentInterpretation = generatedInterpretation[selectedCompetitor]
-  const previewProfile = currentInterpretation?.profile
-  
   const selectedConfig = config.find(c => c.playerId === selectedCompetitor)
   const selectedStrategy = COMPETITOR_STRATEGIES[selectedCompetitor]
   
@@ -483,74 +334,6 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
       }
     }))
     setEditingCapacity(null)
-  }
-  
-  // Handle strategic intent text change
-  const handleIntentTextChange = (text: string) => {
-    setStrategicIntent(prev => ({
-      ...prev,
-      [selectedCompetitor]: { textInput: text }
-    }))
-    // Clear any previously generated interpretation when text changes
-    setGeneratedInterpretation(prev => {
-      const updated = { ...prev }
-      delete updated[selectedCompetitor]
-      return updated
-    })
-  }
-  
-  // Generate Strategy (preview) from text
-  const handleGenerateStrategy = () => {
-    if (!currentIntent.textInput.trim()) return
-    const interpretation = generateStrategyFromText(currentIntent.textInput)
-    setGeneratedInterpretation(prev => ({
-      ...prev,
-      [selectedCompetitor]: interpretation,
-    }))
-  }
-  
-  // Apply Strategy to Behavior Settings
-  const handleApplyStrategy = () => {
-    if (!currentInterpretation || !selectedConfig) return
-    
-    const newSettings = mapStrategyToBehavior(currentInterpretation.profile, currentLocks, selectedConfig.behaviorSettings)
-    
-    // Clear capacity overrides when applying new strategy
-    setCapacityOverrides(prev => {
-      const updated = { ...prev }
-      delete updated[selectedCompetitor]
-      return updated
-    })
-    
-    const updatedConfig = config.map(c => {
-      if (c.playerId === selectedCompetitor) {
-        return {
-          ...c,
-          behaviorSettings: newSettings,
-          isEdited: true,
-        }
-      }
-      return c
-    })
-    onChange(updatedConfig)
-    
-    // Clear the interpretation after applying
-    setGeneratedInterpretation(prev => {
-      const updated = { ...prev }
-      delete updated[selectedCompetitor]
-      return updated
-    })
-  }
-  
-  // Toggle locked field
-  const toggleLock = (field: keyof LockedFields) => {
-    setLockedFields(prev => ({
-      ...prev,
-      [selectedCompetitor]: {
-        ...currentLocks,
-        [field]: !currentLocks[field],
-      }
-    }))
   }
 
   return (
@@ -633,119 +416,105 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
       {selectedConfig && selectedStrategy && derivedCapacity && derivedAllocation && (
         <div className="flex-1 overflow-y-auto space-y-5 pr-2">
           
-          {/* ========== COMPACT: Strategic Intent + AI Strategy Profile ========== */}
-          <div className="space-y-3">
-            {/* Strategic Intent Input - Single Row Control Bar */}
-            <div className="flex items-center gap-3 p-3 rounded-lg border border-cyan-200 bg-cyan-50/50">
-              <div className="flex items-center gap-2 text-sm font-medium text-cyan-700 whitespace-nowrap">
-                <Wand2 className="h-4 w-4" />
-                Strategic Intent
-              </div>
-              <input
-                type="text"
-                value={currentIntent.textInput}
-                onChange={(e) => handleIntentTextChange(e.target.value)}
-                placeholder="e.g., Aggressive expansion, follow APP with 1-year delay, focus on packaging exports..."
-                className="flex-1 h-8 px-3 text-sm rounded-md border border-cyan-200 bg-white focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
-              />
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleGenerateStrategy}
-                  disabled={!currentIntent.textInput.trim()}
-                  className="h-8 gap-1.5 text-xs"
-                >
-                  <Wand2 className="h-3.5 w-3.5" />
-                  Generate
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={handleApplyStrategy}
-                  disabled={!currentInterpretation}
-                  className="h-8 gap-1.5 text-xs bg-cyan-600 hover:bg-cyan-700"
-                >
-                  <Check className="h-3.5 w-3.5" />
-                  Apply
-                </Button>
-              </div>
-            </div>
-            
-            {/* Inline AI Interpretation - 1 line only */}
-            {currentInterpretation && (
-              <div className="flex items-center gap-2 px-3 py-1.5 text-sm">
-                <Sparkles className="h-3.5 w-3.5 text-emerald-600 flex-shrink-0" />
-                <span className="text-emerald-700 font-medium">AI Interpretation:</span>
-                <span className="text-emerald-600 truncate">{currentInterpretation.summary}</span>
-              </div>
-            )}
-            
-            {/* AI Strategy Profile - Compact Chips */}
-            <div className={cn(
-              "flex items-center gap-3 p-3 rounded-lg border",
-              previewProfile 
-                ? "border-emerald-200 bg-emerald-50/50" 
-                : "border-indigo-200 bg-indigo-50/50"
-            )}>
-              <div className={cn(
-                "flex items-center gap-2 text-sm font-medium whitespace-nowrap",
-                previewProfile ? "text-emerald-700" : "text-indigo-700"
-              )}>
-                <Sparkles className="h-4 w-4" />
-                {previewProfile ? 'Preview' : 'Strategy'}
-              </div>
-              
-              {/* Strategy Chips */}
-              {(() => {
-                const displayProfile = previewProfile || selectedStrategy.aiProfile
-                return (
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className={cn(
-                      'inline-flex px-2 py-1 rounded text-xs font-medium border',
-                      PROFILE_LABELS.marketShareFocus[displayProfile.marketShareFocus].color,
-                      previewProfile && 'ring-1 ring-emerald-300'
-                    )}>
-                      {PROFILE_LABELS.marketShareFocus[displayProfile.marketShareFocus].label}
-                    </span>
-                    <span className={cn(
-                      'inline-flex px-2 py-1 rounded text-xs font-medium border',
-                      PROFILE_LABELS.profitabilityFocus[displayProfile.profitabilityFocus].color,
-                      previewProfile && 'ring-1 ring-emerald-300'
-                    )}>
-                      {PROFILE_LABELS.profitabilityFocus[displayProfile.profitabilityFocus].label}
-                    </span>
-                    <span className={cn(
-                      'inline-flex px-2 py-1 rounded text-xs font-medium border',
-                      PROFILE_LABELS.capacityStrategy[displayProfile.capacityStrategy].color,
-                      previewProfile && 'ring-1 ring-emerald-300'
-                    )}>
-                      {PROFILE_LABELS.capacityStrategy[displayProfile.capacityStrategy].label}
-                    </span>
-                    <span className={cn(
-                      'inline-flex px-2 py-1 rounded text-xs font-medium border',
-                      PROFILE_LABELS.riskAppetite[displayProfile.riskAppetite].color,
-                      previewProfile && 'ring-1 ring-emerald-300'
-                    )}>
-                      {PROFILE_LABELS.riskAppetite[displayProfile.riskAppetite].label} Risk
-                    </span>
-                    <span className={cn(
-                      'inline-flex px-2 py-1 rounded text-xs font-medium border',
-                      PROFILE_LABELS.customerStrategy[displayProfile.customerStrategy].color,
-                      previewProfile && 'ring-1 ring-emerald-300'
-                    )}>
-                      {PROFILE_LABELS.customerStrategy[displayProfile.customerStrategy].label}
-                    </span>
+          {/* ========== SECTION 1: AI Strategy Profile (Top) ========== */}
+          <Card className="border-2 border-indigo-200 bg-gradient-to-r from-indigo-50/50 to-purple-50/50">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-100">
+                    <Sparkles className="h-5 w-5 text-indigo-600" />
                   </div>
-                )
-              })()}
-              
-              {/* Base Capacity - Inline Right */}
-              <div className="ml-auto flex items-center gap-2 text-sm whitespace-nowrap">
-                <span className="text-muted-foreground">Base:</span>
-                <span className="font-bold text-indigo-700">{selectedStrategy.baseCapacity} kt</span>
+                  <div>
+                    <CardTitle className="text-base font-semibold">AI Strategy Profile</CardTitle>
+                    <p className="text-xs text-muted-foreground mt-0.5">{selectedConfig.playerName} - AI-generated competitive positioning</p>
+                  </div>
+                </div>
+                <span className="text-xs text-indigo-600 bg-indigo-100 px-2.5 py-1 rounded-full font-medium">Read-only</span>
               </div>
-            </div>
-          </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              {/* 5 Strategy Dimensions */}
+              <div className="grid grid-cols-5 gap-4">
+                {/* Market Share Focus */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                    <Crosshair className="h-3.5 w-3.5" />
+                    Market Share
+                  </div>
+                  <span className={cn(
+                    'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
+                    PROFILE_LABELS.marketShareFocus[selectedStrategy.aiProfile.marketShareFocus].color
+                  )}>
+                    {PROFILE_LABELS.marketShareFocus[selectedStrategy.aiProfile.marketShareFocus].label}
+                  </span>
+                </div>
+                
+                {/* Profitability Focus */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                    <DollarSign className="h-3.5 w-3.5" />
+                    Profitability
+                  </div>
+                  <span className={cn(
+                    'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
+                    PROFILE_LABELS.profitabilityFocus[selectedStrategy.aiProfile.profitabilityFocus].color
+                  )}>
+                    {PROFILE_LABELS.profitabilityFocus[selectedStrategy.aiProfile.profitabilityFocus].label}
+                  </span>
+                </div>
+                
+                {/* Capacity Strategy */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                    <Factory className="h-3.5 w-3.5" />
+                    Capacity
+                  </div>
+                  <span className={cn(
+                    'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
+                    PROFILE_LABELS.capacityStrategy[selectedStrategy.aiProfile.capacityStrategy].color
+                  )}>
+                    {PROFILE_LABELS.capacityStrategy[selectedStrategy.aiProfile.capacityStrategy].label}
+                  </span>
+                </div>
+                
+                {/* Risk Appetite */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                    <AlertTriangle className="h-3.5 w-3.5" />
+                    Risk Appetite
+                  </div>
+                  <span className={cn(
+                    'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
+                    PROFILE_LABELS.riskAppetite[selectedStrategy.aiProfile.riskAppetite].color
+                  )}>
+                    {PROFILE_LABELS.riskAppetite[selectedStrategy.aiProfile.riskAppetite].label}
+                  </span>
+                </div>
+                
+                {/* Customer Strategy */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                    <UserCheck className="h-3.5 w-3.5" />
+                    Customer
+                  </div>
+                  <span className={cn(
+                    'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
+                    PROFILE_LABELS.customerStrategy[selectedStrategy.aiProfile.customerStrategy].color
+                  )}>
+                    {PROFILE_LABELS.customerStrategy[selectedStrategy.aiProfile.customerStrategy].label}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Base Capacity */}
+              <div className="mt-4 pt-4 border-t border-indigo-200/50 flex items-center justify-between">
+                <div className="text-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">{selectedConfig.playerName}</span> base capacity
+                </div>
+                <div className="text-xl font-bold text-indigo-700">{selectedStrategy.baseCapacity} kt</div>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* ========== SECTION 2: Behavior Settings (Middle) ========== */}
           <Card className="border-2 border-red-200 bg-red-50/30">
@@ -816,31 +585,11 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                   </div>
 
                   {/* 2. Follow Ratio Slider */}
-                  <div className={cn("space-y-3 p-3 rounded-lg transition-colors", currentLocks.followRatio && "bg-slate-100/50 border border-slate-200")}>
+                  <div className="space-y-3">
                     <label className="text-sm font-medium flex items-center justify-between text-foreground">
                       <span className="flex items-center gap-2">
                         <Users className="h-4 w-4 text-muted-foreground" />
                         Follow Ratio to APP
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                onClick={() => toggleLock('followRatio')}
-                                className={cn(
-                                  "p-1 rounded transition-colors",
-                                  currentLocks.followRatio 
-                                    ? "text-amber-600 bg-amber-100 hover:bg-amber-200" 
-                                    : "text-muted-foreground hover:bg-muted"
-                                )}
-                              >
-                                {currentLocks.followRatio ? <Lock className="h-3.5 w-3.5" /> : <Unlock className="h-3.5 w-3.5" />}
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent side="top">
-                              <p className="text-xs">{currentLocks.followRatio ? 'Locked - AI will not override' : 'Click to lock from AI updates'}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
                       </span>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-muted-foreground">{getFollowRatioLabel(selectedConfig.behaviorSettings.followRatio)}</span>
@@ -854,7 +603,6 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                       max={200}
                       step={5}
                       className="w-full"
-                      disabled={currentLocks.followRatio}
                     />
                     <div className="flex justify-between text-xs text-muted-foreground">
                       <span>0%</span>
@@ -866,30 +614,10 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                   </div>
 
                   {/* 3. Reaction Timing - Vertical */}
-                  <div className={cn("space-y-3 p-3 rounded-lg transition-colors", currentLocks.reactionTiming && "bg-slate-100/50 border border-slate-200")}>
+                  <div className="space-y-3">
                     <label className="text-sm font-medium flex items-center gap-2 text-foreground">
                       <Clock className="h-4 w-4 text-muted-foreground" />
                       Reaction Timing
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button
-                              onClick={() => toggleLock('reactionTiming')}
-                              className={cn(
-                                "p-1 rounded transition-colors",
-                                currentLocks.reactionTiming 
-                                  ? "text-amber-600 bg-amber-100 hover:bg-amber-200" 
-                                  : "text-muted-foreground hover:bg-muted"
-                              )}
-                            >
-                              {currentLocks.reactionTiming ? <Lock className="h-3.5 w-3.5" /> : <Unlock className="h-3.5 w-3.5" />}
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent side="top">
-                            <p className="text-xs">{currentLocks.reactionTiming ? 'Locked - AI will not override' : 'Click to lock from AI updates'}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
                     </label>
                     <div className="grid grid-cols-3 gap-2">
                       {TIMING_OPTIONS.map((option) => (
@@ -897,14 +625,12 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <button
-                                onClick={() => !currentLocks.reactionTiming && handleSettingChange(selectedConfig.playerId, 'reactionTiming', option.value)}
-                                disabled={currentLocks.reactionTiming}
+                                onClick={() => handleSettingChange(selectedConfig.playerId, 'reactionTiming', option.value)}
                                 className={cn(
                                   'px-3 py-2.5 text-sm font-medium rounded-lg border transition-all',
                                   selectedConfig.behaviorSettings.reactionTiming === option.value
                                     ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
-                                    : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50',
-                                  currentLocks.reactionTiming && 'opacity-60 cursor-not-allowed'
+                                    : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
                                 )}
                               >
                                 {option.label}
@@ -954,37 +680,10 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
               </div>
 
               {/* Module B: Downstream Allocation */}
-              <div className={cn(
-                "rounded-xl border bg-white/60 p-5 transition-colors",
-                currentLocks.downstreamAllocation 
-                  ? "border-amber-200 bg-amber-50/30" 
-                  : "border-red-200/80"
-              )}>
-                <div className="flex items-center justify-between mb-5">
-                  <div className="flex items-center gap-2">
-                    <Package className="h-5 w-5 text-purple-600" />
-                    <h4 className="text-sm font-semibold text-foreground">Module B: Downstream Allocation</h4>
-                  </div>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          onClick={() => toggleLock('downstreamAllocation')}
-                          className={cn(
-                            "p-1.5 rounded transition-colors",
-                            currentLocks.downstreamAllocation 
-                              ? "text-amber-600 bg-amber-100 hover:bg-amber-200" 
-                              : "text-muted-foreground hover:bg-muted"
-                          )}
-                        >
-                          {currentLocks.downstreamAllocation ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent side="top">
-                        <p className="text-xs">{currentLocks.downstreamAllocation ? 'Locked - AI will not override' : 'Click to lock from AI updates'}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+              <div className="rounded-xl border border-red-200/80 bg-white/60 p-5">
+                <div className="flex items-center gap-2 mb-5">
+                  <Package className="h-5 w-5 text-purple-600" />
+                  <h4 className="text-sm font-semibold text-foreground">Module B: Downstream Allocation</h4>
                 </div>
                 
                 <div className="grid grid-cols-3 gap-4">
