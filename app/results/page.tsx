@@ -84,76 +84,78 @@ export default function ResultsPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex h-16 items-center justify-between px-6">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Zap className="h-6 w-6 text-primary" />
-              <h1 className="text-xl font-bold">APP Strategic War-Gaming Tool</h1>
-            </div>
-            <Badge variant="outline" className="text-xs">
-              Simulation Results
-            </Badge>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {/* History */}
-            {history.length > 0 && (
-              <Badge variant="secondary" className="gap-1">
-                <History className="h-3 w-3" />
-                {history.length} runs
+      {/* Sticky Header + Navigation Container */}
+      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        {/* Header */}
+        <header className="border-b border-border/50">
+          <div className="flex h-16 items-center justify-between px-6">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Zap className="h-6 w-6 text-primary" />
+                <h1 className="text-xl font-bold">APP Strategic War-Gaming Tool</h1>
+              </div>
+              <Badge variant="outline" className="text-xs">
+                Simulation Results
               </Badge>
-            )}
+            </div>
 
-            {/* Control buttons */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowOverview(!showOverview)}
-                className="gap-1.5"
-              >
-                <ClipboardList className="h-4 w-4" />
-                Input Overview
-                {showOverview ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-              </Button>
-              <div className="h-6 w-px bg-border" />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleExportReport}
-                disabled={status === 'running' || !result}
-              >
-                <Download className="mr-1.5 h-4 w-4" />
-                Export Report
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleShareReport}
-                disabled={status === 'running' || !result}
-              >
-                <Share2 className="mr-1.5 h-4 w-4" />
-                Share Report
-              </Button>
-              <div className="h-6 w-px bg-border" />
-              <Button
-                variant={showDebug ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setShowDebug(!showDebug)}
-                className="gap-1.5"
-              >
-                <Bug className="h-4 w-4" />
-                Debug
-              </Button>
+            <div className="flex items-center gap-4">
+              {/* History */}
+              {history.length > 0 && (
+                <Badge variant="secondary" className="gap-1">
+                  <History className="h-3 w-3" />
+                  {history.length} runs
+                </Badge>
+              )}
+
+              {/* Control buttons */}
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowOverview(!showOverview)}
+                  className="gap-1.5"
+                >
+                  <ClipboardList className="h-4 w-4" />
+                  Input Overview
+                  {showOverview ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </Button>
+                <div className="h-6 w-px bg-border" />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportReport}
+                  disabled={status === 'running' || !result}
+                >
+                  <Download className="mr-1.5 h-4 w-4" />
+                  Export Report
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleShareReport}
+                  disabled={status === 'running' || !result}
+                >
+                  <Share2 className="mr-1.5 h-4 w-4" />
+                  Share Report
+                </Button>
+                <div className="h-6 w-px bg-border" />
+                <Button
+                  variant={showDebug ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setShowDebug(!showDebug)}
+                  className="gap-1.5"
+                >
+                  <Bug className="h-4 w-4" />
+                  Debug
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Navigation tabs - 4 steps */}
-      <nav className="border-b border-border/50 bg-background px-6">
+        {/* Navigation tabs - 4 steps */}
+        <nav className="border-b border-border/50 bg-background px-6">
         <div className="flex items-center gap-1">
           {/* Step 1: Market Input */}
           <button
@@ -206,7 +208,8 @@ export default function ResultsPage() {
             </div>
           </div>
         </div>
-      </nav>
+        </nav>
+      </div>
 
       {/* Expandable Overview Panel */}
       {showOverview && (

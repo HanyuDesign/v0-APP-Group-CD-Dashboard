@@ -113,12 +113,10 @@ function StickyNav({
   return (
     <div 
       className={cn(
-        'sticky z-40 py-3 px-4 rounded-lg border transition-shadow duration-200',
+        'py-3 px-4 rounded-lg border transition-shadow duration-200',
         colors.bg, colors.border,
-        // Top offset: header (64px) + step nav (~44px) + padding (8px) = 116px
-        'top-[116px]',
-        // Add shadow when sticky is active
-        isSticky && 'shadow-lg ring-1 ring-border/50'
+        // Add shadow when parent is sticky
+        isSticky && 'shadow-sm'
       )}
     >
       <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
@@ -207,17 +205,15 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
   // Track if nav is sticky and update active section on scroll
   useEffect(() => {
     const handleScroll = () => {
-      // Check if nav is in sticky position
-      if (navRef.current) {
-        const navRect = navRef.current.getBoundingClientRect()
-        // Nav becomes sticky when its top reaches 116px from viewport top
-        setIsNavSticky(navRect.top <= 120)
-      }
+      // Check if sticky container is active (scrolled past its original position)
+      const scrollY = window.scrollY
+      // Sticky activates when content scrolls past ~200px
+      setIsNavSticky(scrollY > 100)
       
       // Update active section based on scroll position
       const navItems = NAV_ITEMS[activeStage]
-      // Offset = header (64) + nav (44) + sticky nav height (~52) + some buffer
-      const scrollPosition = window.scrollY + 180
+      // Total sticky height: header (64) + step nav (44) + strategic insights (~200) + jump nav (~52) + buffer
+      const scrollPosition = scrollY + 400
       
       for (let i = navItems.length - 1; i >= 0; i--) {
         const element = document.getElementById(navItems[i].id)
@@ -236,8 +232,8 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
   const handleSectionClick = useCallback((sectionId: string) => {
     const element = document.getElementById(sectionId)
     if (element) {
-      // Offset = header (64) + step nav (44) + sticky nav height (~52) + padding (10)
-      const offset = 170
+      // Offset = header (64) + step nav (44) + strategic insights (~200) + jump nav (~52) + padding
+      const offset = 380
       const elementPosition = element.getBoundingClientRect().top + window.scrollY
       window.scrollTo({
         top: elementPosition - offset,
@@ -287,35 +283,41 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
 
   return (
     <div className="space-y-6">
-      {/* Section 1: Value Chain Insights - Interactive Tabs */}
-      <section>
-        <ValueChainInsights 
-          result={result} 
-          activeStage={activeStage}
-          onStageChange={setActiveStage}
-          stages={VALUE_CHAIN_STAGES}
-        />
-      </section>
-
-      {/* Section 2: Detailed Analysis with Sticky Navigation */}
-      <section>
-        <div className="flex items-center gap-2 mb-3">
-          <h3 className="text-sm font-semibold text-muted-foreground">Detailed Analysis</h3>
-          <span className="h-px flex-1 bg-border" />
-        </div>
-        
-        {/* Sticky Navigation Bar - Only this sticks */}
-        <div ref={navRef}>
-          <StickyNav 
-            activeStage={activeStage} 
-            activeSection={activeSection}
-            onSectionClick={handleSectionClick}
-            isSticky={isNavSticky}
+      {/* Sticky Container: Strategic Insights + Detailed Analysis Navigation */}
+      <div className="sticky top-[108px] z-40 bg-background pb-3 -mx-6 px-6 pt-3">
+        {/* Section 1: Value Chain Insights - Interactive Tabs */}
+        <section>
+          <ValueChainInsights 
+            result={result} 
+            activeStage={activeStage}
+            onStageChange={setActiveStage}
+            stages={VALUE_CHAIN_STAGES}
           />
-        </div>
-        
+        </section>
+
+        {/* Section 2: Detailed Analysis Header + Navigation */}
+        <section className="mt-4">
+          <div className="flex items-center gap-2 mb-3">
+            <h3 className="text-sm font-semibold text-muted-foreground">Detailed Analysis</h3>
+            <span className="h-px flex-1 bg-border" />
+          </div>
+          
+          {/* Navigation Bar */}
+          <div ref={navRef}>
+            <StickyNav 
+              activeStage={activeStage} 
+              activeSection={activeSection}
+              onSectionClick={handleSectionClick}
+              isSticky={isNavSticky}
+            />
+          </div>
+        </section>
+      </div>
+
+      {/* Detailed Analysis Content */}
+      <section>
         {/* Content */}
-        <div className={cn('mt-4', status === 'running' && 'opacity-50')}>
+        <div className={cn(status === 'running' && 'opacity-50')}>
           {activeStage === 'forestry' && (
             <ForestryDetails result={result} />
           )}
