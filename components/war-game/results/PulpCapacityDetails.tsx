@@ -211,21 +211,25 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
         <CardContent>
           <TooltipProvider>
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full table-fixed">
                 <thead>
                   <tr className="border-b border-border/50">
-                    <th className="text-left py-3 px-3 text-sm font-semibold text-muted-foreground w-28">Player</th>
-                    <th className="text-left py-3 px-3 text-sm font-semibold text-muted-foreground w-32">Strategy</th>
+                    <th className="text-left py-3 px-2 text-sm font-semibold text-muted-foreground" style={{ width: '12%' }}>Player</th>
+                    <th className="text-left py-3 px-2 text-sm font-semibold text-muted-foreground" style={{ width: '14%' }}>Strategy</th>
                     {years.map(year => (
-                      <th key={year} className="text-center py-3 px-3 text-sm font-semibold text-muted-foreground w-16">{year}</th>
+                      <th key={year} className="text-center py-3 px-2 text-sm font-semibold text-muted-foreground" style={{ width: '9%' }}>{year}</th>
                     ))}
-                    <th className="text-left py-3 px-3 text-sm font-semibold text-muted-foreground w-24">Action</th>
-                    <th className="text-left py-3 px-3 text-sm font-semibold text-muted-foreground">Rationale</th>
+                    <th className="text-left py-3 px-2 text-sm font-semibold text-muted-foreground" style={{ width: '11%' }}>Action</th>
+                    <th className="text-left py-3 px-2 text-sm font-semibold text-muted-foreground" style={{ width: '23%' }}>Rationale</th>
                   </tr>
                 </thead>
                 <tbody>
                   {competitorChanges.map(change => {
                     const player = PLAYERS.find(p => p.id === change.playerId)!
+                    // Get competitor config from input to map strategy directly (1:1 mapping from user input)
+                    const competitorConfig = input.competitorConfig?.find(c => c.playerId === change.playerId)
+                    const capacityReactionStyle = competitorConfig?.behaviorSettings?.capacityReactionStyle || 'defensive'
+                    
                     const yearlyChange = {
                       2026: player.pulpCapacity || 100,
                       2027: change.action === 'add' ? Math.round(change.pulpChange * 0.2) : change.action === 'delay' ? -Math.round(change.pulpChange * 0.3) : 0,
@@ -235,29 +239,41 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                       2031: change.action === 'add' ? Math.round(change.pulpChange * 0.1) : change.action === 'delay' ? Math.round(change.pulpChange * 0.2) : 0,
                     }
                     
-                    // Get strategy type based on action - links back to Competitor Configure behavior settings
-                    const getStrategyTag = () => {
-                      if (change.action === 'add') {
-                        return { label: 'Follow the Leader', color: 'bg-blue-100 text-blue-700 border-blue-200' }
-                      } else if (change.action === 'delay') {
-                        return { label: 'Defensive', color: 'bg-amber-100 text-amber-700 border-amber-200' }
-                      } else {
-                        return { label: 'Cautious Observer', color: 'bg-gray-100 text-gray-700 border-gray-200' }
+                    // Strategy MUST be derived directly from Competitor Configure → Behavior Settings → Capacity Reaction Style
+                    // This is a strict 1:1 mapping from user input, NOT inferred from simulation results
+                    const getStrategyFromConfig = () => {
+                      const strategyMap: Record<string, { label: string; color: string; tooltip: string }> = {
+                        'aggressive': { 
+                          label: 'Aggressive', 
+                          color: 'bg-red-100 text-red-700 border-red-200',
+                          tooltip: 'Actively matches or exceeds competitor expansion to gain market share'
+                        },
+                        'follow-the-leader': { 
+                          label: 'Follow-the-Leader', 
+                          color: 'bg-blue-100 text-blue-700 border-blue-200',
+                          tooltip: 'Follows market leader expansion with calibrated delay to maintain position'
+                        },
+                        'defensive': { 
+                          label: 'Defensive', 
+                          color: 'bg-amber-100 text-amber-700 border-amber-200',
+                          tooltip: 'Prioritizes utilization and avoids aggressive expansion'
+                        }
                       }
+                      return strategyMap[capacityReactionStyle] || strategyMap['defensive']
                     }
                     
-                    // Generate rationale based on action and player characteristics
+                    // Generate rationale based on the configured strategy (not action)
                     const getRationale = () => {
-                      if (change.action === 'add') {
-                        return 'Matching APP expansion to defend market share; capacity investment aligned with demand growth outlook'
-                      } else if (change.action === 'delay') {
-                        return 'Cautious approach due to oversupply concerns; prioritizing utilization rates over market share expansion'
+                      if (capacityReactionStyle === 'aggressive') {
+                        return 'Aggressive expansion to capture market share ahead of demand'
+                      } else if (capacityReactionStyle === 'follow-the-leader') {
+                        return 'Following APP expansion with calibrated delay to maintain market position'
                       } else {
-                        return 'Stable positioning; focusing on operational efficiency rather than capacity growth'
+                        return 'Prioritizing utilization rates; delaying expansion until market clarity improves'
                       }
                     }
                     
-                    const strategy = getStrategyTag()
+                    const strategy = getStrategyFromConfig()
                     
                     return (
                       <tr key={change.playerId} className={cn(
@@ -265,24 +281,24 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                         change.action === 'delay' && 'bg-amber-50/50',
                         change.action === 'add' && 'bg-emerald-50/50'
                       )}>
-                        <td className="py-3 px-3">
+                        <td className="py-3 px-2">
                           <div className="flex items-center gap-2">
                             <span className="h-3 w-3 rounded-full flex-shrink-0" style={{ backgroundColor: player.color }} />
-                            <span className="font-semibold text-sm">{player.nameCn}</span>
+                            <span className="font-semibold text-sm truncate">{player.nameCn}</span>
                           </div>
                         </td>
-                        <td className="py-3 px-3">
+                        <td className="py-3 px-2">
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <span className={cn(
-                                'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border cursor-help',
+                                'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border cursor-help whitespace-nowrap',
                                 strategy.color
                               )}>
                                 {strategy.label}
                               </span>
                             </TooltipTrigger>
                             <TooltipContent side="top" className="max-w-xs">
-                              <p className="text-xs">Based on behavior settings from Competitor Configure & Reaction Input</p>
+                              <p className="text-xs font-medium">{strategy.tooltip}</p>
                             </TooltipContent>
                           </Tooltip>
                         </td>
@@ -290,7 +306,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                           const val = yearlyChange[year]
                           const isBase = year === 2026
                           return (
-                            <td key={year} className="text-center py-3 px-3">
+                            <td key={year} className="text-center py-3 px-2">
                               <span className={cn(
                                 'font-mono text-sm',
                                 isBase ? 'text-muted-foreground' : val > 0 ? 'text-emerald-600 font-bold' : val < 0 ? 'text-amber-600 font-bold' : 'text-muted-foreground'
@@ -300,9 +316,9 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                             </td>
                           )
                         })}
-                        <td className="py-3 px-3">
+                        <td className="py-3 px-2">
                           <span className={cn(
-                            'px-2.5 py-1.5 rounded text-sm font-semibold whitespace-nowrap',
+                            'px-2 py-1 rounded text-xs font-semibold whitespace-nowrap',
                             change.action === 'add' && 'bg-emerald-100 text-emerald-700',
                             change.action === 'delay' && 'bg-amber-100 text-amber-700',
                             change.action === 'maintain' && 'bg-gray-100 text-gray-700'
@@ -310,8 +326,8 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                             {change.action === 'add' ? 'Expanding' : change.action === 'delay' ? 'Delaying' : 'Maintaining'}
                           </span>
                         </td>
-                        <td className="py-3 px-3">
-                          <p className="text-sm text-muted-foreground leading-relaxed">
+                        <td className="py-3 px-2">
+                          <p className="text-xs text-muted-foreground leading-snug">
                             {getRationale()}
                           </p>
                         </td>
