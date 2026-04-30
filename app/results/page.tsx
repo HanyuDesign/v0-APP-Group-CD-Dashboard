@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ResultsPanel } from '@/components/war-game/results/ResultsPanel'
 import { OverviewPanel } from '@/components/war-game/OverviewPanel'
-import { Zap, ArrowLeft, History, Download, Share2, ClipboardList, ChevronDown, ChevronUp, Bug, Check } from 'lucide-react'
+import { Zap, ArrowLeft, History, Download, Share2, ClipboardList, ChevronDown, ChevronUp, ChevronRight, Bug, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSimulation } from '@/lib/context/SimulationContext'
 import { computeAllFromInput } from '@/lib/simulation/computations'
@@ -89,14 +89,9 @@ export default function ResultsPage() {
         {/* Header */}
         <header className="border-b border-border/50">
           <div className="flex h-16 items-center justify-between px-6">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Zap className="h-6 w-6 text-primary" />
-                <h1 className="text-xl font-bold">APP Strategic War-Gaming Tool</h1>
-              </div>
-              <Badge variant="outline" className="text-xs">
-                Simulation Results
-              </Badge>
+            <div className="flex items-center gap-2">
+              <Zap className="h-6 w-6 text-primary" />
+              <h1 className="text-xl font-bold">APP Strategic War-Gaming Tool</h1>
             </div>
 
             <div className="flex items-center gap-4">
@@ -158,37 +153,46 @@ export default function ResultsPage() {
         <nav className="border-b border-border/50 bg-background px-6">
         <div className="flex items-center gap-1">
           {/* Step 1: Market Input */}
-          <button
-            onClick={handleBackToInput}
-            className="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-emerald-600 hover:text-emerald-700 flex items-center gap-2"
-          >
-            <span className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold bg-emerald-100 text-emerald-600">
-              <Check className="h-3 w-3" />
-            </span>
-            Market Input
-          </button>
+          <div className="flex items-center">
+            <button
+              onClick={handleBackToInput}
+              className="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-emerald-600 hover:text-emerald-700 flex items-center gap-2"
+            >
+              <span className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold bg-emerald-100 text-emerald-600">
+                <Check className="h-3 w-3" />
+              </span>
+              Market Input
+            </button>
+            <ChevronRight className="h-4 w-4 text-muted-foreground/50 mx-1" />
+          </div>
           
           {/* Step 2: Competitor Configure */}
-          <button
-            onClick={handleBackToInput}
-            className="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-emerald-600 hover:text-emerald-700 flex items-center gap-2"
-          >
-            <span className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold bg-emerald-100 text-emerald-600">
-              <Check className="h-3 w-3" />
-            </span>
-            Competitor Configure
-          </button>
+          <div className="flex items-center">
+            <button
+              onClick={handleBackToInput}
+              className="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-emerald-600 hover:text-emerald-700 flex items-center gap-2"
+            >
+              <span className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold bg-emerald-100 text-emerald-600">
+                <Check className="h-3 w-3" />
+              </span>
+              Competitor Configure
+            </button>
+            <ChevronRight className="h-4 w-4 text-muted-foreground/50 mx-1" />
+          </div>
           
           {/* Step 3: Reaction Input */}
-          <button
-            onClick={handleBackToInput}
-            className="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-emerald-600 hover:text-emerald-700 flex items-center gap-2"
-          >
-            <span className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold bg-emerald-100 text-emerald-600">
-              <Check className="h-3 w-3" />
-            </span>
-            Reaction Input
-          </button>
+          <div className="flex items-center">
+            <button
+              onClick={handleBackToInput}
+              className="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-emerald-600 hover:text-emerald-700 flex items-center gap-2"
+            >
+              <span className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold bg-emerald-100 text-emerald-600">
+                <Check className="h-3 w-3" />
+              </span>
+              Reaction Input
+            </button>
+            <ChevronRight className="h-4 w-4 text-muted-foreground/50 mx-1" />
+          </div>
           
           {/* Step 4: Simulation Results - Active */}
           <button
