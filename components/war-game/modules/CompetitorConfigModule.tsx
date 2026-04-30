@@ -531,7 +531,9 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                 <span className="text-xs text-red-600 bg-red-100 px-2.5 py-1 rounded-full font-medium">User Input</span>
               </div>
             </CardHeader>
-            <CardContent className="pt-0 space-y-5">
+            <CardContent className="pt-0">
+              {/* Horizontal layout for Module A and Module B */}
+              <div className="grid grid-cols-2 gap-5">
               
               {/* Module A: Pulp Capacity Response */}
               <div className="rounded-xl border border-red-200/80 bg-white/60 p-5">
@@ -744,6 +746,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                     </div>
                   </div>
                 </div>
+              </div>
               </div>
             </CardContent>
           </Card>
