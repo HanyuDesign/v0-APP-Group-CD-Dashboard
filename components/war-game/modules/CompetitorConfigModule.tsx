@@ -1096,6 +1096,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                   </div>
                 </div>
               </div>
+              </div>
             </CardContent>
           </Card>
 
