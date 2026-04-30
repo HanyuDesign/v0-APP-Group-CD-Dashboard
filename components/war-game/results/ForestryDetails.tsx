@@ -98,7 +98,7 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
   return (
     <div className="space-y-4">
       {/* AI Analysis Module - NEW */}
-      <Card id="forestry-ai-analysis" className="border-2 border-green-200 bg-gradient-to-r from-green-50/50 to-emerald-50/50 scroll-mt-40">
+      <Card id="forestry-ai-analysis" className="border-2 border-green-200 bg-gradient-to-r from-green-50/50 to-emerald-50/50 scroll-mt-44">
         <CardHeader className="pb-2">
           <div className="flex items-center gap-2">
             <div className="p-2 rounded-lg bg-green-100">
@@ -205,7 +205,7 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
       </Card>
 
       {/* Woodchip Supply Table */}
-      <Card id="forestry-woodchip-supply" className="border-border/50 bg-card/80 scroll-mt-40">
+      <Card id="forestry-woodchip-supply" className="border-border/50 bg-card/80 scroll-mt-44">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm flex items-center gap-2">
@@ -290,7 +290,7 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
       </Card>
 
       {/* Import Dependency Indicators */}
-      <Card id="forestry-import-dependency" className="border-border/50 bg-card/80 scroll-mt-40">
+      <Card id="forestry-import-dependency" className="border-border/50 bg-card/80 scroll-mt-44">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
             <Ship className="h-4 w-4 text-blue-600" />
@@ -334,7 +334,7 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
       </Card>
 
       {/* Supply-Demand Balance */}
-      <Card id="forestry-supply-demand" className="border-border/50 bg-card/80 scroll-mt-40">
+      <Card id="forestry-supply-demand" className="border-border/50 bg-card/80 scroll-mt-44">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-amber-600" />

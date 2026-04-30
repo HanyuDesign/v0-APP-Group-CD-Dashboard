@@ -115,10 +115,10 @@ function StickyNav({
       className={cn(
         'sticky z-40 py-3 px-4 rounded-lg border transition-shadow duration-200',
         colors.bg, colors.border,
-        // Top offset: header (~64px) + step nav (~48px) + some padding
-        'top-[120px]',
+        // Top offset: header (64px) + step nav (~44px) + padding (8px) = 116px
+        'top-[116px]',
         // Add shadow when sticky is active
-        isSticky && 'shadow-md'
+        isSticky && 'shadow-lg ring-1 ring-border/50'
       )}
     >
       <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
@@ -210,13 +210,14 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
       // Check if nav is in sticky position
       if (navRef.current) {
         const navRect = navRef.current.getBoundingClientRect()
-        // Nav becomes sticky when its top reaches ~120px from viewport top
-        setIsNavSticky(navRect.top <= 125)
+        // Nav becomes sticky when its top reaches 116px from viewport top
+        setIsNavSticky(navRect.top <= 120)
       }
       
       // Update active section based on scroll position
       const navItems = NAV_ITEMS[activeStage]
-      const scrollPosition = window.scrollY + 200 // Offset for nav bar
+      // Offset = header (64) + nav (44) + sticky nav height (~52) + some buffer
+      const scrollPosition = window.scrollY + 180
       
       for (let i = navItems.length - 1; i >= 0; i--) {
         const element = document.getElementById(navItems[i].id)
@@ -235,7 +236,8 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
   const handleSectionClick = useCallback((sectionId: string) => {
     const element = document.getElementById(sectionId)
     if (element) {
-      const offset = 180 // Account for sticky nav bar only
+      // Offset = header (64) + step nav (44) + sticky nav height (~52) + padding (10)
+      const offset = 170
       const elementPosition = element.getBoundingClientRect().top + window.scrollY
       window.scrollTo({
         top: elementPosition - offset,

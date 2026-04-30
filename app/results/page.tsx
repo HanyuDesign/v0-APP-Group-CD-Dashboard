@@ -265,7 +265,7 @@ export default function ResultsPage() {
       )}
 
       {/* Main content */}
-      <main className="flex-1 overflow-x-auto p-6">
+      <main className="flex-1 p-6">
         <ResultsPanel result={result} status={status} />
       </main>
 
