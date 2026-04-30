@@ -11,6 +11,7 @@ import {
 import { cn } from '@/lib/utils'
 import { Slider } from '@/components/ui/slider'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import type { 
   CompetitorConfig, 
@@ -42,6 +43,99 @@ interface AIStrategyProfile {
   capacityStrategy: CapacityStrategy
   riskAppetite: RiskAppetite
   customerStrategy: CustomerStrategy
+}
+
+interface AIInterpretation {
+  summary: string
+  profile: AIStrategyProfile
+}
+
+// AI Strategy Generation Logic - parses text input into structured signals
+function generateStrategyFromText(text: string): AIInterpretation {
+  // Parse signals from text
+  const isAggressive = /aggressive|expand|growth|attack|offensive|increase capacity/i.test(text)
+  const isDefensive = /defensive|protect|maintain|conservative|cautious|avoid/i.test(text)
+  const isProfitFocused = /profit|margin|cost|efficiency|returns/i.test(text)
+  const isVolumeFocused = /volume|market share|scale|dominat/i.test(text)
+  const hasDelayMention = /delay|lag|wait|1.year|2.year|slow/i.test(text)
+  const hasImmediateMention = /immediate|quick|fast|rapid|now/i.test(text)
+  const hasHighRisk = /high risk|aggressive|bold|ambitious/i.test(text)
+  const hasLowRisk = /low risk|safe|cautious|conservative|careful/i.test(text)
+  const hasExportFocus = /export|international|global|overseas/i.test(text)
+  const hasPackagingFocus = /packaging|carton|board/i.test(text)
+  const hasUtilization = /utilization|capacity util|high util/i.test(text)
+  
+  // Determine Market Share Focus
+  const marketShareFocus: MarketShareFocus = 
+    isAggressive || isVolumeFocused ? 'expand' :
+    isDefensive ? 'defend' : 'selective'
+  
+  // Determine Profitability Focus
+  const profitabilityFocus: ProfitabilityFocus = 
+    isProfitFocused ? 'margin-first' :
+    isVolumeFocused ? 'volume-first' : 'balanced'
+  
+  // Determine Capacity Strategy
+  const capacityStrategy: CapacityStrategy = 
+    isAggressive ? 'aggressive' :
+    isDefensive ? 'conservative' : 'disciplined'
+  
+  // Determine Risk Appetite
+  const riskAppetite: RiskAppetite = 
+    hasHighRisk || isAggressive ? 'high' :
+    hasLowRisk || isDefensive ? 'low' : 'medium'
+  
+  // Determine Customer Strategy
+  const customerStrategy: CustomerStrategy = 
+    isDefensive || hasUtilization ? 'lock-in' :
+    isAggressive ? 'opportunistic' : 'flexible'
+  
+  // Generate interpretation summary
+  const summaryParts: string[] = []
+  if (isAggressive) summaryParts.push('aggressive expansion')
+  else if (isDefensive) summaryParts.push('defensive positioning')
+  else summaryParts.push('balanced approach')
+  
+  if (isProfitFocused) summaryParts.push('margin focus')
+  else if (isVolumeFocused) summaryParts.push('volume priority')
+  
+  if (hasDelayMention) summaryParts.push('delayed reaction')
+  else if (hasImmediateMention) summaryParts.push('immediate response')
+  
+  if (hasExportFocus) summaryParts.push('export emphasis')
+  if (hasPackagingFocus) summaryParts.push('packaging focus')
+  
+  const summary = summaryParts.join(' | ')
+  
+  return {
+    summary,
+    profile: {
+      marketShareFocus,
+      profitabilityFocus,
+      capacityStrategy,
+      riskAppetite,
+      customerStrategy,
+    }
+  }
+}
+
+// Map Strategy Profile to Behavior Settings
+function mapStrategyToBehavior(profile: AIStrategyProfile): Partial<CompetitorBehaviorSettings> {
+  return {
+    capacityReactionStyle: 
+      profile.capacityStrategy === 'aggressive' ? 'aggressive' :
+      profile.capacityStrategy === 'conservative' ? 'defensive' : 'follow-the-leader',
+    followRatio: 
+      profile.capacityStrategy === 'aggressive' ? 120 :
+      profile.capacityStrategy === 'disciplined' ? 70 :
+      profile.riskAppetite === 'low' ? 30 : 50,
+    reactionTiming: 
+      profile.riskAppetite === 'high' ? 'immediate' :
+      profile.riskAppetite === 'low' ? '2-year-lag' : '1-year-lag',
+    utilizationTarget: 
+      profile.profitabilityFocus === 'margin-first' ? 'high' :
+      profile.profitabilityFocus === 'volume-first' ? 'flexible' : 'balanced',
+  }
 }
 
 
@@ -277,12 +371,14 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
   const [editingCapacity, setEditingCapacity] = useState<number | null>(null)
   const [capacityOverrides, setCapacityOverrides] = useState<Record<string, YearlyCapacity>>({})
   const [strategicIntentMap, setStrategicIntentMap] = useState<Record<string, string>>({})
+  const [generatedInterpretation, setGeneratedInterpretation] = useState<Record<string, AIInterpretation>>({})
   
-  // Get current competitor's strategic intent
+  // Get current competitor's strategic intent and interpretation
   const strategicIntent = strategicIntentMap[selectedCompetitor] || ''
   const setStrategicIntent = (value: string) => {
     setStrategicIntentMap(prev => ({ ...prev, [selectedCompetitor]: value }))
   }
+  const currentInterpretation = generatedInterpretation[selectedCompetitor]
   
   const selectedConfig = config.find(c => c.playerId === selectedCompetitor)
   const selectedStrategy = COMPETITOR_STRATEGIES[selectedCompetitor]
@@ -341,6 +437,40 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
       }
     }))
     setEditingCapacity(null)
+  }
+  
+  // Generate Strategy from intent text - updates profile, behavior settings, and clears capacity overrides
+  const handleGenerateStrategy = () => {
+    if (!strategicIntent.trim() || !selectedConfig) return
+    
+    const interpretation = generateStrategyFromText(strategicIntent)
+    
+    // Store the interpretation
+    setGeneratedInterpretation(prev => ({
+      ...prev,
+      [selectedCompetitor]: interpretation,
+    }))
+    
+    // Apply behavior settings
+    const newBehaviorSettings = mapStrategyToBehavior(interpretation.profile)
+    const updatedConfig = config.map(c => {
+      if (c.playerId === selectedCompetitor) {
+        return {
+          ...c,
+          behaviorSettings: { ...c.behaviorSettings, ...newBehaviorSettings },
+          isEdited: true,
+        }
+      }
+      return c
+    })
+    onChange(updatedConfig)
+    
+    // Clear capacity overrides to recalculate derived actions
+    setCapacityOverrides(prev => {
+      const updated = { ...prev }
+      delete updated[selectedCompetitor]
+      return updated
+    })
   }
 
   return (
@@ -423,129 +553,107 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
       {selectedConfig && selectedStrategy && derivedCapacity && derivedAllocation && (
         <div className="flex-1 overflow-y-auto space-y-5 pr-2">
           
-          {/* ========== SECTION 1: AI Strategy Profile (Top) ========== */}
-          <Card className="border-2 border-indigo-200 bg-gradient-to-r from-indigo-50/50 to-purple-50/50">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-100">
+          {/* ========== SECTION 1: Strategic Intent + AI Strategy Profile (4-column grid) ========== */}
+          <div className="grid grid-cols-4 gap-4">
+            {/* Strategic Intent Panel - 1 column */}
+            <Card className="border-2 border-cyan-200 bg-gradient-to-b from-cyan-50/50 to-sky-50/50">
+              <CardHeader className="pb-2">
+                <div className="flex items-center gap-2">
+                  <Wand2 className="h-5 w-5 text-cyan-600" />
+                  <CardTitle className="text-sm font-semibold">Strategic Intent</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0 space-y-3">
+                <textarea
+                  value={strategicIntent}
+                  onChange={(e) => setStrategicIntent(e.target.value)}
+                  placeholder="e.g., Aggressive expansion, follow APP with 1-year delay..."
+                  className="w-full h-20 px-3 py-2 text-sm rounded-lg border border-cyan-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent resize-none placeholder:text-muted-foreground/60"
+                />
+                <Button
+                  onClick={handleGenerateStrategy}
+                  disabled={!strategicIntent.trim()}
+                  className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
+                  size="sm"
+                >
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Generate Strategy
+                </Button>
+              </CardContent>
+            </Card>
+            
+            {/* AI Strategy Profile - 3 columns */}
+            <Card className="col-span-3 border-2 border-indigo-200 bg-gradient-to-r from-indigo-50/50 to-purple-50/50">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
                     <Sparkles className="h-5 w-5 text-indigo-600" />
+                    <CardTitle className="text-sm font-semibold">AI Strategy Profile</CardTitle>
+                    <span className="text-xs text-muted-foreground">- {selectedConfig.playerName}</span>
                   </div>
-                  <div>
-                    <CardTitle className="text-base font-semibold">AI Strategy Profile</CardTitle>
-                    <p className="text-xs text-muted-foreground mt-0.5">{selectedConfig.playerName} - AI-generated competitive positioning</p>
-                  </div>
-                </div>
-                <span className="text-xs text-indigo-600 bg-indigo-100 px-2.5 py-1 rounded-full font-medium">Read-only</span>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="flex gap-6">
-                {/* Left: Strategy Dimensions + Base Capacity */}
-                <div className="flex-1">
-                  {/* 5 Strategy Dimensions */}
-                  <div className="grid grid-cols-5 gap-4">
-                    {/* Market Share Focus */}
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                        <Crosshair className="h-3.5 w-3.5" />
-                        Market Share
-                      </div>
-                      <span className={cn(
-                        'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
-                        PROFILE_LABELS.marketShareFocus[selectedStrategy.aiProfile.marketShareFocus].color
-                      )}>
-                        {PROFILE_LABELS.marketShareFocus[selectedStrategy.aiProfile.marketShareFocus].label}
-                      </span>
-                    </div>
-                    
-                    {/* Profitability Focus */}
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                        <DollarSign className="h-3.5 w-3.5" />
-                        Profitability
-                      </div>
-                      <span className={cn(
-                        'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
-                        PROFILE_LABELS.profitabilityFocus[selectedStrategy.aiProfile.profitabilityFocus].color
-                      )}>
-                        {PROFILE_LABELS.profitabilityFocus[selectedStrategy.aiProfile.profitabilityFocus].label}
-                      </span>
-                    </div>
-                    
-                    {/* Capacity Strategy */}
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                        <Factory className="h-3.5 w-3.5" />
-                        Capacity
-                      </div>
-                      <span className={cn(
-                        'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
-                        PROFILE_LABELS.capacityStrategy[selectedStrategy.aiProfile.capacityStrategy].color
-                      )}>
-                        {PROFILE_LABELS.capacityStrategy[selectedStrategy.aiProfile.capacityStrategy].label}
-                      </span>
-                    </div>
-                    
-                    {/* Risk Appetite */}
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                        <AlertTriangle className="h-3.5 w-3.5" />
-                        Risk Appetite
-                      </div>
-                      <span className={cn(
-                        'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
-                        PROFILE_LABELS.riskAppetite[selectedStrategy.aiProfile.riskAppetite].color
-                      )}>
-                        {PROFILE_LABELS.riskAppetite[selectedStrategy.aiProfile.riskAppetite].label}
-                      </span>
-                    </div>
-                    
-                    {/* Customer Strategy */}
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                        <UserCheck className="h-3.5 w-3.5" />
-                        Customer
-                      </div>
-                      <span className={cn(
-                        'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
-                        PROFILE_LABELS.customerStrategy[selectedStrategy.aiProfile.customerStrategy].color
-                      )}>
-                        {PROFILE_LABELS.customerStrategy[selectedStrategy.aiProfile.customerStrategy].label}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  {/* Base Capacity */}
-                  <div className="mt-4 pt-4 border-t border-indigo-200/50 flex items-center justify-between">
-                    <div className="text-sm text-muted-foreground">
-                      <span className="font-medium text-foreground">{selectedConfig.playerName}</span> base capacity
-                    </div>
-                    <div className="text-xl font-bold text-indigo-700">{selectedStrategy.baseCapacity} kt</div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-medium text-muted-foreground">Base capacity:</span>
+                    <span className="text-lg font-bold text-indigo-700">{selectedStrategy.baseCapacity} kt</span>
                   </div>
                 </div>
+              </CardHeader>
+              <CardContent className="pt-0 space-y-3">
+                {/* Strategy Chips - compact horizontal layout */}
+                {(() => {
+                  const displayProfile = currentInterpretation?.profile || selectedStrategy.aiProfile
+                  const hasGenerated = !!currentInterpretation
+                  return (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className={cn(
+                        'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border transition-all',
+                        PROFILE_LABELS.marketShareFocus[displayProfile.marketShareFocus].color,
+                        hasGenerated && 'ring-2 ring-emerald-300 ring-offset-1'
+                      )}>
+                        {PROFILE_LABELS.marketShareFocus[displayProfile.marketShareFocus].label}
+                      </span>
+                      <span className={cn(
+                        'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border transition-all',
+                        PROFILE_LABELS.profitabilityFocus[displayProfile.profitabilityFocus].color,
+                        hasGenerated && 'ring-2 ring-emerald-300 ring-offset-1'
+                      )}>
+                        {PROFILE_LABELS.profitabilityFocus[displayProfile.profitabilityFocus].label}
+                      </span>
+                      <span className={cn(
+                        'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border transition-all',
+                        PROFILE_LABELS.capacityStrategy[displayProfile.capacityStrategy].color,
+                        hasGenerated && 'ring-2 ring-emerald-300 ring-offset-1'
+                      )}>
+                        {PROFILE_LABELS.capacityStrategy[displayProfile.capacityStrategy].label}
+                      </span>
+                      <span className={cn(
+                        'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border transition-all',
+                        PROFILE_LABELS.riskAppetite[displayProfile.riskAppetite].color,
+                        hasGenerated && 'ring-2 ring-emerald-300 ring-offset-1'
+                      )}>
+                        {PROFILE_LABELS.riskAppetite[displayProfile.riskAppetite].label} Risk
+                      </span>
+                      <span className={cn(
+                        'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border transition-all',
+                        PROFILE_LABELS.customerStrategy[displayProfile.customerStrategy].color,
+                        hasGenerated && 'ring-2 ring-emerald-300 ring-offset-1'
+                      )}>
+                        {PROFILE_LABELS.customerStrategy[displayProfile.customerStrategy].label}
+                      </span>
+                    </div>
+                  )
+                })()}
                 
-                {/* Right: Strategic Intent Input */}
-                <div className="w-72 border-l border-indigo-200/50 pl-6">
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-sm font-medium text-indigo-700">
-                      <Wand2 className="h-4 w-4" />
-                      Strategic Intent
-                    </div>
-                    <textarea
-                      value={strategicIntent}
-                      onChange={(e) => setStrategicIntent(e.target.value)}
-                      placeholder="e.g., Aggressive expansion, follow APP with 1-year delay, focus on packaging exports..."
-                      className="w-full h-24 px-3 py-2 text-sm rounded-lg border border-indigo-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent resize-none placeholder:text-muted-foreground/60"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Describe growth focus, reaction to APP, risk appetite, or downstream priorities
-                    </p>
+                {/* AI Interpretation - 1 line */}
+                {currentInterpretation && (
+                  <div className="flex items-center gap-2 text-sm border-t border-indigo-200/50 pt-2">
+                    <Lightbulb className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+                    <span className="text-emerald-700 font-medium">AI:</span>
+                    <span className="text-emerald-600">{currentInterpretation.summary}</span>
                   </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                )}
+              </CardContent>
+            </Card>
+          </div>
 
           {/* ========== SECTION 2: Behavior Settings (Middle) ========== */}
           <Card className="border-2 border-red-200 bg-red-50/30">
