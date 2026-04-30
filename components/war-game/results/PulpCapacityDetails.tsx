@@ -214,11 +214,12 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border/50">
-                    <th className="text-left py-2 px-3 font-medium text-muted-foreground w-36">Player</th>
+                    <th className="text-left py-2 px-3 font-medium text-muted-foreground w-32">Player</th>
                     {years.map(year => (
-                      <th key={year} className="text-center py-2 px-3 font-medium text-muted-foreground">{year}</th>
+                      <th key={year} className="text-center py-2 px-3 font-medium text-muted-foreground w-16">{year}</th>
                     ))}
-                    <th className="text-left py-2 px-3 font-medium text-muted-foreground w-48">Action</th>
+                    <th className="text-left py-2 px-3 font-medium text-muted-foreground w-24">Action</th>
+                    <th className="text-left py-2 px-3 font-medium text-muted-foreground">Rationale</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -232,6 +233,18 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                       2030: change.action === 'add' ? Math.round(change.pulpChange * 0.15) : change.action === 'delay' ? Math.round(change.pulpChange * 0.3) : 0,
                       2031: change.action === 'add' ? Math.round(change.pulpChange * 0.1) : change.action === 'delay' ? Math.round(change.pulpChange * 0.2) : 0,
                     }
+                    
+                    // Generate rationale based on action and player characteristics
+                    const getRationale = () => {
+                      if (change.action === 'add') {
+                        return 'Matching APP expansion to defend market share; capacity investment aligned with demand growth outlook'
+                      } else if (change.action === 'delay') {
+                        return 'Cautious approach due to oversupply concerns; prioritizing utilization rates over market share expansion'
+                      } else {
+                        return 'Stable positioning; focusing on operational efficiency rather than capacity growth'
+                      }
+                    }
+                    
                     return (
                       <tr key={change.playerId} className={cn(
                         'border-b border-border/30',
@@ -250,7 +263,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                           return (
                             <td key={year} className="text-center py-2.5 px-3">
                               <span className={cn(
-                                'font-mono',
+                                'font-mono text-xs',
                                 isBase ? 'text-muted-foreground' : val > 0 ? 'text-emerald-600 font-semibold' : val < 0 ? 'text-amber-600 font-semibold' : 'text-muted-foreground'
                               )}>
                                 {isBase ? val : val > 0 ? `+${val}` : val < 0 ? val : '-'}
@@ -260,13 +273,18 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                         })}
                         <td className="py-2.5 px-3">
                           <span className={cn(
-                            'px-2 py-1 rounded text-xs font-medium',
+                            'px-2 py-1 rounded text-xs font-medium whitespace-nowrap',
                             change.action === 'add' && 'bg-emerald-100 text-emerald-700',
                             change.action === 'delay' && 'bg-amber-100 text-amber-700',
                             change.action === 'maintain' && 'bg-gray-100 text-gray-700'
                           )}>
                             {change.action === 'add' ? 'Expanding' : change.action === 'delay' ? 'Delaying' : 'Maintaining'}
                           </span>
+                        </td>
+                        <td className="py-2.5 px-3">
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            {getRationale()}
+                          </p>
                         </td>
                       </tr>
                     )
