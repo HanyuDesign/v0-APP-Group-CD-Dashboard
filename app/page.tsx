@@ -2,12 +2,12 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Badge } from '@/components/ui/badge'
+
 import { Button } from '@/components/ui/button'
 import { ValueChainFlow } from '@/components/war-game/ValueChainFlow'
 import { CompetitorConfigModule, initializeCompetitorConfig } from '@/components/war-game/modules/CompetitorConfigModule'
 import { ReactionInputModule } from '@/components/war-game/modules/ReactionInputModule'
-import { Zap, ArrowRight, ArrowLeft, Play, Check } from 'lucide-react'
+import { Zap, ArrowRight, ArrowLeft, Play, Check, ChevronRight } from 'lucide-react'
 import { useSimulation } from '@/lib/context/SimulationContext'
 import { cn } from '@/lib/utils'
 import type { SimulationStep, CompetitorConfig, ReactionSettings } from '@/lib/types/war-game'
@@ -117,14 +117,9 @@ export default function InputPage() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex h-16 items-center justify-between px-6">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Zap className="h-6 w-6 text-primary" />
-              <h1 className="text-xl font-bold">APP Strategic War-Gaming Tool</h1>
-            </div>
-            <Badge variant="outline" className="text-xs">
-              {STEPS.find(s => s.key === currentStep)?.label || 'Input Configuration'}
-            </Badge>
+          <div className="flex items-center gap-2">
+            <Zap className="h-6 w-6 text-primary" />
+            <h1 className="text-xl font-bold">APP Strategic War-Gaming Tool</h1>
           </div>
         </div>
       </header>
@@ -137,39 +132,45 @@ export default function InputPage() {
             const isPast = index < currentStepIndex
             const isResults = step.key === 'results'
             const isDisabled = isResults && !result
+            const isLast = index === STEPS.length - 1
             
             return (
-              <button
-                key={step.key}
-                onClick={() => handleStepClick(step.key)}
-                disabled={isDisabled}
-                className={cn(
-                  'relative px-4 py-2.5 text-sm font-medium border-b-2 transition-all flex items-center gap-2',
-                  isActive 
-                    ? 'border-primary text-primary' 
-                    : isPast
-                      ? 'border-transparent text-emerald-600 hover:text-emerald-700'
-                      : isDisabled
-                        ? 'border-transparent text-muted-foreground/50 cursor-not-allowed'
-                        : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+              <div key={step.key} className="flex items-center">
+                <button
+                  onClick={() => handleStepClick(step.key)}
+                  disabled={isDisabled}
+                  className={cn(
+                    'relative px-4 py-2.5 text-sm font-medium border-b-2 transition-all flex items-center gap-2',
+                    isActive 
+                      ? 'border-primary text-primary' 
+                      : isPast
+                        ? 'border-transparent text-emerald-600 hover:text-emerald-700'
+                        : isDisabled
+                          ? 'border-transparent text-muted-foreground/50 cursor-not-allowed'
+                          : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                  )}
+                >
+                  {/* Step number / check */}
+                  <span className={cn(
+                    'flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold',
+                    isActive 
+                      ? 'bg-primary text-primary-foreground' 
+                      : isPast
+                        ? 'bg-emerald-100 text-emerald-600'
+                        : 'bg-muted text-muted-foreground'
+                  )}>
+                    {isPast ? <Check className="h-3 w-3" /> : index + 1}
+                  </span>
+                  <span>{step.label}</span>
+                  {isResults && !result && (
+                    <span className="text-[10px] ml-1">(Run simulation first)</span>
+                  )}
+                </button>
+                {/* Arrow between steps */}
+                {!isLast && (
+                  <ChevronRight className="h-4 w-4 text-muted-foreground/50 mx-1" />
                 )}
-              >
-                {/* Step number / check */}
-                <span className={cn(
-                  'flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold',
-                  isActive 
-                    ? 'bg-primary text-primary-foreground' 
-                    : isPast
-                      ? 'bg-emerald-100 text-emerald-600'
-                      : 'bg-muted text-muted-foreground'
-                )}>
-                  {isPast ? <Check className="h-3 w-3" /> : index + 1}
-                </span>
-                <span>{step.label}</span>
-                {isResults && !result && (
-                  <span className="text-[10px] ml-1">(Run simulation first)</span>
-                )}
-              </button>
+              </div>
             )
           })}
           
