@@ -450,48 +450,81 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
             </table>
           </div>
 
-          {/* Summary Cards */}
+          {/* Summary Cards - v155 design */}
           <div className="grid grid-cols-3 gap-4 pt-2">
-            {/* 5-Year Net Supply */}
-            <div className="p-4 rounded-lg bg-white border-l-4 border-l-blue-500 border border-border/50">
-              <div className="text-xs text-blue-600 font-medium mb-1">5-Year Net Supply</div>
-              <div className={cn(
-                'text-2xl font-bold',
-                (appChinaPulpAdd + totalCompetitorPulpChange) >= 0 ? 'text-emerald-600' : 'text-amber-600'
-              )}>
-                {(appChinaPulpAdd + totalCompetitorPulpChange) >= 0 ? '+' : ''}{appChinaPulpAdd + totalCompetitorPulpChange} kt
+            {/* Supply Impact */}
+            <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
+              <div className="text-xs text-blue-600 font-medium mb-2">Supply Impact</div>
+              <div className="text-2xl font-bold text-blue-700">
+                +{appChinaPulpAdd + totalCompetitorPulpChange} kt
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">Net capacity addition</div>
+              <div className="mt-3 pt-3 border-t border-blue-200 space-y-1">
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">APP China</span>
+                  <span className="text-red-600 font-medium">+{appChinaPulpAdd} kt</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Competitors</span>
+                  <span className={cn(
+                    'font-medium',
+                    totalCompetitorPulpChange >= 0 ? 'text-emerald-600' : 'text-amber-600'
+                  )}>
+                    {totalCompetitorPulpChange >= 0 ? '+' : ''}{totalCompetitorPulpChange} kt
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Market Balance */}
-            <div className="p-4 rounded-lg bg-white border border-border/50">
-              <div className="text-xs text-muted-foreground font-medium mb-2">Market Balance</div>
-              <span className={cn(
-                'inline-flex px-3 py-1.5 rounded-full text-sm font-semibold',
-                (appChinaPulpAdd + totalCompetitorPulpChange) > 400 
-                  ? 'bg-red-100 text-red-700' 
-                  : (appChinaPulpAdd + totalCompetitorPulpChange) > 200 
-                    ? 'bg-amber-100 text-amber-700' 
-                    : 'bg-emerald-100 text-emerald-700'
+            {/* Price Pressure */}
+            <div className="p-4 rounded-lg bg-amber-50 border border-amber-200">
+              <div className="text-xs text-amber-600 font-medium mb-2">Price Pressure</div>
+              <div className={cn(
+                'text-2xl font-bold',
+                (appChinaPulpAdd + totalCompetitorPulpChange) > 400 ? 'text-red-600' : 
+                (appChinaPulpAdd + totalCompetitorPulpChange) > 200 ? 'text-amber-600' : 'text-emerald-600'
               )}>
-                {(appChinaPulpAdd + totalCompetitorPulpChange) > 400 
-                  ? 'Oversupply' 
-                  : (appChinaPulpAdd + totalCompetitorPulpChange) > 200 
-                    ? 'Tight' 
-                    : 'Balanced'}
-              </span>
+                {(appChinaPulpAdd + totalCompetitorPulpChange) > 400 ? 'High' : 
+                 (appChinaPulpAdd + totalCompetitorPulpChange) > 200 ? 'Moderate' : 'Low'}
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">Expected margin compression</div>
+              <div className="mt-3 pt-3 border-t border-amber-200">
+                <div className="flex items-center gap-2">
+                  {(appChinaPulpAdd + totalCompetitorPulpChange) > 400 ? (
+                    <TrendingDown className="h-4 w-4 text-red-500" />
+                  ) : (appChinaPulpAdd + totalCompetitorPulpChange) > 200 ? (
+                    <TrendingDown className="h-4 w-4 text-amber-500" />
+                  ) : (
+                    <TrendingUp className="h-4 w-4 text-emerald-500" />
+                  )}
+                  <span className="text-xs text-muted-foreground">
+                    {(appChinaPulpAdd + totalCompetitorPulpChange) > 400 
+                      ? 'Significant oversupply risk' 
+                      : (appChinaPulpAdd + totalCompetitorPulpChange) > 200 
+                        ? 'Balanced supply-demand' 
+                        : 'Favorable pricing environment'}
+                  </span>
+                </div>
+              </div>
             </div>
 
-            {/* Price Trend */}
-            <div className="p-4 rounded-lg bg-white border border-border/50">
-              <div className="text-xs text-muted-foreground font-medium mb-2">Price Trend</div>
-              <div className="flex items-center gap-2 text-xl font-bold text-foreground">
-                <ArrowRight className="h-5 w-5" />
-                {(appChinaPulpAdd + totalCompetitorPulpChange) > 400 
-                  ? 'Declining' 
-                  : (appChinaPulpAdd + totalCompetitorPulpChange) > 200 
-                    ? 'Pressured' 
-                    : 'Stable'}
+            {/* Competitive Position */}
+            <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200">
+              <div className="text-xs text-emerald-600 font-medium mb-2">Competitive Position</div>
+              <div className="text-2xl font-bold text-emerald-700">
+                {competitorsDelaying > competitorsExpanding ? 'Strong' : 
+                 competitorsDelaying === competitorsExpanding ? 'Neutral' : 'Challenged'}
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">APP market position outlook</div>
+              <div className="mt-3 pt-3 border-t border-emerald-200 space-y-1">
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Deterred competitors</span>
+                  <span className="text-amber-600 font-medium">{competitorsDelaying}</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Following competitors</span>
+                  <span className="text-emerald-600 font-medium">{competitorsExpanding}</span>
+                </div>
               </div>
             </div>
           </div>
