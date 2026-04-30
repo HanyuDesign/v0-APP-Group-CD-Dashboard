@@ -151,11 +151,42 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
 
       {/* Section 2: Dynamic Detailed Analysis Based on Selected Stage */}
       <section>
-        <h3 className="flex items-center gap-2 text-sm font-semibold text-muted-foreground mb-4">
+        {/* Navigation Tabs */}
+        <div className="flex items-center gap-2 mb-4">
+          <h3 className="text-sm font-semibold text-muted-foreground">Detailed Analysis</h3>
           <span className="h-px flex-1 bg-border" />
-          Detailed Analysis: {VALUE_CHAIN_STAGES.find(s => s.id === activeStage)?.label}
-          <span className="h-px flex-1 bg-border" />
-        </h3>
+          <div className="flex gap-1 bg-muted/50 rounded-lg p-1">
+            {VALUE_CHAIN_STAGES.map((stage) => {
+              const Icon = stage.icon
+              const isActive = activeStage === stage.id
+              return (
+                <button
+                  key={stage.id}
+                  onClick={() => setActiveStage(stage.id)}
+                  className={cn(
+                    'flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all',
+                    isActive
+                      ? cn(
+                          'bg-background shadow-sm',
+                          stage.color === 'green' && 'text-green-700',
+                          stage.color === 'blue' && 'text-blue-700',
+                          stage.color === 'purple' && 'text-purple-700'
+                        )
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  <Icon className={cn(
+                    'h-4 w-4',
+                    isActive && stage.color === 'green' && 'text-green-600',
+                    isActive && stage.color === 'blue' && 'text-blue-600',
+                    isActive && stage.color === 'purple' && 'text-purple-600'
+                  )} />
+                  {stage.label}
+                </button>
+              )
+            })}
+          </div>
+        </div>
         
         <div className={cn(status === 'running' && 'opacity-50')}>
           {activeStage === 'forestry' && (
