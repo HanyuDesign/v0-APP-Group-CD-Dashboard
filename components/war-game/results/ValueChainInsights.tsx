@@ -180,18 +180,6 @@ export function ValueChainInsights({ result, activeStage, onStageChange, stages 
                   </p>
                 </div>
 
-                {/* Active indicator */}
-                {isActive && (
-                  <div className={cn(
-                    'mt-3 pt-2 border-t text-xs font-medium flex items-center gap-1',
-                    stage.id === 'forestry' && 'border-green-200 text-green-600',
-                    stage.id === 'pulp' && 'border-blue-200 text-blue-600',
-                    stage.id === 'downstream' && 'border-purple-200 text-purple-600'
-                  )}>
-                    <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
-                    Viewing Details
-                  </div>
-                )}
               </button>
 
               {/* Arrow connector */}
@@ -213,21 +201,6 @@ export function ValueChainInsights({ result, activeStage, onStageChange, stages 
         })}
       </div>
 
-      {/* Story Flow Indicator */}
-      <div className="flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-muted/30 text-xs text-muted-foreground">
-        <span className="font-medium">Story Flow:</span>
-        <span className={cn(activeStage === 'forestry' && 'text-green-600 font-semibold')}>
-          Wood Supply
-        </span>
-        <ArrowRight className="h-3 w-3" />
-        <span className={cn(activeStage === 'pulp' && 'text-blue-600 font-semibold')}>
-          Pulp Capacity
-        </span>
-        <ArrowRight className="h-3 w-3" />
-        <span className={cn(activeStage === 'downstream' && 'text-purple-600 font-semibold')}>
-          Market Absorption
-        </span>
-      </div>
     </div>
   )
 }

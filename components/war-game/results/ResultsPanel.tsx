@@ -48,6 +48,54 @@ interface ResultsPanelProps {
   status: SimulationStatus
 }
 
+// Market Data Tabs Component
+function MarketDataTabs({ result, status }: { result: SimulationResult, status: SimulationStatus }) {
+  const [activeTab, setActiveTab] = useState<'market' | 'financial'>('market')
+  
+  return (
+    <div className="space-y-4">
+      {/* Tab Header */}
+      <div className="flex items-center gap-2">
+        <h3 className="text-sm font-semibold text-muted-foreground">Market Data</h3>
+        <span className="h-px flex-1 bg-border" />
+        <div className="flex gap-1 bg-muted/50 rounded-lg p-1">
+          <button
+            onClick={() => setActiveTab('market')}
+            className={cn(
+              'px-3 py-1.5 text-sm font-medium rounded-md transition-all',
+              activeTab === 'market'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            )}
+          >
+            Market Performance
+          </button>
+          <button
+            onClick={() => setActiveTab('financial')}
+            className={cn(
+              'px-3 py-1.5 text-sm font-medium rounded-md transition-all',
+              activeTab === 'financial'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            )}
+          >
+            Financial Results
+          </button>
+        </div>
+      </div>
+      
+      {/* Tab Content */}
+      <div className={cn(status === 'running' && 'opacity-50')}>
+        {activeTab === 'market' ? (
+          <MarketResults result={result} />
+        ) : (
+          <FinancialResults result={result} />
+        )}
+      </div>
+    </div>
+  )
+}
+
 export function ResultsPanel({ result, status }: ResultsPanelProps) {
   const [activeStage, setActiveStage] = useState<ValueChainStage>('pulp')
   
@@ -124,21 +172,9 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
         </div>
       </section>
 
-      {/* Section 3: Data Tables (shown based on relevance) */}
+      {/* Section 3: Market Data with Tabs */}
       <section>
-        <h3 className="flex items-center gap-2 text-sm font-semibold text-muted-foreground mb-4">
-          <span className="h-px flex-1 bg-border" />
-          {activeStage === 'downstream' ? 'Financial Results' : 'Market Data'}
-          <span className="h-px flex-1 bg-border" />
-        </h3>
-        
-        <div className={cn(status === 'running' && 'opacity-50')}>
-          {activeStage === 'downstream' ? (
-            <FinancialResults result={result} />
-          ) : (
-            <MarketResults result={result} />
-          )}
-        </div>
+        <MarketDataTabs result={result} status={status} />
       </section>
     </div>
   )
