@@ -1,14 +1,47 @@
 'use client'
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { BarChart3, DollarSign, Clock } from 'lucide-react'
-import { AIDecisionsSummary } from './AIDecisionsSummary'
+import { Clock, Trees, Factory, Package } from 'lucide-react'
+import { ValueChainInsights } from './ValueChainInsights'
+import { ForestryDetails } from './ForestryDetails'
+import { PulpCapacityDetails } from './PulpCapacityDetails'
+import { DownstreamDetails } from './DownstreamDetails'
 import { MarketResults } from './MarketResults'
 import { FinancialResults } from './FinancialResults'
 import type { SimulationResult, SimulationStatus } from '@/lib/types/war-game'
 import { cn } from '@/lib/utils'
 import { Spinner } from '@/components/ui/spinner'
+
+// Value chain stages as clickable tabs
+export type ValueChainStage = 'forestry' | 'pulp' | 'downstream'
+
+const VALUE_CHAIN_STAGES = [
+  { 
+    id: 'forestry' as ValueChainStage, 
+    label: 'Forestry & Woodchips', 
+    shortLabel: 'Upstream',
+    icon: Trees,
+    color: 'green',
+    description: 'Supply & sourcing dynamics'
+  },
+  { 
+    id: 'pulp' as ValueChainStage, 
+    label: 'Pulp Capacity & Competitors', 
+    shortLabel: 'Midstream',
+    icon: Factory,
+    color: 'blue',
+    description: 'Capacity decisions & reactions'
+  },
+  { 
+    id: 'downstream' as ValueChainStage, 
+    label: 'Downstream Markets', 
+    shortLabel: 'Demand',
+    icon: Package,
+    color: 'purple',
+    description: 'Market absorption & margins'
+  },
+] as const
 
 interface ResultsPanelProps {
   result: SimulationResult | null
@@ -16,6 +49,8 @@ interface ResultsPanelProps {
 }
 
 export function ResultsPanel({ result, status }: ResultsPanelProps) {
+  const [activeStage, setActiveStage] = useState<ValueChainStage>('pulp')
+  
   if (status === 'idle' && !result) {
     return (
       <Card className="border-border/50 bg-card/80">
@@ -56,33 +91,54 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
 
   return (
     <div className="space-y-6">
-      {/* Section 1: AI Decisions Summary */}
+      {/* Section 1: Value Chain Insights - Interactive Tabs */}
       <section>
-        <AIDecisionsSummary result={result} />
+        <ValueChainInsights 
+          result={result} 
+          activeStage={activeStage}
+          onStageChange={setActiveStage}
+          stages={VALUE_CHAIN_STAGES}
+        />
       </section>
 
-      {/* Section 2: Market & Financial Results */}
+      {/* Section 2: Dynamic Detailed Analysis Based on Selected Stage */}
       <section>
-        <Tabs defaultValue="market" className="w-full">
-          <TabsList className="mb-4 grid w-full max-w-md grid-cols-2">
-            <TabsTrigger value="market" className="gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Market Results
-            </TabsTrigger>
-            <TabsTrigger value="financial" className="gap-2">
-              <DollarSign className="h-4 w-4" />
-              Financial Results
-            </TabsTrigger>
-          </TabsList>
+        <h3 className="flex items-center gap-2 text-sm font-semibold text-muted-foreground mb-4">
+          <span className="h-px flex-1 bg-border" />
+          Detailed Analysis: {VALUE_CHAIN_STAGES.find(s => s.id === activeStage)?.label}
+          <span className="h-px flex-1 bg-border" />
+        </h3>
+        
+        <div className={cn(status === 'running' && 'opacity-50')}>
+          {activeStage === 'forestry' && (
+            <ForestryDetails result={result} />
+          )}
           
-          <TabsContent value="market" className={cn(status === 'running' && 'opacity-50')}>
-            <MarketResults result={result} />
-          </TabsContent>
+          {activeStage === 'pulp' && (
+            <PulpCapacityDetails result={result} />
+          )}
           
-          <TabsContent value="financial" className={cn(status === 'running' && 'opacity-50')}>
+          {activeStage === 'downstream' && (
+            <DownstreamDetails result={result} />
+          )}
+        </div>
+      </section>
+
+      {/* Section 3: Data Tables (shown based on relevance) */}
+      <section>
+        <h3 className="flex items-center gap-2 text-sm font-semibold text-muted-foreground mb-4">
+          <span className="h-px flex-1 bg-border" />
+          {activeStage === 'downstream' ? 'Financial Results' : 'Market Data'}
+          <span className="h-px flex-1 bg-border" />
+        </h3>
+        
+        <div className={cn(status === 'running' && 'opacity-50')}>
+          {activeStage === 'downstream' ? (
             <FinancialResults result={result} />
-          </TabsContent>
-        </Tabs>
+          ) : (
+            <MarketResults result={result} />
+          )}
+        </div>
       </section>
     </div>
   )
