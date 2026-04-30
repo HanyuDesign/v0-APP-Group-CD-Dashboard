@@ -1,5 +1,6 @@
 'use client'
 
+import { Fragment } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { ArrowRight, Trees, Factory, Package, TrendingUp, TrendingDown, Users, Globe, Lightbulb } from 'lucide-react'
@@ -117,10 +118,9 @@ export function ValueChainInsights({ result, activeStage, onStageChange, stages 
           const isLast = index === stages.length - 1
 
           return (
-            <>
+            <Fragment key={stage.id}>
               {/* Stage Card - Clickable */}
               <button
-                key={stage.id}
                 onClick={() => onStageChange(stage.id)}
                 className={cn(
                   'rounded-lg border-2 p-4 text-left transition-all',
@@ -196,7 +196,7 @@ export function ValueChainInsights({ result, activeStage, onStageChange, stages 
 
               {/* Arrow connector */}
               {!isLast && (
-                <div key={`arrow-${index}`} className="flex flex-col items-center justify-center">
+                <div className="flex flex-col items-center justify-center">
                   <ArrowRight className={cn(
                     'h-5 w-5',
                     activeStage === stages[index + 1]?.id || activeStage === stage.id
@@ -208,7 +208,7 @@ export function ValueChainInsights({ result, activeStage, onStageChange, stages 
                   </span>
                 </div>
               )}
-            </>
+            </Fragment>
           )
         })}
       </div>

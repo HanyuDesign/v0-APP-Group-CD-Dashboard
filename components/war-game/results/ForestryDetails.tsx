@@ -24,9 +24,9 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
   const woodDemandIncrease = Math.round(appChinaPulpAdd * 2.2) // ~2.2 kt wood per kt pulp
   
   // Derive policy impacts from input settings
-  const loggingPolicy = input.forestry.chinaLogging
-  const realEstateCondition = input.forestry.realEstateCondition
-  const exportPolicy = input.forestry.exporterPolicy
+  const loggingPolicy = input.forestry.chinaLoggingPolicy
+  const realEstateCondition = input.forestry.chinaRealEstateCondition
+  const exportPolicy = input.forestry.vietnamExportPolicy
 
   // Generate AI analysis based on inputs
   const generateAIAnalysis = () => {
@@ -39,8 +39,8 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
       opportunities: [] as string[],
     }
 
-    // Logging policy impact
-    if (loggingPolicy === 'restrictive') {
+    // Logging policy impact (tight, baseline, relaxed)
+    if (loggingPolicy === 'tight') {
       analysis.drivers.push('Restrictive logging policies limit domestic supply growth')
       analysis.supplyTightness = 'tight'
       analysis.importReliance = 'high'
@@ -51,24 +51,24 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
       analysis.drivers.push('Stable logging policy maintains current supply levels')
     }
 
-    // Real estate impact
-    if (realEstateCondition === 'weak') {
+    // Real estate impact (downturn, stable, recovery)
+    if (realEstateCondition === 'downturn') {
       analysis.drivers.push('Weak real estate reduces construction wood demand, freeing supply')
       analysis.opportunities.push('Lower domestic competition for wood resources')
       if (analysis.supplyTightness === 'tight') analysis.supplyTightness = 'balanced'
-    } else if (realEstateCondition === 'strong') {
+    } else if (realEstateCondition === 'recovery') {
       analysis.drivers.push('Strong real estate increases competition for domestic wood')
       analysis.risks.push('Higher wood prices from construction sector demand')
       if (analysis.supplyTightness === 'balanced') analysis.supplyTightness = 'tight'
     }
 
-    // Export policy impact
-    if (exportPolicy === 'china-focused') {
-      analysis.drivers.push('Exporters prioritizing China market increases import availability')
+    // Export policy impact (restricted, baseline, expanded)
+    if (exportPolicy === 'expanded') {
+      analysis.drivers.push('Exporters expanding China allocation increases import availability')
       analysis.importReliance = 'high'
       analysis.opportunities.push('Reliable import supply from key exporter countries')
-    } else if (exportPolicy === 'diversified') {
-      analysis.drivers.push('Exporters diversifying away from China reduces import availability')
+    } else if (exportPolicy === 'restricted') {
+      analysis.drivers.push('Exporters restricting China allocation reduces import availability')
       analysis.risks.push('Need to secure alternative supply sources')
       analysis.importReliance = 'decreasing'
     }

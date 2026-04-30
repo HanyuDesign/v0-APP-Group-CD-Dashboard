@@ -4,48 +4,97 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { 
   FileText, Package, Bath, TrendingUp, TrendingDown, Minus,
-  AlertTriangle, CheckCircle, Info
+  AlertTriangle, CheckCircle, Lightbulb, BarChart3
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { AIBadge } from '../shared/AIBadge'
+import { TrafficLight } from '../shared/TrafficLight'
 import type { SimulationResult } from '@/lib/types/war-game'
+import { PLAYERS } from '@/lib/data/initial-data'
 
 interface DownstreamDetailsProps {
   result: SimulationResult
 }
 
-const years = [2025, 2026, 2027, 2028, 2029, 2030] as const
+const years = [2026, 2027, 2028, 2029, 2030, 2031] as const
+
+const SEGMENT_CONFIG = {
+  paper: {
+    label: 'Paper',
+    icon: FileText,
+    iconColor: 'bg-amber-100 text-amber-600',
+    borderColor: 'border-amber-200',
+    bgColor: 'bg-amber-50/30',
+  },
+  board: {
+    label: 'Packaging / Carton Board',
+    icon: Package,
+    iconColor: 'bg-purple-100 text-purple-600',
+    borderColor: 'border-purple-200',
+    bgColor: 'bg-purple-50/30',
+  },
+  tissue: {
+    label: 'Tissue',
+    icon: Bath,
+    iconColor: 'bg-blue-100 text-blue-600',
+    borderColor: 'border-blue-200',
+    bgColor: 'bg-blue-50/30',
+  },
+}
 
 // Generate downstream market data based on simulation results
 function generateDownstreamData(result: SimulationResult) {
-  const baseData = {
+  const { segmentOutcomes, input } = result
+  
+  // Get APP's downstream capacity additions
+  const appBoardAdd = 
+    (input.appCapacity.guangxi.includeBoard ? input.appCapacity.guangxi.boardCapacity : 0) +
+    (input.appCapacity.jiangsuFujian.includeBoard ? input.appCapacity.jiangsuFujian.boardCapacity : 0)
+  const appTissueAdd = 
+    (input.appCapacity.guangxi.includeTissue ? input.appCapacity.guangxi.tissueCapacity : 0) +
+    (input.appCapacity.jiangsuFujian.includeTissue ? input.appCapacity.jiangsuFujian.tissueCapacity : 0)
+  
+  // Find segment outcomes
+  const paperOutcome = segmentOutcomes.find(s => s.segment === 'paper')
+  const boardOutcome = segmentOutcomes.find(s => s.segment === 'board')
+  const tissueOutcome = segmentOutcomes.find(s => s.segment === 'tissue')
+  
+  return {
     paper: {
-      supply: { 2025: 45000, 2026: 46500, 2027: 48200, 2028: 50100, 2029: 52000, 2030: 54000 },
-      demand: { 2025: 44000, 2026: 45800, 2027: 47800, 2028: 49500, 2029: 51200, 2030: 53000 },
-      utilization: { 2025: 92, 2026: 91, 2027: 90, 2028: 89, 2029: 88, 2030: 87 },
-      marginPressure: 'moderate' as const,
+      capacity: { 2026: 4500, 2027: 4650, 2028: 4820, 2029: 5010, 2030: 5200, 2031: 5400 },
+      output: { 2026: 4100, 2027: 4230, 2028: 4380, 2029: 4500, 2030: 4620, 2031: 4750 },
+      supply: paperOutcome?.supply || 4500,
+      demand: paperOutcome?.demand || 4400,
+      utilization: paperOutcome?.utilization || 91,
+      balance: paperOutcome?.supplyDemandBalance || 100,
+      marginPressure: (paperOutcome?.utilization || 91) >= 85 ? 'low' : (paperOutcome?.utilization || 91) >= 75 ? 'moderate' : 'high',
     },
-    packaging: {
-      supply: { 2025: 38000, 2026: 40000, 2027: 42500, 2028: 45000, 2029: 47500, 2030: 50000 },
-      demand: { 2025: 37500, 2026: 39500, 2027: 42000, 2028: 44800, 2029: 47200, 2030: 49500 },
-      utilization: { 2025: 94, 2026: 93, 2027: 92, 2028: 91, 2029: 90, 2030: 89 },
-      marginPressure: 'low' as const,
+    board: {
+      capacity: { 2026: 3800, 2027: 3800 + Math.round(appBoardAdd * 0.2), 2028: 3800 + Math.round(appBoardAdd * 0.5), 2029: 3800 + Math.round(appBoardAdd * 0.8), 2030: 3800 + appBoardAdd, 2031: 3800 + appBoardAdd + 200 },
+      output: { 2026: 3550, 2027: 3650, 2028: 3800, 2029: 3950, 2030: 4100, 2031: 4250 },
+      supply: boardOutcome?.supply || 3800,
+      demand: boardOutcome?.demand || 3750,
+      utilization: boardOutcome?.utilization || 93,
+      balance: boardOutcome?.supplyDemandBalance || 50,
+      marginPressure: (boardOutcome?.utilization || 93) >= 85 ? 'low' : (boardOutcome?.utilization || 93) >= 75 ? 'moderate' : 'high',
     },
     tissue: {
-      supply: { 2025: 12000, 2026: 12800, 2027: 13600, 2028: 14500, 2029: 15400, 2030: 16300 },
-      demand: { 2025: 11800, 2026: 12600, 2027: 13500, 2028: 14400, 2029: 15300, 2030: 16200 },
-      utilization: { 2025: 95, 2026: 94, 2027: 93, 2028: 92, 2029: 91, 2030: 90 },
-      marginPressure: 'low' as const,
+      capacity: { 2026: 1200, 2027: 1200 + Math.round(appTissueAdd * 0.2), 2028: 1200 + Math.round(appTissueAdd * 0.5), 2029: 1200 + Math.round(appTissueAdd * 0.8), 2030: 1200 + appTissueAdd, 2031: 1200 + appTissueAdd + 100 },
+      output: { 2026: 1140, 2027: 1200, 2028: 1280, 2029: 1360, 2030: 1440, 2031: 1520 },
+      supply: tissueOutcome?.supply || 1200,
+      demand: tissueOutcome?.demand || 1180,
+      utilization: tissueOutcome?.utilization || 95,
+      balance: tissueOutcome?.supplyDemandBalance || 20,
+      marginPressure: (tissueOutcome?.utilization || 95) >= 85 ? 'low' : (tissueOutcome?.utilization || 95) >= 75 ? 'moderate' : 'high',
     },
   }
-  
-  return baseData
 }
 
 function MarginIndicator({ level }: { level: 'low' | 'moderate' | 'high' }) {
   const config = {
-    low: { color: 'text-emerald-600 bg-emerald-50', icon: CheckCircle, label: 'Low Pressure' },
-    moderate: { color: 'text-amber-600 bg-amber-50', icon: AlertTriangle, label: 'Moderate Pressure' },
-    high: { color: 'text-red-600 bg-red-50', icon: AlertTriangle, label: 'High Pressure' },
+    low: { color: 'bg-emerald-100 text-emerald-700', icon: CheckCircle, label: 'Low Pressure' },
+    moderate: { color: 'bg-amber-100 text-amber-700', icon: BarChart3, label: 'Moderate' },
+    high: { color: 'bg-red-100 text-red-700', icon: AlertTriangle, label: 'High Pressure' },
   }
   
   const { color, icon: Icon, label } = config[level]
@@ -59,42 +108,83 @@ function MarginIndicator({ level }: { level: 'low' | 'moderate' | 'high' }) {
 }
 
 function DownstreamTable({ 
-  title, 
-  icon: Icon, 
-  iconColor,
-  data 
+  segmentKey,
+  data,
+  playerOutcomes,
+  input,
 }: { 
-  title: string
-  icon: React.ElementType
-  iconColor: string
+  segmentKey: 'paper' | 'board' | 'tissue'
   data: {
-    supply: Record<number, number>
-    demand: Record<number, number>
-    utilization: Record<number, number>
+    capacity: Record<number, number>
+    output: Record<number, number>
+    supply: number
+    demand: number
+    utilization: number
+    balance: number
     marginPressure: 'low' | 'moderate' | 'high'
   }
+  playerOutcomes: SimulationResult['playerMarketOutcomes']
+  input: SimulationResult['input']
 }) {
+  const config = SEGMENT_CONFIG[segmentKey]
+  const Icon = config.icon
+  
   return (
-    <Card className="border-border/50">
+    <Card className={cn('border-2', config.borderColor, config.bgColor)}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className={cn('flex h-8 w-8 items-center justify-center rounded-lg', iconColor)}>
+            <div className={cn('flex h-8 w-8 items-center justify-center rounded-lg', config.iconColor)}>
               <Icon className="h-4 w-4" />
             </div>
-            <CardTitle className="text-base font-semibold">{title}</CardTitle>
+            <CardTitle className="text-base font-semibold">{config.label}</CardTitle>
           </div>
-          <MarginIndicator level={data.marginPressure} />
+          <div className="flex items-center gap-2">
+            <MarginIndicator level={data.marginPressure} />
+            <TrafficLight status={data.utilization >= 85 ? 'green' : data.utilization >= 75 ? 'amber' : 'red'} />
+          </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-0">
+      <CardContent className="pt-0 space-y-4">
+        {/* Key Metrics Summary */}
+        <div className="grid grid-cols-4 gap-3">
+          <div className="p-2.5 rounded-lg bg-white/70 text-center">
+            <div className="text-[10px] text-muted-foreground mb-0.5">Supply</div>
+            <div className="text-lg font-bold">{data.supply} kt</div>
+          </div>
+          <div className="p-2.5 rounded-lg bg-white/70 text-center">
+            <div className="text-[10px] text-muted-foreground mb-0.5">Demand</div>
+            <div className="text-lg font-bold">{data.demand} kt</div>
+          </div>
+          <div className="p-2.5 rounded-lg bg-white/70 text-center">
+            <div className="text-[10px] text-muted-foreground mb-0.5">Utilization</div>
+            <div className={cn(
+              'text-lg font-bold',
+              data.utilization >= 85 ? 'text-emerald-600' : data.utilization >= 75 ? 'text-amber-600' : 'text-red-600'
+            )}>
+              {data.utilization.toFixed(1)}%
+            </div>
+          </div>
+          <div className="p-2.5 rounded-lg bg-white/70 text-center">
+            <div className="text-[10px] text-muted-foreground mb-0.5">Balance</div>
+            <div className={cn(
+              'text-lg font-bold flex items-center justify-center gap-1',
+              data.balance > 20 ? 'text-amber-600' : data.balance < -20 ? 'text-emerald-600' : 'text-foreground'
+            )}>
+              {data.balance > 0 ? <TrendingUp className="h-4 w-4" /> : data.balance < 0 ? <TrendingDown className="h-4 w-4" /> : <Minus className="h-4 w-4" />}
+              {data.balance > 0 ? '+' : ''}{data.balance}
+            </div>
+          </div>
+        </div>
+
+        {/* Capacity & Output Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border/50">
-                <th className="text-left py-2 pr-4 font-medium text-muted-foreground">Metric</th>
+                <th className="text-left py-2 pr-4 font-medium text-muted-foreground w-36">Metric</th>
                 {years.map(year => (
-                  <th key={year} className="text-right py-2 px-2 font-medium text-muted-foreground min-w-[70px]">
+                  <th key={year} className="text-center py-2 px-2 font-medium text-muted-foreground min-w-[70px]">
                     {year}
                   </th>
                 ))}
@@ -102,46 +192,42 @@ function DownstreamTable({
             </thead>
             <tbody>
               <tr className="border-b border-border/30">
-                <td className="py-2.5 pr-4 font-medium text-foreground">Supply (kt)</td>
-                {years.map(year => (
-                  <td key={year} className="text-right py-2.5 px-2 font-mono text-sm">
-                    {(data.supply[year] / 1000).toFixed(1)}k
-                  </td>
-                ))}
-              </tr>
-              <tr className="border-b border-border/30">
-                <td className="py-2.5 pr-4 font-medium text-foreground">Demand (kt)</td>
-                {years.map(year => (
-                  <td key={year} className="text-right py-2.5 px-2 font-mono text-sm">
-                    {(data.demand[year] / 1000).toFixed(1)}k
-                  </td>
-                ))}
-              </tr>
-              <tr className="border-b border-border/30">
-                <td className="py-2.5 pr-4 font-medium text-foreground">Balance (kt)</td>
-                {years.map(year => {
-                  const balance = data.supply[year] - data.demand[year]
+                <td className="py-2.5 pr-4 font-medium text-foreground">Capacity (kt)</td>
+                {years.map((year, idx) => {
+                  const value = data.capacity[year]
+                  const prevValue = idx > 0 ? data.capacity[years[idx - 1]] : value
+                  const delta = value - prevValue
                   return (
-                    <td key={year} className={cn(
-                      'text-right py-2.5 px-2 font-mono text-sm font-medium',
-                      balance > 0 ? 'text-emerald-600' : balance < 0 ? 'text-red-600' : 'text-foreground'
-                    )}>
-                      {balance > 0 ? '+' : ''}{(balance / 1000).toFixed(1)}k
+                    <td key={year} className="text-center py-2.5 px-2">
+                      <span className="font-mono">{value}</span>
+                      {idx > 0 && delta > 0 && (
+                        <span className="text-[10px] text-emerald-600 ml-1">+{delta}</span>
+                      )}
                     </td>
                   )
                 })}
               </tr>
-              <tr>
-                <td className="py-2.5 pr-4 font-medium text-foreground">Utilization (%)</td>
+              <tr className="border-b border-border/30">
+                <td className="py-2.5 pr-4 font-medium text-foreground">Output (kt)</td>
                 {years.map(year => (
-                  <td key={year} className={cn(
-                    'text-right py-2.5 px-2 font-mono text-sm',
-                    data.utilization[year] >= 90 ? 'text-emerald-600' : 
-                    data.utilization[year] >= 80 ? 'text-amber-600' : 'text-red-600'
-                  )}>
-                    {data.utilization[year]}%
+                  <td key={year} className="text-center py-2.5 px-2 font-mono">
+                    {data.output[year]}
                   </td>
                 ))}
+              </tr>
+              <tr>
+                <td className="py-2.5 pr-4 font-medium text-foreground">Utilization (%)</td>
+                {years.map(year => {
+                  const util = Math.round((data.output[year] / data.capacity[year]) * 100)
+                  return (
+                    <td key={year} className={cn(
+                      'text-center py-2.5 px-2 font-mono font-medium',
+                      util >= 85 ? 'text-emerald-600' : util >= 75 ? 'text-amber-600' : 'text-red-600'
+                    )}>
+                      {util}%
+                    </td>
+                  )
+                })}
               </tr>
             </tbody>
           </table>
@@ -153,79 +239,139 @@ function DownstreamTable({
 
 export function DownstreamDetails({ result }: DownstreamDetailsProps) {
   const downstreamData = generateDownstreamData(result)
+  const { segmentOutcomes, playerMarketOutcomes, input } = result
+  
+  // Calculate overall metrics
+  const avgUtilization = Object.values(downstreamData).reduce((sum, d) => sum + d.utilization, 0) / 3
+  const tightSegments = Object.values(downstreamData).filter(d => d.balance < -20).length
+  const oversuppliedSegments = Object.values(downstreamData).filter(d => d.balance > 50).length
   
   return (
-    <div className="space-y-6">
-      {/* AI Analysis Summary */}
-      <Card className="border-purple-200 bg-purple-50/30">
-        <CardHeader className="pb-3">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100">
-              <Info className="h-4 w-4 text-purple-600" />
-            </div>
-            <CardTitle className="text-base font-semibold">Downstream Market Analysis</CardTitle>
-            <Badge variant="outline" className="bg-purple-100 text-purple-700 border-purple-200 text-xs">
-              AI Generated
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="space-y-3">
-            <p className="text-sm text-foreground leading-relaxed">
-              Downstream markets show balanced supply-demand dynamics through 2030. Packaging segment demonstrates 
-              the strongest fundamentals with consistent demand growth driven by e-commerce expansion. Paper segment 
-              faces moderate margin pressure as digital substitution continues. Tissue maintains healthy utilization 
-              supported by stable consumer demand.
-            </p>
-            <div className="grid grid-cols-3 gap-4 pt-2">
-              <div className="text-center p-3 rounded-lg bg-white/50">
-                <div className="text-xs text-muted-foreground mb-1">Paper Outlook</div>
-                <div className="flex items-center justify-center gap-1 text-amber-600 font-medium">
-                  <Minus className="h-4 w-4" />
-                  Stable
-                </div>
-              </div>
-              <div className="text-center p-3 rounded-lg bg-white/50">
-                <div className="text-xs text-muted-foreground mb-1">Packaging Outlook</div>
-                <div className="flex items-center justify-center gap-1 text-emerald-600 font-medium">
-                  <TrendingUp className="h-4 w-4" />
-                  Growth
-                </div>
-              </div>
-              <div className="text-center p-3 rounded-lg bg-white/50">
-                <div className="text-xs text-muted-foreground mb-1">Tissue Outlook</div>
-                <div className="flex items-center justify-center gap-1 text-emerald-600 font-medium">
-                  <TrendingUp className="h-4 w-4" />
-                  Growth
-                </div>
-              </div>
+    <div className="space-y-4">
+      {/* Market Health Overview */}
+      <div className="rounded-xl border-2 border-purple-200 bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 p-4">
+        <div className="flex items-center gap-2 mb-4">
+          <Lightbulb className="h-5 w-5 text-purple-600" />
+          <h3 className="font-bold text-purple-900">Downstream Market Health</h3>
+          <AIBadge size="sm" />
+        </div>
+        
+        {/* Summary Cards */}
+        <div className="grid grid-cols-4 gap-4 mb-4">
+          <div className="p-3 rounded-lg bg-white border border-purple-200 text-center">
+            <div className="text-xs text-muted-foreground mb-1">Avg Utilization</div>
+            <div className={cn(
+              'text-2xl font-bold',
+              avgUtilization >= 85 ? 'text-emerald-600' : avgUtilization >= 75 ? 'text-amber-600' : 'text-red-600'
+            )}>
+              {avgUtilization.toFixed(0)}%
             </div>
           </div>
-        </CardContent>
-      </Card>
+          <div className="p-3 rounded-lg bg-white border border-purple-200 text-center">
+            <div className="text-xs text-muted-foreground mb-1">Tight Markets</div>
+            <div className={cn(
+              'text-2xl font-bold',
+              tightSegments > 0 ? 'text-emerald-600' : 'text-muted-foreground'
+            )}>
+              {tightSegments}
+            </div>
+            <div className="text-[10px] text-muted-foreground">Pricing power</div>
+          </div>
+          <div className="p-3 rounded-lg bg-white border border-purple-200 text-center">
+            <div className="text-xs text-muted-foreground mb-1">Oversupplied</div>
+            <div className={cn(
+              'text-2xl font-bold',
+              oversuppliedSegments > 0 ? 'text-red-600' : 'text-emerald-600'
+            )}>
+              {oversuppliedSegments}
+            </div>
+            <div className="text-[10px] text-muted-foreground">Margin risk</div>
+          </div>
+          <div className="p-3 rounded-lg bg-white border border-purple-200 text-center">
+            <div className="text-xs text-muted-foreground mb-1">Overall Status</div>
+            <div className={cn(
+              'text-lg font-bold',
+              avgUtilization >= 80 && oversuppliedSegments === 0 ? 'text-emerald-600' :
+              avgUtilization >= 70 ? 'text-amber-600' : 'text-red-600'
+            )}>
+              {avgUtilization >= 80 && oversuppliedSegments === 0 ? 'Healthy' :
+               avgUtilization >= 70 ? 'Cautious' : 'Stressed'}
+            </div>
+          </div>
+        </div>
+
+        {/* AI Insight */}
+        <div className="p-3 rounded-lg bg-white/70 border border-purple-200">
+          <p className="text-sm text-muted-foreground">
+            {avgUtilization >= 85 
+              ? `Strong demand fundamentals with ${avgUtilization.toFixed(0)}% average utilization. Downstream markets can absorb planned capacity additions without significant margin compression.`
+              : avgUtilization >= 75
+                ? `Moderate demand environment with ${avgUtilization.toFixed(0)}% average utilization. Some segments may face margin pressure from additional supply.`
+                : `Weak demand conditions with ${avgUtilization.toFixed(0)}% average utilization. Significant margin compression expected across multiple segments.`
+            }
+          </p>
+        </div>
+
+        {/* Outlook Grid */}
+        <div className="grid grid-cols-3 gap-4 mt-4">
+          <div className="text-center p-3 rounded-lg bg-white/50">
+            <div className="text-xs text-muted-foreground mb-1">Paper Outlook</div>
+            <div className={cn(
+              'flex items-center justify-center gap-1 font-medium',
+              downstreamData.paper.marginPressure === 'low' ? 'text-emerald-600' : 
+              downstreamData.paper.marginPressure === 'moderate' ? 'text-amber-600' : 'text-red-600'
+            )}>
+              {downstreamData.paper.marginPressure === 'low' ? <TrendingUp className="h-4 w-4" /> : <Minus className="h-4 w-4" />}
+              {downstreamData.paper.marginPressure === 'low' ? 'Growth' : downstreamData.paper.marginPressure === 'moderate' ? 'Stable' : 'Pressure'}
+            </div>
+          </div>
+          <div className="text-center p-3 rounded-lg bg-white/50">
+            <div className="text-xs text-muted-foreground mb-1">Packaging Outlook</div>
+            <div className={cn(
+              'flex items-center justify-center gap-1 font-medium',
+              downstreamData.board.marginPressure === 'low' ? 'text-emerald-600' : 
+              downstreamData.board.marginPressure === 'moderate' ? 'text-amber-600' : 'text-red-600'
+            )}>
+              {downstreamData.board.marginPressure === 'low' ? <TrendingUp className="h-4 w-4" /> : <Minus className="h-4 w-4" />}
+              {downstreamData.board.marginPressure === 'low' ? 'Growth' : downstreamData.board.marginPressure === 'moderate' ? 'Stable' : 'Pressure'}
+            </div>
+          </div>
+          <div className="text-center p-3 rounded-lg bg-white/50">
+            <div className="text-xs text-muted-foreground mb-1">Tissue Outlook</div>
+            <div className={cn(
+              'flex items-center justify-center gap-1 font-medium',
+              downstreamData.tissue.marginPressure === 'low' ? 'text-emerald-600' : 
+              downstreamData.tissue.marginPressure === 'moderate' ? 'text-amber-600' : 'text-red-600'
+            )}>
+              {downstreamData.tissue.marginPressure === 'low' ? <TrendingUp className="h-4 w-4" /> : <Minus className="h-4 w-4" />}
+              {downstreamData.tissue.marginPressure === 'low' ? 'Growth' : downstreamData.tissue.marginPressure === 'moderate' ? 'Stable' : 'Pressure'}
+            </div>
+          </div>
+        </div>
+      </div>
       
       {/* Paper Market */}
       <DownstreamTable
-        title="Paper"
-        icon={FileText}
-        iconColor="bg-blue-100 text-blue-600"
+        segmentKey="paper"
         data={downstreamData.paper}
+        playerOutcomes={playerMarketOutcomes}
+        input={input}
       />
       
       {/* Packaging / Carton Board Market */}
       <DownstreamTable
-        title="Packaging / Carton Board"
-        icon={Package}
-        iconColor="bg-amber-100 text-amber-600"
-        data={downstreamData.packaging}
+        segmentKey="board"
+        data={downstreamData.board}
+        playerOutcomes={playerMarketOutcomes}
+        input={input}
       />
       
       {/* Tissue Market */}
       <DownstreamTable
-        title="Tissue"
-        icon={Bath}
-        iconColor="bg-emerald-100 text-emerald-600"
+        segmentKey="tissue"
         data={downstreamData.tissue}
+        playerOutcomes={playerMarketOutcomes}
+        input={input}
       />
     </div>
   )
