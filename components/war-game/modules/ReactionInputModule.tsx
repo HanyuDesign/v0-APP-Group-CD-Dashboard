@@ -27,7 +27,7 @@ interface ReactionInputModuleProps {
 const years = [2026, 2027, 2028, 2029, 2030, 2031] as const
 
 // Generate reaction summary based on competitor config
-function generateReactionSummary(competitor: CompetitorConfig): { summary: string; rationale: string[] } {
+function generateReactionSummary(competitor: CompetitorConfig): { summary: string; rationale: string[]; persona: string } {
   const { behaviorSettings } = competitor
   const style = behaviorSettings.capacityReactionStyle
   const timing = behaviorSettings.reactionTiming
@@ -35,19 +35,26 @@ function generateReactionSummary(competitor: CompetitorConfig): { summary: strin
   const utilization = behaviorSettings.utilizationTarget
   
   let summary = ''
+  let persona = ''
   const rationale: string[] = []
   
-  // Generate persona-style summary
+  // Generate persona-style summary with detailed narrative
   if (style === 'aggressive') {
-    summary = `We will aggressively match APP's expansion to protect our market position.`
+    persona = 'Aggressive Challenger'
+    summary = `As an aggressive challenger, we see APP's expansion as a direct threat to our market position. We will match their moves immediately and at scale—market share is non-negotiable, even if it means short-term margin pressure.`
     rationale.push('Prioritize market share over short-term margins')
+    rationale.push('Match or exceed competitor capacity additions')
   } else if (style === 'follow-the-leader') {
+    persona = 'Disciplined Scaler'
     const timingText = timing === 'immediate' ? 'immediately' : timing === '1-year-lag' ? 'with a 1-year delay' : 'with a 2-year delay'
-    summary = `We will follow APP's expansion to defend market share, ${timingText}.`
+    summary = `As a disciplined scaler, we won't ignore APP's expansion—but we won't chase it blindly either. We'll follow ${timingText}, scaling in step with proven demand while keeping our utilization strong.`
     rationale.push(`Match approximately ${ratio}% of APP's capacity additions`)
+    rationale.push('Scale capacity based on validated market demand')
   } else {
-    summary = `We will take a cautious approach, focusing on profitability over expansion.`
+    persona = 'Cautious Observer'
+    summary = `As a cautious observer, we believe the market doesn't need more capacity—it needs discipline. We'll hold our position, focus on profitability, and let others overextend before making our move.`
     rationale.push('Delay capacity decisions until market clarity improves')
+    rationale.push('Focus on margin optimization over volume growth')
   }
   
   // Add utilization rationale
@@ -64,7 +71,7 @@ function generateReactionSummary(competitor: CompetitorConfig): { summary: strin
     rationale.push(`Observe market developments before committing capital (${timing.replace('-', ' ')})`)
   }
   
-  return { summary, rationale }
+  return { summary, rationale, persona }
 }
 
 // Calculate woodchip supply based on market input
@@ -298,9 +305,17 @@ export function ReactionInputModule({
               </div>
             </CardHeader>
             <CardContent className="pt-0">
+              {/* Persona Tag */}
+              <div className="mb-3">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-sm font-semibold shadow-sm">
+                  <Users className="h-3.5 w-3.5" />
+                  {reactionSummary.persona}
+                </span>
+              </div>
+              
               {/* Quote-style summary */}
-              <div className="relative pl-4 border-l-4 border-purple-300 mb-4">
-                <Quote className="absolute -left-3 -top-1 h-5 w-5 text-purple-300 bg-purple-50 rounded" />
+              <div className="relative pl-5 border-l-4 border-purple-300 mb-4">
+                <Quote className="absolute -left-3.5 -top-1 h-6 w-6 text-purple-300 bg-purple-50 rounded" />
                 <p className="text-base text-foreground italic leading-relaxed">
                   "{reactionSummary.summary}"
                 </p>
