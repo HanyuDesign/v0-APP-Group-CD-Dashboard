@@ -1,7 +1,7 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Factory, Users, Globe, ArrowRight, TrendingUp, TrendingDown, Lightbulb, Building2 } from 'lucide-react'
+import { Factory, Users, Globe, ArrowRight, TrendingUp, TrendingDown, Lightbulb, Building2, BarChart3 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { AIBadge } from '../shared/AIBadge'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -380,92 +380,118 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
         </CardContent>
       </Card>
 
-      {/* Section 4: Market Impacts */}
-      <Card className="border-border/50 bg-card/80">
+      {/* Section 4: Market Impact Summary */}
+      <Card className="border-border/50 bg-blue-50/30">
         <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-emerald-600" />
-              Market Impacts
-            </CardTitle>
-            <AIBadge size="sm" />
-          </div>
+          <CardTitle className="text-sm flex items-center gap-2 text-blue-700">
+            <BarChart3 className="h-4 w-4 text-blue-600" />
+            Market Impact Summary
+          </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-3 gap-4">
-            {/* Supply Impact */}
-            <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
-              <div className="text-xs text-blue-600 font-medium mb-2">Supply Impact</div>
-              <div className="text-2xl font-bold text-blue-700">
-                +{appChinaPulpAdd + totalCompetitorPulpChange} kt
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">Net capacity addition</div>
-              <div className="mt-3 pt-3 border-t border-blue-200 space-y-1">
-                <div className="flex justify-between text-xs">
-                  <span className="text-muted-foreground">APP China</span>
-                  <span className="text-red-600 font-medium">+{appChinaPulpAdd} kt</span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-muted-foreground">Competitors</span>
-                  <span className={cn(
-                    'font-medium',
-                    totalCompetitorPulpChange >= 0 ? 'text-emerald-600' : 'text-amber-600'
-                  )}>
-                    {totalCompetitorPulpChange >= 0 ? '+' : ''}{totalCompetitorPulpChange} kt
-                  </span>
-                </div>
-              </div>
-            </div>
+        <CardContent className="space-y-4">
+          {/* Impact Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-blue-200">
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-blue-700 w-40">Metric</th>
+                  {years.map(year => (
+                    <th key={year} className="text-center py-3 px-4 text-sm font-semibold text-blue-700">{year}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {/* Net Supply Change Row */}
+                <tr className="border-b border-blue-100 bg-white/50">
+                  <td className="py-3 px-4 text-sm font-medium text-amber-700">Net Supply Change</td>
+                  {years.map((year, idx) => {
+                    // Calculate yearly net supply change based on APP + competitors
+                    const yearlySupplyChange = idx === 0 ? 0 : 
+                      Math.round((appChinaPulpAdd + totalCompetitorPulpChange) * (idx * 0.15 - 0.1))
+                    return (
+                      <td key={year} className="text-center py-3 px-4">
+                        {idx === 0 ? (
+                          <span className="text-muted-foreground">-</span>
+                        ) : (
+                          <span className={cn(
+                            'text-sm font-medium',
+                            yearlySupplyChange > 0 ? 'text-emerald-600' : yearlySupplyChange < 0 ? 'text-amber-600' : 'text-muted-foreground'
+                          )}>
+                            {yearlySupplyChange > 0 ? '+' : ''}{yearlySupplyChange} <span className="text-xs text-muted-foreground">kt</span>
+                          </span>
+                        )}
+                      </td>
+                    )
+                  })}
+                </tr>
+                {/* Price Signal Row */}
+                <tr className="bg-white/30">
+                  <td className="py-3 px-4 text-sm font-medium text-muted-foreground">Price Signal</td>
+                  {years.map((year, idx) => {
+                    const totalChange = appChinaPulpAdd + totalCompetitorPulpChange
+                    const priceSignal = idx === 0 ? null : 
+                      totalChange > 400 ? 'Declining' : 
+                      totalChange > 200 ? 'Pressured' : 'Stable'
+                    return (
+                      <td key={year} className="text-center py-3 px-4">
+                        {idx === 0 ? (
+                          <span className="text-muted-foreground">-</span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+                            <ArrowRight className="h-3 w-3" />
+                            {priceSignal}
+                          </span>
+                        )}
+                      </td>
+                    )
+                  })}
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-            {/* Price Pressure */}
-            <div className="p-4 rounded-lg bg-amber-50 border border-amber-200">
-              <div className="text-xs text-amber-600 font-medium mb-2">Price Pressure</div>
+          {/* Summary Cards */}
+          <div className="grid grid-cols-3 gap-4 pt-2">
+            {/* 5-Year Net Supply */}
+            <div className="p-4 rounded-lg bg-white border-l-4 border-l-blue-500 border border-border/50">
+              <div className="text-xs text-blue-600 font-medium mb-1">5-Year Net Supply</div>
               <div className={cn(
                 'text-2xl font-bold',
-                (appChinaPulpAdd + totalCompetitorPulpChange) > 400 ? 'text-red-600' : 
-                (appChinaPulpAdd + totalCompetitorPulpChange) > 200 ? 'text-amber-600' : 'text-emerald-600'
+                (appChinaPulpAdd + totalCompetitorPulpChange) >= 0 ? 'text-emerald-600' : 'text-amber-600'
               )}>
-                {(appChinaPulpAdd + totalCompetitorPulpChange) > 400 ? 'High' : 
-                 (appChinaPulpAdd + totalCompetitorPulpChange) > 200 ? 'Moderate' : 'Low'}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">Expected margin compression</div>
-              <div className="mt-3 pt-3 border-t border-amber-200">
-                <div className="flex items-center gap-2">
-                  {(appChinaPulpAdd + totalCompetitorPulpChange) > 400 ? (
-                    <TrendingDown className="h-4 w-4 text-red-500" />
-                  ) : (appChinaPulpAdd + totalCompetitorPulpChange) > 200 ? (
-                    <TrendingDown className="h-4 w-4 text-amber-500" />
-                  ) : (
-                    <TrendingUp className="h-4 w-4 text-emerald-500" />
-                  )}
-                  <span className="text-xs text-muted-foreground">
-                    {(appChinaPulpAdd + totalCompetitorPulpChange) > 400 
-                      ? 'Significant oversupply risk' 
-                      : (appChinaPulpAdd + totalCompetitorPulpChange) > 200 
-                        ? 'Balanced supply-demand' 
-                        : 'Favorable pricing environment'}
-                  </span>
-                </div>
+                {(appChinaPulpAdd + totalCompetitorPulpChange) >= 0 ? '+' : ''}{appChinaPulpAdd + totalCompetitorPulpChange} kt
               </div>
             </div>
 
-            {/* Competitive Position */}
-            <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200">
-              <div className="text-xs text-emerald-600 font-medium mb-2">Competitive Position</div>
-              <div className="text-2xl font-bold text-emerald-700">
-                {competitorsDelaying > competitorsExpanding ? 'Strong' : 
-                 competitorsDelaying === competitorsExpanding ? 'Neutral' : 'Challenged'}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">APP market position outlook</div>
-              <div className="mt-3 pt-3 border-t border-emerald-200 space-y-1">
-                <div className="flex justify-between text-xs">
-                  <span className="text-muted-foreground">Deterred competitors</span>
-                  <span className="text-amber-600 font-medium">{competitorsDelaying}</span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-muted-foreground">Following competitors</span>
-                  <span className="text-emerald-600 font-medium">{competitorsExpanding}</span>
-                </div>
+            {/* Market Balance */}
+            <div className="p-4 rounded-lg bg-white border border-border/50">
+              <div className="text-xs text-muted-foreground font-medium mb-2">Market Balance</div>
+              <span className={cn(
+                'inline-flex px-3 py-1.5 rounded-full text-sm font-semibold',
+                (appChinaPulpAdd + totalCompetitorPulpChange) > 400 
+                  ? 'bg-red-100 text-red-700' 
+                  : (appChinaPulpAdd + totalCompetitorPulpChange) > 200 
+                    ? 'bg-amber-100 text-amber-700' 
+                    : 'bg-emerald-100 text-emerald-700'
+              )}>
+                {(appChinaPulpAdd + totalCompetitorPulpChange) > 400 
+                  ? 'Oversupply' 
+                  : (appChinaPulpAdd + totalCompetitorPulpChange) > 200 
+                    ? 'Tight' 
+                    : 'Balanced'}
+              </span>
+            </div>
+
+            {/* Price Trend */}
+            <div className="p-4 rounded-lg bg-white border border-border/50">
+              <div className="text-xs text-muted-foreground font-medium mb-2">Price Trend</div>
+              <div className="flex items-center gap-2 text-xl font-bold text-foreground">
+                <ArrowRight className="h-5 w-5" />
+                {(appChinaPulpAdd + totalCompetitorPulpChange) > 400 
+                  ? 'Declining' 
+                  : (appChinaPulpAdd + totalCompetitorPulpChange) > 200 
+                    ? 'Pressured' 
+                    : 'Stable'}
               </div>
             </div>
           </div>
