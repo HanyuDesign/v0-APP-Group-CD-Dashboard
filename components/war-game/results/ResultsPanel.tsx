@@ -85,9 +85,24 @@ function StickyNav({
   
   const getStageColor = () => {
     switch (activeStage) {
-      case 'forestry': return { bg: 'bg-green-50', border: 'border-green-200', active: 'bg-green-600 text-white', hover: 'hover:bg-green-100' }
-      case 'pulp': return { bg: 'bg-blue-50', border: 'border-blue-200', active: 'bg-blue-600 text-white', hover: 'hover:bg-blue-100' }
-      case 'downstream': return { bg: 'bg-purple-50', border: 'border-purple-200', active: 'bg-purple-600 text-white', hover: 'hover:bg-purple-100' }
+      case 'forestry': return { 
+        bg: 'bg-green-50/80', 
+        border: 'border-green-200', 
+        active: 'bg-green-600 text-white shadow-sm', 
+        inactive: 'text-foreground/80 hover:bg-green-100 border border-transparent hover:border-green-300' 
+      }
+      case 'pulp': return { 
+        bg: 'bg-blue-50/80', 
+        border: 'border-blue-200', 
+        active: 'bg-blue-600 text-white shadow-sm', 
+        inactive: 'text-foreground/80 hover:bg-blue-100 border border-transparent hover:border-blue-300' 
+      }
+      case 'downstream': return { 
+        bg: 'bg-purple-50/80', 
+        border: 'border-purple-200', 
+        active: 'bg-purple-600 text-white shadow-sm', 
+        inactive: 'text-foreground/80 hover:bg-purple-100 border border-transparent hover:border-purple-300' 
+      }
     }
   }
   
@@ -95,20 +110,20 @@ function StickyNav({
   
   return (
     <div className={cn(
-      'py-2.5 px-4 rounded-lg border',
+      'py-3 px-4 rounded-lg border',
       colors.bg, colors.border
     )}>
       <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-        <span className="text-xs font-medium text-muted-foreground whitespace-nowrap mr-2">Jump to:</span>
+        <span className="text-sm font-medium text-muted-foreground whitespace-nowrap mr-1">Jump to:</span>
         {navItems.map((item) => (
           <button
             key={item.id}
             onClick={() => onSectionClick(item.id)}
             className={cn(
-              'px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap',
+              'px-3 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap',
               activeSection === item.id
                 ? colors.active
-                : cn('text-foreground/70', colors.hover)
+                : colors.inactive
             )}
           >
             {item.label}
