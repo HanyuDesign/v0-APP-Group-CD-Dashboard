@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ForestryModule } from './modules/ForestryModule'
 import { WoodchipSupplyOutput } from './modules/WoodchipSupplyOutput'
 import { PulpModule } from './modules/PulpModule'
@@ -16,14 +16,19 @@ import type {
   DownstreamSettings,
 } from '@/lib/types/war-game'
 
+export type MarketInputTabKey = 'forestry' | 'pulp' | 'downstream' | 'overview'
+
+export const MARKET_INPUT_TAB_KEYS: MarketInputTabKey[] = ['forestry', 'pulp', 'downstream', 'overview']
+
 interface ValueChainFlowProps {
   input: SimulationInput
   onInputChange: (input: SimulationInput) => void
   result: SimulationResult | null
   isRunning?: boolean
+  onTabVisit?: (tab: MarketInputTabKey) => void
 }
 
-type TabKey = 'forestry' | 'pulp' | 'downstream' | 'overview'
+type TabKey = MarketInputTabKey
 
 const TABS: { key: TabKey; label: string; icon: React.ReactNode; description: string }[] = [
   { 
@@ -34,7 +39,7 @@ const TABS: { key: TabKey; label: string; icon: React.ReactNode; description: st
   },
   { 
     key: 'pulp', 
-    label: 'Pulp Capacity (APP)', 
+    label: 'Pulp Capacity & Players', 
     icon: <Factory className="h-4 w-4" />,
     description: 'Set APP capacity decisions'
   },
@@ -52,8 +57,14 @@ const TABS: { key: TabKey; label: string; icon: React.ReactNode; description: st
   },
 ]
 
-export function ValueChainFlow({ input, onInputChange, result, isRunning }: ValueChainFlowProps) {
+export function ValueChainFlow({ input, onInputChange, result, isRunning, onTabVisit }: ValueChainFlowProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('forestry')
+
+  // Notify parent whenever the active sub-tab changes (including the initial mount),
+  // so the parent can track which sub-steps the user has reviewed.
+  useEffect(() => {
+    onTabVisit?.(activeTab)
+  }, [activeTab, onTabVisit])
 
   const handleForestryChange = (forestry: ForestrySettings) => {
     onInputChange({ ...input, forestry })
