@@ -4,10 +4,11 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
-import { ValueChainFlow } from '@/components/war-game/ValueChainFlow'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { ValueChainFlow, MARKET_INPUT_TAB_KEYS, type MarketInputTabKey } from '@/components/war-game/ValueChainFlow'
 import { CompetitorConfigModule, initializeCompetitorConfig } from '@/components/war-game/modules/CompetitorConfigModule'
 import { ReactionInputModule } from '@/components/war-game/modules/ReactionInputModule'
-import { Zap, ArrowRight, ArrowLeft, Play, Check, ChevronRight } from 'lucide-react'
+import { Zap, ArrowRight, ArrowLeft, Play, Check, ChevronRight, Lock } from 'lucide-react'
 import { useSimulation } from '@/lib/context/SimulationContext'
 import { cn } from '@/lib/utils'
 import type { SimulationStep, CompetitorConfig, ReactionSettings } from '@/lib/types/war-game'
@@ -49,18 +50,73 @@ export default function InputPage() {
     input.reactionSettings || DEFAULT_REACTION_SETTINGS
   )
 
+  // Track which Market Input sub-tabs the user has visited. The "Next" button
+  // is gated until all sub-tabs have been reviewed so users don't accidentally
+  // skip sections they need to confirm.
+  const [visitedMarketTabs, setVisitedMarketTabs] = useState<Set<MarketInputTabKey>>(
+    () => new Set<MarketInputTabKey>()
+  )
+  // Track which top-level steps the user has visited at least once.
+  const [visitedSteps, setVisitedSteps] = useState<Set<SimulationStep>>(
+    () => new Set<SimulationStep>(['market-input'])
+  )
+
+  const handleMarketTabVisit = (tab: MarketInputTabKey) => {
+    setVisitedMarketTabs(prev => {
+      if (prev.has(tab)) return prev
+      const next = new Set(prev)
+      next.add(tab)
+      return next
+    })
+  }
+
+  const allMarketTabsVisited = MARKET_INPUT_TAB_KEYS.every(t => visitedMarketTabs.has(t))
+  const competitorStepVisited = visitedSteps.has('competitor-configure')
+  const reactionStepVisited = visitedSteps.has('reaction-input')
+
+  // Gate the Next / Run Simulation button per step.
+  let nextDisabledReason: string | null = null
+  if (currentStep === 'market-input' && !allMarketTabsVisited) {
+    const remaining = MARKET_INPUT_TAB_KEYS.filter(t => !visitedMarketTabs.has(t)).length
+    nextDisabledReason = `Review all Market Input sections before continuing (${remaining} left).`
+  } else if (currentStep === 'competitor-configure' && !competitorStepVisited) {
+    nextDisabledReason = 'Review the Competitor Configure step before continuing.'
+  } else if (currentStep === 'reaction-input') {
+    if (!allMarketTabsVisited) {
+      nextDisabledReason = 'Finish reviewing all Market Input sections before running the simulation.'
+    } else if (!competitorStepVisited) {
+      nextDisabledReason = 'Review the Competitor Configure step before running the simulation.'
+    } else if (!reactionStepVisited) {
+      nextDisabledReason = 'Review the Reaction Input step before running the simulation.'
+    }
+  }
+  const isNextDisabled = nextDisabledReason !== null
+
   const currentStepIndex = STEPS.findIndex(s => s.key === currentStep)
+
+  const markStepVisited = (step: SimulationStep) => {
+    setVisitedSteps(prev => {
+      if (prev.has(step)) return prev
+      const next = new Set(prev)
+      next.add(step)
+      return next
+    })
+  }
 
   const handleNext = () => {
     if (currentStepIndex < STEPS.length - 2) {
       // Move to next step (not results)
-      setCurrentStep(STEPS[currentStepIndex + 1].key)
+      const nextStep = STEPS[currentStepIndex + 1].key
+      setCurrentStep(nextStep)
+      markStepVisited(nextStep)
     }
   }
 
   const handleBack = () => {
     if (currentStepIndex > 0) {
-      setCurrentStep(STEPS[currentStepIndex - 1].key)
+      const prevStep = STEPS[currentStepIndex - 1].key
+      setCurrentStep(prevStep)
+      markStepVisited(prevStep)
     }
   }
 
@@ -87,6 +143,7 @@ export default function InputPage() {
       return
     }
     setCurrentStep(step)
+    markStepVisited(step)
   }
 
   const handleCompetitorConfigChange = (config: CompetitorConfig[]) => {
@@ -196,6 +253,7 @@ export default function InputPage() {
             onInputChange={setInput}
             result={result}
             isRunning={status === 'running'}
+            onTabVisit={handleMarketTabVisit}
           />
         )}
 
@@ -255,6 +313,9 @@ export default function InputPage() {
                 reset()
                 setCompetitorConfig(initializeCompetitorConfig())
                 setReactionSettings(DEFAULT_REACTION_SETTINGS)
+                setVisitedMarketTabs(new Set<MarketInputTabKey>())
+                setVisitedSteps(new Set<SimulationStep>(['market-input']))
+                setCurrentStep('market-input')
               }}
               disabled={status === 'running'}
             >
@@ -263,30 +324,50 @@ export default function InputPage() {
 
             {/* Next / Run Simulation button */}
             {currentStep !== 'results' && (
-              <Button
-                onClick={currentStep === 'reaction-input' ? handleRunSimulation : handleNext}
-                disabled={status === 'running'}
-                className={cn(
-                  currentStep === 'reaction-input' && 'bg-emerald-600 hover:bg-emerald-700'
-                )}
-              >
-                {status === 'running' ? (
-                  <>
-                    <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                    Running...
-                  </>
-                ) : currentStep === 'reaction-input' ? (
-                  <>
-                    <Play className="mr-1.5 h-4 w-4" />
-                    Run Simulation
-                  </>
-                ) : (
-                  <>
-                    {getNextButtonLabel()}
-                    <ArrowRight className="ml-1.5 h-4 w-4" />
-                  </>
-                )}
-              </Button>
+              <TooltipProvider delayDuration={150}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    {/* Wrapper span ensures the tooltip still shows when the button is disabled */}
+                    <span tabIndex={0}>
+                      <Button
+                        onClick={currentStep === 'reaction-input' ? handleRunSimulation : handleNext}
+                        disabled={status === 'running' || isNextDisabled}
+                        aria-disabled={isNextDisabled || status === 'running'}
+                        className={cn(
+                          currentStep === 'reaction-input' && !isNextDisabled && 'bg-emerald-600 hover:bg-emerald-700'
+                        )}
+                      >
+                        {status === 'running' ? (
+                          <>
+                            <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                            Running...
+                          </>
+                        ) : currentStep === 'reaction-input' ? (
+                          <>
+                            {isNextDisabled ? (
+                              <Lock className="mr-1.5 h-4 w-4" />
+                            ) : (
+                              <Play className="mr-1.5 h-4 w-4" />
+                            )}
+                            Run Simulation
+                          </>
+                        ) : (
+                          <>
+                            {isNextDisabled && <Lock className="mr-1.5 h-4 w-4" />}
+                            {getNextButtonLabel()}
+                            {!isNextDisabled && <ArrowRight className="ml-1.5 h-4 w-4" />}
+                          </>
+                        )}
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+                  {nextDisabledReason && (
+                    <TooltipContent side="top" align="end" className="max-w-xs">
+                      {nextDisabledReason}
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
             )}
           </div>
         </div>
