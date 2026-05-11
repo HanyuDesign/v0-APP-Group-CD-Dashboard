@@ -64,7 +64,7 @@ function CapacityInput({
       value={value || ''}
       onChange={handleChange}
       className={cn(
-        "h-8 w-full text-center text-sm font-mono bg-white border-2 p-0",
+        "h-9 w-full text-center text-base font-mono bg-white border-2 p-0",
         "border-[#cc0000]/40 focus:border-[#cc0000]",
         disabled && "bg-muted/50 cursor-not-allowed",
         className
@@ -142,7 +142,7 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
         <div className="rounded-lg border-2 border-primary/40 bg-primary/5 p-4">
           <div className="mb-4 flex items-center gap-2">
             <Package className="h-4 w-4 text-primary" />
-            <span className="font-semibold text-primary">APP Capacity Decisions</span>
+            <span className="text-base font-semibold text-primary">APP Capacity Decisions</span>
             <span className="ml-auto px-2 py-0.5 text-[10px] font-medium bg-primary/10 text-primary rounded uppercase">User Input</span>
           </div>
           
@@ -166,7 +166,7 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
                       className="h-3 w-3 rounded-full"
                       style={{ backgroundColor: appChina.color }}
                     />
-                    <span className="text-sm font-semibold text-[#cc0000]">Additions (kt/year)</span>
+                    <span className="text-base font-semibold text-[#cc0000]">Additions (kt/year)</span>
                     <span className="px-1.5 py-0.5 text-[9px] font-semibold bg-[#cc0000]/10 text-[#cc0000] rounded uppercase">Input</span>
                   </div>
                 </TableCell>
@@ -174,7 +174,7 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
                   <TableCell key={year} className="text-center p-2">
                     {index === 0 ? (
                       <div className="flex items-center justify-center">
-                        <span className="text-sm font-semibold text-primary bg-primary/20 px-3 py-1.5 rounded">
+                        <span className="text-base font-semibold text-primary bg-primary/20 px-3 py-1.5 rounded">
                           {baseCapacity}
                         </span>
                       </div>
@@ -194,13 +194,13 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-2">
                     <span className="h-3 w-3 rounded-full bg-muted" />
-                    <span className="text-sm font-semibold text-foreground">Total Capacity (kt)</span>
+                    <span className="text-base font-semibold text-foreground">Total Capacity (kt)</span>
                     <span className="px-1.5 py-0.5 text-[9px] font-medium bg-muted text-muted-foreground rounded uppercase">Auto</span>
                   </div>
                 </TableCell>
                 {YEARS.map((year) => (
                   <TableCell key={year} className="text-center p-2">
-                    <span className="text-sm font-mono font-semibold text-foreground">
+                    <span className="text-base font-mono font-semibold text-foreground">
                       {totalCapacity[year]}
                     </span>
                   </TableCell>
@@ -209,7 +209,7 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
             </TableBody>
           </Table>
           
-          <p className="mt-3 text-xs text-muted-foreground">
+          <p className="mt-3 text-sm text-muted-foreground">
             Enter yearly capacity additions. Total capacity is automatically calculated.
           </p>
         </div>
@@ -218,7 +218,7 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
         <div className="rounded-lg border border-border/50 p-4">
           <div className="mb-4 flex items-center gap-2">
             <Users className="h-4 w-4 text-muted-foreground" />
-            <span className="font-semibold text-sm">Competitor Capacity Reference</span>
+            <span className="text-base font-semibold">Competitor Capacity Reference</span>
             <span className="ml-auto px-2 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground rounded uppercase">Read Only</span>
           </div>
           
@@ -245,12 +245,12 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
                           className="h-3 w-3 rounded-full"
                           style={{ backgroundColor: getCompetitorColor(competitor.playerId) }}
                         />
-                        <span className="text-sm">{competitor.playerName}</span>
+                        <span className="text-base">{competitor.playerName}</span>
                       </div>
                     </TableCell>
                     {YEARS.map((year) => (
                       <TableCell key={year} className="text-center p-2">
-                        <span className="text-sm font-mono text-muted-foreground">
+                        <span className="text-base font-mono text-muted-foreground">
                           {competitorTotals[year]}
                         </span>
                       </TableCell>
@@ -262,8 +262,8 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
           </Table>
           
           <div className="mt-3 flex items-start gap-2 p-2 rounded bg-muted/50">
-            <Info className="h-3.5 w-3.5 text-muted-foreground mt-0.5 flex-shrink-0" />
-            <p className="text-xs text-muted-foreground">
+            <Info className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+            <p className="text-sm text-muted-foreground">
               Competitor capacity shown here is read-only reference data. To modify competitor assumptions, proceed to Step 2: Competitor Configure.
             </p>
           </div>
