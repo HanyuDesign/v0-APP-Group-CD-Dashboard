@@ -681,7 +681,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                               <button
                                 onClick={() => handleSettingChange(selectedConfig.playerId, 'capacityReactionStyle', option.value)}
                                 className={cn(
-                                  'w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg border transition-all text-left',
+                                  'w-full flex items-center justify-between px-4 py-3 text-base font-semibold rounded-lg border transition-all text-left',
                                   selectedConfig.behaviorSettings.capacityReactionStyle === option.value
                                     ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
                                     : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
@@ -689,7 +689,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                               >
                                 <span>{option.label}</span>
                                 <span className={cn(
-                                  'text-sm px-2 py-0.5 rounded',
+                                  'text-sm font-medium px-2.5 py-0.5 rounded',
                                   selectedConfig.behaviorSettings.capacityReactionStyle === option.value
                                     ? 'bg-red-200/50 text-red-700'
                                     : 'bg-muted text-muted-foreground'
@@ -750,7 +750,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                               <button
                                 onClick={() => handleSettingChange(selectedConfig.playerId, 'reactionTiming', option.value)}
                                 className={cn(
-                                  'px-3 py-2.5 text-sm font-medium rounded-lg border transition-all',
+                                  'px-3 py-2.5 text-base font-semibold rounded-lg border transition-all',
                                   selectedConfig.behaviorSettings.reactionTiming === option.value
                                     ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
                                     : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
@@ -782,7 +782,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                               <button
                                 onClick={() => handleSettingChange(selectedConfig.playerId, 'utilizationTarget', option.value)}
                                 className={cn(
-                                  'px-3 py-2.5 text-sm font-medium rounded-lg border transition-all',
+                                  'px-3 py-2.5 text-base font-semibold rounded-lg border transition-all',
                                   selectedConfig.behaviorSettings.utilizationTarget === option.value
                                     ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
                                     : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
@@ -832,7 +832,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                                 key={opt.value}
                                 onClick={() => handleDownstreamChange('paper', 'premiumTier', opt.value)}
                                 className={cn(
-                                  'px-3 py-2 text-sm font-medium rounded-lg border transition-all',
+                                  'px-3 py-2 text-base font-semibold rounded-lg border transition-all',
                                   currentDownstream.paper.premiumTier === opt.value
                                     ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
                                     : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
@@ -852,7 +852,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                                 key={opt.value}
                                 onClick={() => handleDownstreamChange('paper', 'midTier', opt.value)}
                                 className={cn(
-                                  'px-3 py-2 text-sm font-medium rounded-lg border transition-all',
+                                  'px-3 py-2 text-base font-semibold rounded-lg border transition-all',
                                   currentDownstream.paper.midTier === opt.value
                                     ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
                                     : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
@@ -919,7 +919,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                                 key={opt.value}
                                 onClick={() => handleDownstreamChange('packaging', 'premiumTier', opt.value)}
                                 className={cn(
-                                  'px-3 py-2 text-sm font-medium rounded-lg border transition-all',
+                                  'px-3 py-2 text-base font-semibold rounded-lg border transition-all',
                                   currentDownstream.packaging.premiumTier === opt.value
                                     ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
                                     : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
@@ -939,7 +939,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                                 key={opt.value}
                                 onClick={() => handleDownstreamChange('packaging', 'midTier', opt.value)}
                                 className={cn(
-                                  'px-3 py-2 text-sm font-medium rounded-lg border transition-all',
+                                  'px-3 py-2 text-base font-semibold rounded-lg border transition-all',
                                   currentDownstream.packaging.midTier === opt.value
                                     ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
                                     : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
