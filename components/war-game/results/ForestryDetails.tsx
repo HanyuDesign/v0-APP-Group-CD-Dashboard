@@ -114,10 +114,10 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
             <div className="p-3 rounded-lg bg-white border border-green-200">
               <div className="flex items-center gap-2 mb-2">
                 <Trees className="h-4 w-4 text-green-600" />
-                <span className="text-xs font-medium text-muted-foreground">Supply Tightness</span>
+                <span className="text-base font-medium text-muted-foreground">Supply Tightness</span>
               </div>
               <div className={cn(
-                'text-lg font-bold capitalize',
+                'text-2xl font-bold capitalize leading-tight tracking-tight',
                 aiAnalysis.supplyTightness === 'tight' && 'text-red-600',
                 aiAnalysis.supplyTightness === 'balanced' && 'text-amber-600',
                 aiAnalysis.supplyTightness === 'abundant' && 'text-green-600'
@@ -128,10 +128,10 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
             <div className="p-3 rounded-lg bg-white border border-green-200">
               <div className="flex items-center gap-2 mb-2">
                 <Ship className="h-4 w-4 text-blue-600" />
-                <span className="text-xs font-medium text-muted-foreground">Import Reliance</span>
+                <span className="text-base font-medium text-muted-foreground">Import Reliance</span>
               </div>
               <div className={cn(
-                'text-lg font-bold capitalize',
+                'text-2xl font-bold capitalize leading-tight tracking-tight',
                 aiAnalysis.importReliance === 'high' && 'text-amber-600',
                 aiAnalysis.importReliance === 'moderate' && 'text-blue-600',
                 aiAnalysis.importReliance === 'decreasing' && 'text-red-600'
@@ -142,10 +142,10 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
             <div className="p-3 rounded-lg bg-white border border-green-200">
               <div className="flex items-center gap-2 mb-2">
                 <Factory className="h-4 w-4 text-purple-600" />
-                <span className="text-xs font-medium text-muted-foreground">Cost Implications</span>
+                <span className="text-base font-medium text-muted-foreground">Cost Implications</span>
               </div>
               <div className={cn(
-                'text-lg font-bold capitalize',
+                'text-2xl font-bold capitalize leading-tight tracking-tight',
                 aiAnalysis.costImplications === 'elevated' && 'text-red-600',
                 aiAnalysis.costImplications === 'moderate-high' && 'text-amber-600',
                 aiAnalysis.costImplications === 'moderate' && 'text-blue-600',
@@ -158,14 +158,14 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
 
           {/* Drivers */}
           <div className="space-y-2">
-            <h4 className="text-sm font-semibold flex items-center gap-2">
+            <h4 className="text-base font-semibold flex items-center gap-2">
               <Info className="h-4 w-4 text-blue-500" />
               Key Drivers (from your inputs)
             </h4>
             <ul className="space-y-1.5">
               {aiAnalysis.drivers.map((driver, idx) => (
-                <li key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <span className="h-1.5 w-1.5 rounded-full bg-blue-400 mt-2 flex-shrink-0" />
+                <li key={idx} className="flex items-start gap-2 text-base text-muted-foreground leading-relaxed">
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-400 mt-2.5 flex-shrink-0" />
                   {driver}
                 </li>
               ))}
@@ -176,26 +176,26 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
           <div className="grid grid-cols-2 gap-4">
             {aiAnalysis.risks.length > 0 && (
               <div className="p-3 rounded-lg bg-red-50 border border-red-200">
-                <h4 className="text-sm font-semibold text-red-700 flex items-center gap-2 mb-2">
+                <h4 className="text-base font-semibold text-red-700 flex items-center gap-2 mb-2">
                   <AlertTriangle className="h-4 w-4" />
                   Risks
                 </h4>
-                <ul className="space-y-1">
+                <ul className="space-y-1.5">
                   {aiAnalysis.risks.map((risk, idx) => (
-                    <li key={idx} className="text-xs text-red-600">{risk}</li>
+                    <li key={idx} className="text-base text-red-600 leading-relaxed">{risk}</li>
                   ))}
                 </ul>
               </div>
             )}
             {aiAnalysis.opportunities.length > 0 && (
               <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200">
-                <h4 className="text-sm font-semibold text-emerald-700 flex items-center gap-2 mb-2">
+                <h4 className="text-base font-semibold text-emerald-700 flex items-center gap-2 mb-2">
                   <CheckCircle className="h-4 w-4" />
                   Opportunities
                 </h4>
-                <ul className="space-y-1">
+                <ul className="space-y-1.5">
                   {aiAnalysis.opportunities.map((opp, idx) => (
-                    <li key={idx} className="text-xs text-emerald-600">{opp}</li>
+                    <li key={idx} className="text-base text-emerald-600 leading-relaxed">{opp}</li>
                   ))}
                 </ul>
               </div>
