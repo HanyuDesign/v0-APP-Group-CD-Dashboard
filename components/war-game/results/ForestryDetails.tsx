@@ -354,7 +354,7 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
                   style={{ width: `${Math.min(woodDemandIncrease / 10, 100)}%` }}
                 />
               </div>
-              <div className="flex justify-between text-sm font-medium text-muted-foreground mt-1">
+              <div className="flex justify-between text-base font-medium text-muted-foreground mt-1">
                 <span>Low pressure</span>
                 <span>High pressure</span>
               </div>
