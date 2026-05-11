@@ -29,8 +29,8 @@ const STEPS: { key: SimulationStep; label: string; shortLabel: string; descripti
   },
   { 
     key: 'reaction-input', 
-    label: 'Reaction Input', 
-    shortLabel: 'Reactions',
+    label: 'Reaction', 
+    shortLabel: 'Reaction',
     description: 'Review AI-generated market reactions'
   },
   { 
@@ -87,7 +87,7 @@ export default function InputPage() {
     } else if (!competitorStepVisited) {
       nextDisabledReason = 'Review the Competitor Configure step before running the simulation.'
     } else if (!reactionStepVisited) {
-      nextDisabledReason = 'Review the Reaction Input step before running the simulation.'
+      nextDisabledReason = 'Review the Reaction step before running the simulation.'
     }
   }
   const isNextDisabled = nextDisabledReason !== null
@@ -161,7 +161,7 @@ export default function InputPage() {
       case 'market-input':
         return 'Next: Competitor Configure'
       case 'competitor-configure':
-        return 'Next: Reaction Input'
+        return 'Next: Reaction'
       case 'reaction-input':
         return 'Run Simulation'
       default:
@@ -219,9 +219,6 @@ export default function InputPage() {
                     {isPast ? <Check className="h-3 w-3" /> : index + 1}
                   </span>
                   <span>{step.label}</span>
-                  {isResults && !result && (
-                    <span className="text-[10px] ml-1">(Run simulation first)</span>
-                  )}
                 </button>
                 {/* Arrow between steps */}
                 {!isLast && (
@@ -266,7 +263,7 @@ export default function InputPage() {
           />
         )}
 
-        {/* Step 3: Reaction Input */}
+        {/* Step 3: Reaction */}
         {currentStep === 'reaction-input' && (
           <ReactionInputModule
             settings={reactionSettings}

@@ -5,8 +5,7 @@ import { ForestryModule } from './modules/ForestryModule'
 import { WoodchipSupplyOutput } from './modules/WoodchipSupplyOutput'
 import { PulpModule } from './modules/PulpModule'
 import { DownstreamModule } from './modules/DownstreamModule'
-import { OverviewPanel } from './OverviewPanel'
-import { Trees, Factory, Package, ChevronRight, ClipboardList } from 'lucide-react'
+import { Trees, Factory, Package, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { 
   SimulationInput, 
@@ -16,9 +15,9 @@ import type {
   DownstreamSettings,
 } from '@/lib/types/war-game'
 
-export type MarketInputTabKey = 'forestry' | 'pulp' | 'downstream' | 'overview'
+export type MarketInputTabKey = 'forestry' | 'pulp' | 'downstream'
 
-export const MARKET_INPUT_TAB_KEYS: MarketInputTabKey[] = ['forestry', 'pulp', 'downstream', 'overview']
+export const MARKET_INPUT_TAB_KEYS: MarketInputTabKey[] = ['forestry', 'pulp', 'downstream']
 
 interface ValueChainFlowProps {
   input: SimulationInput
@@ -48,12 +47,6 @@ const TABS: { key: TabKey; label: string; icon: React.ReactNode; description: st
     label: 'Downstream Markets', 
     icon: <Package className="h-4 w-4" />,
     description: 'Define demand scenarios'
-  },
-  { 
-    key: 'overview', 
-    label: 'Overview', 
-    icon: <ClipboardList className="h-4 w-4" />,
-    description: 'Review all inputs'
   },
 ]
 
@@ -191,9 +184,6 @@ export function ValueChainFlow({ input, onInputChange, result, isRunning, onTabV
             settings={input.downstream}
             onChange={handleDownstreamChange}
           />
-        )}
-        {activeTab === 'overview' && (
-          <OverviewPanel input={input} />
         )}
       </div>
     </div>

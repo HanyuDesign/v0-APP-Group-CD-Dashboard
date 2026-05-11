@@ -180,7 +180,7 @@ export default function ResultsPage() {
             <ChevronRight className="h-4 w-4 text-muted-foreground/50 mx-1" />
           </div>
           
-          {/* Step 3: Reaction Input */}
+          {/* Step 3: Reaction */}
           <div className="flex items-center">
             <button
               onClick={handleBackToInput}
@@ -189,7 +189,7 @@ export default function ResultsPage() {
               <span className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold bg-emerald-100 text-emerald-600">
                 <Check className="h-3 w-3" />
               </span>
-              Reaction Input
+              Reaction
             </button>
             <ChevronRight className="h-4 w-4 text-muted-foreground/50 mx-1" />
           </div>
