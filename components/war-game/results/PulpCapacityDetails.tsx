@@ -117,15 +117,15 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                 +{appChinaPulpAdd + totalCompetitorPulpChange} kt
               </div>
               <div className="text-sm text-muted-foreground mt-1">Net capacity addition</div>
-              <div className="mt-3 pt-3 border-t border-blue-200 space-y-1">
-                <div className="flex justify-between text-xs">
+              <div className="mt-3 pt-3 border-t border-blue-200 space-y-1.5">
+                <div className="flex justify-between items-center text-sm">
                   <span className="text-muted-foreground">APP China</span>
-                  <span className="text-red-600 font-medium">+{appChinaPulpAdd} kt</span>
+                  <span className="text-red-600 font-semibold tabular-nums">+{appChinaPulpAdd} kt</span>
                 </div>
-                <div className="flex justify-between text-xs">
+                <div className="flex justify-between items-center text-sm">
                   <span className="text-muted-foreground">Competitors</span>
                   <span className={cn(
-                    'font-medium',
+                    'font-semibold tabular-nums',
                     totalCompetitorPulpChange >= 0 ? 'text-emerald-600' : 'text-amber-600'
                   )}>
                     {totalCompetitorPulpChange >= 0 ? '+' : ''}{totalCompetitorPulpChange} kt
@@ -155,7 +155,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                   ) : (
                     <TrendingUp className="h-4 w-4 text-emerald-500 flex-shrink-0" />
                   )}
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-sm font-medium text-muted-foreground leading-snug">
                     {(appChinaPulpAdd + totalCompetitorPulpChange) > 400
                       ? 'Significant oversupply risk'
                       : (appChinaPulpAdd + totalCompetitorPulpChange) > 200
@@ -174,14 +174,14 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                  competitorsDelaying === competitorsExpanding ? 'Neutral' : 'Challenged'}
               </div>
               <div className="text-sm text-muted-foreground mt-1">APP market position outlook</div>
-              <div className="mt-3 pt-3 border-t border-emerald-200 space-y-1">
-                <div className="flex justify-between text-xs">
+              <div className="mt-3 pt-3 border-t border-emerald-200 space-y-1.5">
+                <div className="flex justify-between items-center text-sm">
                   <span className="text-muted-foreground">Deterred competitors</span>
-                  <span className="text-amber-600 font-medium">{competitorsDelaying}</span>
+                  <span className="text-amber-600 font-semibold tabular-nums">{competitorsDelaying}</span>
                 </div>
-                <div className="flex justify-between text-xs">
+                <div className="flex justify-between items-center text-sm">
                   <span className="text-muted-foreground">Following competitors</span>
-                  <span className="text-emerald-600 font-medium">{competitorsExpanding}</span>
+                  <span className="text-emerald-600 font-semibold tabular-nums">{competitorsExpanding}</span>
                 </div>
               </div>
             </div>
