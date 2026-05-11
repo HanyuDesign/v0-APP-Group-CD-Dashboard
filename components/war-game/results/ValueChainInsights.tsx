@@ -156,18 +156,18 @@ export function ValueChainInsights({ result, activeStage, onStageChange, stages 
 
                 {/* Metrics */}
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-baseline justify-between gap-2">
                     <span className={cn(
-                      'px-2.5 py-1 rounded text-sm font-semibold',
-                      getStatusColor(data.status, isActive)
-                    )}>
-                      {data.primaryMetric}
-                    </span>
-                    <span className={cn(
-                      'font-mono font-bold text-base tabular-nums',
+                      'font-mono font-bold text-3xl leading-tight tracking-tight tabular-nums',
                       isActive ? 'text-foreground' : 'text-muted-foreground'
                     )}>
                       {data.primaryValue}
+                    </span>
+                    <span className={cn(
+                      'px-2.5 py-1 rounded text-base font-semibold flex-shrink-0',
+                      getStatusColor(data.status, isActive)
+                    )}>
+                      {data.primaryMetric}
                     </span>
                   </div>
                   
