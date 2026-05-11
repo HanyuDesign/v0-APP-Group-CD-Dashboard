@@ -320,7 +320,6 @@ export function ReactionInputModule({
                 </div>
                 <div>
                   <CardTitle className="text-lg font-semibold">Reaction Summary</CardTitle>
-                  <p className="text-xs text-muted-foreground mt-0.5">AI-generated interpretation for {selectedConfig.playerName}</p>
                 </div>
                 <span className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded bg-purple-100 text-purple-700 text-sm font-medium">
                   <Lightbulb className="h-3 w-3" />
