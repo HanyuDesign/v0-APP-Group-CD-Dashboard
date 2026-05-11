@@ -173,7 +173,7 @@ export function ValueChainInsights({ result, activeStage, onStageChange, stages 
                   
                   {/* Insight preview */}
                   <p className={cn(
-                    'text-sm leading-relaxed line-clamp-2',
+                    'text-base leading-relaxed line-clamp-2',
                     isActive ? 'text-muted-foreground' : 'text-muted-foreground/70'
                   )}>
                     {data.insight}
