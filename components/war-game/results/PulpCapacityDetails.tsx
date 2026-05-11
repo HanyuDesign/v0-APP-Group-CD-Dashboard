@@ -112,11 +112,11 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
           <div className="grid grid-cols-3 gap-4 pt-2">
             {/* Supply Impact */}
             <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
-              <div className="text-xs text-blue-600 font-medium mb-2">Supply Impact</div>
-              <div className="text-2xl font-bold text-blue-700">
+              <div className="text-sm text-blue-600 font-semibold mb-2">Supply Impact</div>
+              <div className="text-3xl font-bold text-blue-700 leading-tight tracking-tight">
                 +{appChinaPulpAdd + totalCompetitorPulpChange} kt
               </div>
-              <div className="text-xs text-muted-foreground mt-1">Net capacity addition</div>
+              <div className="text-sm text-muted-foreground mt-1">Net capacity addition</div>
               <div className="mt-3 pt-3 border-t border-blue-200 space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">APP China</span>
@@ -136,24 +136,24 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
 
             {/* Price Pressure */}
             <div className="p-4 rounded-lg bg-amber-50 border border-amber-200">
-              <div className="text-xs text-amber-600 font-medium mb-2">Price Pressure</div>
+              <div className="text-sm text-amber-600 font-semibold mb-2">Price Pressure</div>
               <div className={cn(
-                'text-2xl font-bold',
+                'text-3xl font-bold leading-tight tracking-tight',
                 (appChinaPulpAdd + totalCompetitorPulpChange) > 400 ? 'text-red-600' :
                 (appChinaPulpAdd + totalCompetitorPulpChange) > 200 ? 'text-amber-600' : 'text-emerald-600'
               )}>
                 {(appChinaPulpAdd + totalCompetitorPulpChange) > 400 ? 'High' :
                  (appChinaPulpAdd + totalCompetitorPulpChange) > 200 ? 'Moderate' : 'Low'}
               </div>
-              <div className="text-xs text-muted-foreground mt-1">Expected margin compression</div>
+              <div className="text-sm text-muted-foreground mt-1">Expected margin compression</div>
               <div className="mt-3 pt-3 border-t border-amber-200">
                 <div className="flex items-center gap-2">
                   {(appChinaPulpAdd + totalCompetitorPulpChange) > 400 ? (
-                    <TrendingDown className="h-4 w-4 text-red-500" />
+                    <TrendingDown className="h-4 w-4 text-red-500 flex-shrink-0" />
                   ) : (appChinaPulpAdd + totalCompetitorPulpChange) > 200 ? (
-                    <TrendingDown className="h-4 w-4 text-amber-500" />
+                    <TrendingDown className="h-4 w-4 text-amber-500 flex-shrink-0" />
                   ) : (
-                    <TrendingUp className="h-4 w-4 text-emerald-500" />
+                    <TrendingUp className="h-4 w-4 text-emerald-500 flex-shrink-0" />
                   )}
                   <span className="text-xs text-muted-foreground">
                     {(appChinaPulpAdd + totalCompetitorPulpChange) > 400
@@ -168,12 +168,12 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
 
             {/* Competitive Position */}
             <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200">
-              <div className="text-xs text-emerald-600 font-medium mb-2">Competitive Position</div>
-              <div className="text-2xl font-bold text-emerald-700">
+              <div className="text-sm text-emerald-600 font-semibold mb-2">Competitive Position</div>
+              <div className="text-3xl font-bold text-emerald-700 leading-tight tracking-tight">
                 {competitorsDelaying > competitorsExpanding ? 'Strong' :
                  competitorsDelaying === competitorsExpanding ? 'Neutral' : 'Challenged'}
               </div>
-              <div className="text-xs text-muted-foreground mt-1">APP market position outlook</div>
+              <div className="text-sm text-muted-foreground mt-1">APP market position outlook</div>
               <div className="mt-3 pt-3 border-t border-emerald-200 space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">Deterred competitors</span>
