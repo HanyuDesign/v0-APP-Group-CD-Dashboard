@@ -3,10 +3,9 @@
 import { useState, useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { 
-  Users, Shield, Clock, Gauge, ChevronRight, Info, Lightbulb, 
+  Users, Clock, Gauge, ChevronRight, Info, Lightbulb, 
   Plus, Factory, Package, FileText, TrendingUp, TrendingDown,
-  Minus, Sparkles, Crosshair, DollarSign, AlertTriangle, UserCheck,
-  Globe, Target, Wand2
+  Minus, Sparkles, Globe, Target, Wand2
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Slider } from '@/components/ui/slider'
@@ -363,35 +362,6 @@ function getFollowRatioLabel(ratio: number): string {
   return 'Minimal Response'
 }
 
-// AI Strategy Profile Labels
-const PROFILE_LABELS = {
-  marketShareFocus: {
-    defend: { label: 'Defend', color: 'bg-blue-100 text-blue-700 border-blue-200' },
-    expand: { label: 'Expand', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
-    selective: { label: 'Selective', color: 'bg-amber-100 text-amber-700 border-amber-200' },
-  },
-  profitabilityFocus: {
-    'margin-first': { label: 'Margin-first', color: 'bg-purple-100 text-purple-700 border-purple-200' },
-    balanced: { label: 'Balanced', color: 'bg-slate-100 text-slate-700 border-slate-200' },
-    'volume-first': { label: 'Volume-first', color: 'bg-orange-100 text-orange-700 border-orange-200' },
-  },
-  capacityStrategy: {
-    aggressive: { label: 'Aggressive', color: 'bg-red-100 text-red-700 border-red-200' },
-    disciplined: { label: 'Disciplined', color: 'bg-blue-100 text-blue-700 border-blue-200' },
-    conservative: { label: 'Conservative', color: 'bg-green-100 text-green-700 border-green-200' },
-  },
-  riskAppetite: {
-    high: { label: 'High', color: 'bg-red-100 text-red-700 border-red-200' },
-    medium: { label: 'Medium', color: 'bg-amber-100 text-amber-700 border-amber-200' },
-    low: { label: 'Low', color: 'bg-green-100 text-green-700 border-green-200' },
-  },
-  customerStrategy: {
-    'lock-in': { label: 'Lock-in', color: 'bg-indigo-100 text-indigo-700 border-indigo-200' },
-    flexible: { label: 'Flexible', color: 'bg-cyan-100 text-cyan-700 border-cyan-200' },
-    opportunistic: { label: 'Opportunistic', color: 'bg-pink-100 text-pink-700 border-pink-200' },
-  },
-}
-
 export function CompetitorConfigModule({ config, onChange, appCapacityAdditions }: CompetitorConfigModuleProps) {
   const [selectedCompetitor, setSelectedCompetitor] = useState(config[0]?.playerId || 'sun-paper')
   const [editingCapacity, setEditingCapacity] = useState<number | null>(null)
@@ -527,12 +497,12 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
   return (
     <div className="flex gap-4 h-[calc(100vh-280px)] min-h-[600px]">
       {/* LEFT SIDEBAR - Competitor Selection */}
-      <div className="w-64 flex-shrink-0">
+      <div className="w-80 flex-shrink-0">
         <div className="sticky top-4 space-y-3 z-10">
           <div className="rounded-lg border border-border/50 bg-card/50 overflow-hidden">
             <div className="px-4 py-3 bg-secondary/30 border-b border-border/50">
-              <h3 className="text-sm font-semibold">Competitor Selection</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">Configure each player</p>
+              <h3 className="text-base font-semibold">Competitor Selection</h3>
+              <p className="text-sm text-muted-foreground mt-0.5">Configure each player</p>
             </div>
             
             <div className="p-2 space-y-1">
@@ -551,7 +521,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                     )}
                   >
                     <div className={cn(
-                      'flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold flex-shrink-0',
+                      'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold flex-shrink-0',
                       isSelected 
                         ? 'bg-primary-foreground/20 text-primary-foreground' 
                         : competitor.isEdited 
@@ -563,13 +533,13 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                     
                     <div className="flex-1 min-w-0">
                       <div className={cn(
-                        'text-sm font-medium truncate',
+                        'text-base font-medium truncate',
                         isSelected ? 'text-primary-foreground' : ''
                       )}>
                         {competitor.playerName}
                       </div>
                       <div className={cn(
-                        'text-xs truncate',
+                        'text-sm truncate',
                         isSelected ? 'text-primary-foreground/70' : 'text-muted-foreground'
                       )}>
                         {competitor.isEdited ? 'Modified' : 'Default settings'}
@@ -587,12 +557,12 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
             
             <div className="p-2 border-t border-border/50">
               <button className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-left transition-all border border-dashed border-border/50 text-muted-foreground hover:border-border hover:text-foreground hover:bg-secondary/30">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-secondary text-muted-foreground flex-shrink-0">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-muted-foreground flex-shrink-0">
                   <Plus className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium">Add Competitor</div>
-                  <div className="text-xs text-muted-foreground">Create custom player</div>
+                  <div className="text-base font-medium">Add Competitor</div>
+                  <div className="text-sm text-muted-foreground">Create custom player</div>
                 </div>
               </button>
             </div>
@@ -604,154 +574,70 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
       {selectedConfig && selectedStrategy && derivedCapacity && derivedAllocation && (
         <div className="flex-1 overflow-y-auto space-y-5 pr-2">
           
-          {/* ========== SECTION 1: Strategic Intent + AI Strategy Profile (4-column grid) ========== */}
-          <div className="grid grid-cols-4 gap-4">
-            {/* Strategic Intent Panel - 1 column */}
-            <Card className="border-2 border-cyan-200 bg-gradient-to-b from-cyan-50/50 to-sky-50/50">
-              <CardHeader className="pb-2">
-                <div className="flex items-center gap-2">
-                  <Wand2 className="h-5 w-5 text-cyan-600" />
-                  <CardTitle className="text-sm font-semibold">Strategic Intent</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-3">
-                <textarea
-                  value={strategicIntent}
-                  onChange={(e) => setStrategicIntent(e.target.value)}
-                  placeholder="e.g., Aggressive expansion, follow APP with 1-year delay..."
-                  className="w-full h-20 px-3 py-2 text-sm rounded-lg border border-cyan-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent resize-none placeholder:text-muted-foreground/60"
-                />
-                <Button
-                  onClick={handleGenerateStrategy}
-                  disabled={!strategicIntent.trim()}
-                  className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
-                  size="sm"
-                >
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  Generate Strategy
-                </Button>
-              </CardContent>
-            </Card>
-            
-            {/* AI Strategy Profile - 3 columns (v172 style) */}
-            <Card className="col-span-3 border-2 border-indigo-200 bg-gradient-to-r from-indigo-50/50 to-purple-50/50">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-100">
-                      <Sparkles className="h-5 w-5 text-indigo-600" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-base font-semibold">AI Strategy Profile</CardTitle>
-                      <p className="text-xs text-muted-foreground mt-0.5">{selectedConfig.playerName} - AI-generated competitive positioning</p>
-                    </div>
+          {/* ========== SECTION 1: Strategic Intent (full width) ========== */}
+          <Card className="border-2 border-cyan-200 bg-gradient-to-r from-cyan-50/50 to-sky-50/50">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-100">
+                    <Wand2 className="h-5 w-5 text-cyan-600" />
                   </div>
-                  <span className="text-xs text-indigo-600 bg-indigo-100 px-2.5 py-1 rounded-full font-medium">Read-only</span>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                {/* 5 Strategy Dimensions - v172 grid layout */}
-                {(() => {
-                  const displayProfile = currentInterpretation?.profile || selectedStrategy.aiProfile
-                  const hasGenerated = !!currentInterpretation
-                  return (
-                    <div className="grid grid-cols-5 gap-4">
-                      {/* Market Share Focus */}
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                          <Crosshair className="h-3.5 w-3.5" />
-                          Market Share
-                        </div>
-                        <span className={cn(
-                          'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
-                          PROFILE_LABELS.marketShareFocus[displayProfile.marketShareFocus].color,
-                          hasGenerated && 'ring-2 ring-emerald-300 ring-offset-1'
-                        )}>
-                          {PROFILE_LABELS.marketShareFocus[displayProfile.marketShareFocus].label}
-                        </span>
-                      </div>
-                      
-                      {/* Profitability Focus */}
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                          <DollarSign className="h-3.5 w-3.5" />
-                          Profitability
-                        </div>
-                        <span className={cn(
-                          'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
-                          PROFILE_LABELS.profitabilityFocus[displayProfile.profitabilityFocus].color,
-                          hasGenerated && 'ring-2 ring-emerald-300 ring-offset-1'
-                        )}>
-                          {PROFILE_LABELS.profitabilityFocus[displayProfile.profitabilityFocus].label}
-                        </span>
-                      </div>
-                      
-                      {/* Capacity Strategy */}
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                          <Factory className="h-3.5 w-3.5" />
-                          Capacity
-                        </div>
-                        <span className={cn(
-                          'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
-                          PROFILE_LABELS.capacityStrategy[displayProfile.capacityStrategy].color,
-                          hasGenerated && 'ring-2 ring-emerald-300 ring-offset-1'
-                        )}>
-                          {PROFILE_LABELS.capacityStrategy[displayProfile.capacityStrategy].label}
-                        </span>
-                      </div>
-                      
-                      {/* Risk Appetite */}
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                          <AlertTriangle className="h-3.5 w-3.5" />
-                          Risk Appetite
-                        </div>
-                        <span className={cn(
-                          'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
-                          PROFILE_LABELS.riskAppetite[displayProfile.riskAppetite].color,
-                          hasGenerated && 'ring-2 ring-emerald-300 ring-offset-1'
-                        )}>
-                          {PROFILE_LABELS.riskAppetite[displayProfile.riskAppetite].label}
-                        </span>
-                      </div>
-                      
-                      {/* Customer Strategy */}
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                          <UserCheck className="h-3.5 w-3.5" />
-                          Customer
-                        </div>
-                        <span className={cn(
-                          'inline-flex px-2.5 py-1.5 rounded-md text-xs font-semibold border',
-                          PROFILE_LABELS.customerStrategy[displayProfile.customerStrategy].color,
-                          hasGenerated && 'ring-2 ring-emerald-300 ring-offset-1'
-                        )}>
-                          {PROFILE_LABELS.customerStrategy[displayProfile.customerStrategy].label}
-                        </span>
-                      </div>
-                    </div>
-                  )
-                })()}
-                
-                {/* Base Capacity + AI Interpretation */}
-                <div className="mt-4 pt-4 border-t border-indigo-200/50 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="text-sm text-muted-foreground">
-                      <span className="font-medium text-foreground">{selectedConfig.playerName}</span> base capacity
-                    </div>
-                    {currentInterpretation && (
-                      <div className="flex items-center gap-2 text-sm pl-4 border-l border-indigo-200/50">
-                        <Lightbulb className="h-4 w-4 text-emerald-600 flex-shrink-0" />
-                        <span className="text-emerald-600">{currentInterpretation.summary}</span>
-                      </div>
-                    )}
+                  <div>
+                    <CardTitle className="text-lg font-semibold">Strategic Intent</CardTitle>
+                    <p className="text-sm text-muted-foreground mt-0.5">
+                      Describe {selectedConfig.playerName}&apos;s strategy &mdash; the Behavior Settings below will update automatically and stay fully editable.
+                    </p>
                   </div>
-                  <div className="text-xl font-bold text-indigo-700">{selectedStrategy.baseCapacity} kt</div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+                <div className="flex items-center gap-3 text-right">
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">Base Capacity</div>
+                    <div className="text-xl font-bold text-cyan-700 leading-tight">{selectedStrategy.baseCapacity} kt</div>
+                  </div>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-3 gap-4">
+                {/* Textarea - 2 columns */}
+                <div className="col-span-2">
+                  <textarea
+                    value={strategicIntent}
+                    onChange={(e) => setStrategicIntent(e.target.value)}
+                    placeholder="e.g., Aggressive expansion, follow APP with 1-year delay, prioritize margin over volume..."
+                    className="w-full h-24 px-3 py-2 text-sm rounded-lg border border-cyan-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent resize-none placeholder:text-muted-foreground/60"
+                  />
+                </div>
+                {/* Generate button + summary - 1 column */}
+                <div className="flex flex-col gap-2">
+                  <Button
+                    onClick={handleGenerateStrategy}
+                    disabled={!strategicIntent.trim()}
+                    className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
+                  >
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Generate Strategy
+                  </Button>
+                  {currentInterpretation ? (
+                    <div className="flex items-start gap-2 rounded-lg border border-emerald-200 bg-emerald-50/70 px-3 py-2">
+                      <Lightbulb className="h-4 w-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                      <div className="text-xs">
+                        <div className="font-medium text-emerald-700">Interpretation</div>
+                        <div className="text-emerald-700/90 mt-0.5">{currentInterpretation.summary}</div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start gap-2 rounded-lg border border-dashed border-cyan-200 bg-white/40 px-3 py-2">
+                      <Info className="h-4 w-4 text-cyan-600 flex-shrink-0 mt-0.5" />
+                      <p className="text-xs text-muted-foreground">
+                        Generate to pre-fill the Behavior Settings, then fine-tune them manually.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* ========== SECTION 2: Behavior Settings (Middle) ========== */}
           <Card className="border-2 border-red-200 bg-red-50/30">
@@ -762,11 +648,11 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                     <Target className="h-5 w-5 text-red-600" />
                   </div>
                   <div>
-                    <CardTitle className="text-base font-semibold">Behavior Settings</CardTitle>
-                    <p className="text-xs text-muted-foreground mt-0.5">Configure competitor response parameters</p>
+                    <CardTitle className="text-lg font-semibold">Behavior Settings</CardTitle>
+                    <p className="text-sm text-muted-foreground mt-0.5">Editable competitor response parameters &mdash; adjust freely or use Strategic Intent to pre-fill</p>
                   </div>
                 </div>
-                <span className="text-xs text-red-600 bg-red-100 px-2.5 py-1 rounded-full font-medium">User Input</span>
+                <span className="text-sm text-red-600 bg-red-100 px-2.5 py-1 rounded-full font-medium">Editable</span>
               </div>
             </CardHeader>
             <CardContent className="pt-0">
@@ -777,13 +663,13 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
               <div className="rounded-xl border border-red-200/80 bg-white/60 p-5">
                 <div className="flex items-center gap-2 mb-5">
                   <Factory className="h-5 w-5 text-blue-600" />
-                  <h4 className="text-sm font-semibold text-foreground">Module A: Pulp Capacity Response</h4>
+                  <h4 className="text-base font-semibold text-foreground">Module A: Pulp Capacity Response</h4>
                 </div>
                 
                 <div className="space-y-5">
                   {/* 1. Capacity Reaction Style - Vertical */}
                   <div className="space-y-3">
-                    <label className="text-sm font-medium flex items-center gap-2 text-foreground">
+                    <label className="text-base font-semibold flex items-center gap-2 text-foreground">
                       <Gauge className="h-4 w-4 text-muted-foreground" />
                       Capacity Reaction Style
                     </label>
@@ -803,7 +689,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                               >
                                 <span>{option.label}</span>
                                 <span className={cn(
-                                  'text-xs px-2 py-0.5 rounded',
+                                  'text-sm font-medium px-2.5 py-0.5 rounded',
                                   selectedConfig.behaviorSettings.capacityReactionStyle === option.value
                                     ? 'bg-red-200/50 text-red-700'
                                     : 'bg-muted text-muted-foreground'
@@ -823,13 +709,13 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
 
                   {/* 2. Follow Ratio Slider */}
                   <div className="space-y-3">
-                    <label className="text-sm font-medium flex items-center justify-between text-foreground">
+                    <label className="text-base font-semibold flex items-center justify-between text-foreground">
                       <span className="flex items-center gap-2">
                         <Users className="h-4 w-4 text-muted-foreground" />
                         Follow Ratio to APP
                       </span>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">{getFollowRatioLabel(selectedConfig.behaviorSettings.followRatio)}</span>
+                        <span className="text-sm font-medium text-muted-foreground">{getFollowRatioLabel(selectedConfig.behaviorSettings.followRatio)}</span>
                         <span className="text-red-600 font-bold text-lg">{selectedConfig.behaviorSettings.followRatio}%</span>
                       </div>
                     </label>
@@ -841,7 +727,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                       step={5}
                       className="w-full"
                     />
-                    <div className="flex justify-between text-xs text-muted-foreground">
+                    <div className="flex justify-between text-sm font-medium text-muted-foreground">
                       <span>0%</span>
                       <span>50%</span>
                       <span>100%</span>
@@ -852,7 +738,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
 
                   {/* 3. Reaction Timing - Vertical */}
                   <div className="space-y-3">
-                    <label className="text-sm font-medium flex items-center gap-2 text-foreground">
+                    <label className="text-base font-semibold flex items-center gap-2 text-foreground">
                       <Clock className="h-4 w-4 text-muted-foreground" />
                       Reaction Timing
                     </label>
@@ -884,7 +770,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
 
                   {/* 4. Utilization Target - Vertical */}
                   <div className="space-y-3">
-                    <label className="text-sm font-medium flex items-center gap-2 text-foreground">
+                    <label className="text-base font-semibold flex items-center gap-2 text-foreground">
                       <Gauge className="h-4 w-4 text-muted-foreground" />
                       Utilization Target
                     </label>
@@ -920,7 +806,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
               <div className="rounded-xl border border-red-200/80 bg-white/60 p-5">
                 <div className="flex items-center gap-2 mb-5">
                   <Package className="h-5 w-5 text-purple-600" />
-                  <h4 className="text-sm font-semibold text-foreground">Module B: Downstream Strategy</h4>
+                  <h4 className="text-base font-semibold text-foreground">Module B: Downstream Strategy</h4>
                 </div>
                 
                 <div className="space-y-5">
@@ -928,25 +814,25 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                   <div className="space-y-4">
                     <div className="flex items-center gap-2 pb-2 border-b border-border/30">
                       <FileText className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-medium text-foreground">Paper</span>
+                      <span className="text-base font-semibold text-foreground">Paper</span>
                     </div>
                     
-                    {/* Tier Strategy */}
+                    {/* Product Tier Strategy */}
                     <div className="space-y-3">
-                      <label className="text-sm font-medium flex items-center gap-2 text-foreground">
-                        Tier Strategy
+                      <label className="text-base font-semibold flex items-center gap-2 text-foreground">
+                        Product Tier Strategy
                       </label>
                       <div className="space-y-2">
                         {/* Premium */}
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground w-20">Premium</span>
+                          <span className="text-base font-medium text-muted-foreground w-20">Premium</span>
                           <div className="grid grid-cols-3 gap-2 flex-1 max-w-xs">
                             {TIER_STRATEGY_OPTIONS.map((opt) => (
                               <button
                                 key={opt.value}
                                 onClick={() => handleDownstreamChange('paper', 'premiumTier', opt.value)}
                                 className={cn(
-                                  'px-3 py-2 text-sm font-medium rounded-lg border transition-all',
+                                  'px-3 py-2.5 text-sm font-medium rounded-lg border transition-all',
                                   currentDownstream.paper.premiumTier === opt.value
                                     ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
                                     : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
@@ -959,14 +845,14 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                         </div>
                         {/* Mid-tier */}
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground w-20">Mid-tier</span>
+                          <span className="text-base font-medium text-muted-foreground w-20">Mid-tier</span>
                           <div className="grid grid-cols-3 gap-2 flex-1 max-w-xs">
                             {TIER_STRATEGY_OPTIONS.map((opt) => (
                               <button
                                 key={opt.value}
                                 onClick={() => handleDownstreamChange('paper', 'midTier', opt.value)}
                                 className={cn(
-                                  'px-3 py-2 text-sm font-medium rounded-lg border transition-all',
+                                  'px-3 py-2.5 text-sm font-medium rounded-lg border transition-all',
                                   currentDownstream.paper.midTier === opt.value
                                     ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
                                     : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
@@ -982,14 +868,20 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                     
                     {/* Market Split Slider */}
                     <div className="space-y-3">
-                      <label className="text-sm font-medium flex items-center justify-between text-foreground">
+                      <label className="text-base font-semibold flex items-center justify-between text-foreground">
                         <span className="flex items-center gap-2">
                           <Globe className="h-4 w-4 text-muted-foreground" />
                           Market Split
                         </span>
-                        <div className="flex items-center gap-4 text-sm">
-                          <span className="text-muted-foreground">Domestic <span className="font-bold text-red-600">{100 - currentDownstream.paper.exportPercent}%</span></span>
-                          <span className="text-muted-foreground">Export <span className="font-bold text-red-600">{currentDownstream.paper.exportPercent}%</span></span>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-muted-foreground">Domestic</span>
+                            <span className="text-red-600 font-bold text-lg">{100 - currentDownstream.paper.exportPercent}%</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-muted-foreground">Export</span>
+                            <span className="text-red-600 font-bold text-lg">{currentDownstream.paper.exportPercent}%</span>
+                          </div>
                         </div>
                       </label>
                       <Slider
@@ -1000,7 +892,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                         step={5}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-xs text-muted-foreground">
+                      <div className="flex justify-between text-sm font-medium text-muted-foreground">
                         <span>100% Domestic</span>
                         <span>50 / 50</span>
                         <span>100% Export</span>
@@ -1015,25 +907,25 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                   <div className="space-y-4">
                     <div className="flex items-center gap-2 pb-2 border-b border-border/30">
                       <Package className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-medium text-foreground">Packaging / Carton Board</span>
+                      <span className="text-base font-semibold text-foreground">Packaging / Carton Board</span>
                     </div>
                     
-                    {/* Tier Strategy */}
+                    {/* Product Tier Strategy */}
                     <div className="space-y-3">
-                      <label className="text-sm font-medium flex items-center gap-2 text-foreground">
-                        Tier Strategy
+                      <label className="text-base font-semibold flex items-center gap-2 text-foreground">
+                        Product Tier Strategy
                       </label>
                       <div className="space-y-2">
                         {/* Premium */}
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground w-20">Premium</span>
+                          <span className="text-base font-medium text-muted-foreground w-20">Premium</span>
                           <div className="grid grid-cols-3 gap-2 flex-1 max-w-xs">
                             {TIER_STRATEGY_OPTIONS.map((opt) => (
                               <button
                                 key={opt.value}
                                 onClick={() => handleDownstreamChange('packaging', 'premiumTier', opt.value)}
                                 className={cn(
-                                  'px-3 py-2 text-sm font-medium rounded-lg border transition-all',
+                                  'px-3 py-2.5 text-sm font-medium rounded-lg border transition-all',
                                   currentDownstream.packaging.premiumTier === opt.value
                                     ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
                                     : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
@@ -1046,14 +938,14 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                         </div>
                         {/* Mid-tier */}
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground w-20">Mid-tier</span>
+                          <span className="text-base font-medium text-muted-foreground w-20">Mid-tier</span>
                           <div className="grid grid-cols-3 gap-2 flex-1 max-w-xs">
                             {TIER_STRATEGY_OPTIONS.map((opt) => (
                               <button
                                 key={opt.value}
                                 onClick={() => handleDownstreamChange('packaging', 'midTier', opt.value)}
                                 className={cn(
-                                  'px-3 py-2 text-sm font-medium rounded-lg border transition-all',
+                                  'px-3 py-2.5 text-sm font-medium rounded-lg border transition-all',
                                   currentDownstream.packaging.midTier === opt.value
                                     ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
                                     : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
@@ -1069,14 +961,20 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                     
                     {/* Market Split Slider */}
                     <div className="space-y-3">
-                      <label className="text-sm font-medium flex items-center justify-between text-foreground">
+                      <label className="text-base font-semibold flex items-center justify-between text-foreground">
                         <span className="flex items-center gap-2">
                           <Globe className="h-4 w-4 text-muted-foreground" />
                           Market Split
                         </span>
-                        <div className="flex items-center gap-4 text-sm">
-                          <span className="text-muted-foreground">Domestic <span className="font-bold text-red-600">{100 - currentDownstream.packaging.exportPercent}%</span></span>
-                          <span className="text-muted-foreground">Export <span className="font-bold text-red-600">{currentDownstream.packaging.exportPercent}%</span></span>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-muted-foreground">Domestic</span>
+                            <span className="text-red-600 font-bold text-lg">{100 - currentDownstream.packaging.exportPercent}%</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-muted-foreground">Export</span>
+                            <span className="text-red-600 font-bold text-lg">{currentDownstream.packaging.exportPercent}%</span>
+                          </div>
                         </div>
                       </label>
                       <Slider
@@ -1087,7 +985,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                         step={5}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-xs text-muted-foreground">
+                      <div className="flex justify-between text-sm font-medium text-muted-foreground">
                         <span>100% Domestic</span>
                         <span>50 / 50</span>
                         <span>100% Export</span>
@@ -1109,11 +1007,11 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                     <Lightbulb className="h-5 w-5 text-amber-600" />
                   </div>
                   <div>
-                    <CardTitle className="text-base font-semibold">Derived Actions</CardTitle>
-                    <p className="text-xs text-muted-foreground mt-0.5">Auto-calculated outcomes based on behavior settings</p>
+                    <CardTitle className="text-lg font-semibold">Derived Actions</CardTitle>
+                    <p className="text-sm text-muted-foreground mt-0.5">Auto-calculated outcomes based on behavior settings</p>
                   </div>
                 </div>
-                <span className="text-xs text-amber-600 bg-amber-100 px-2.5 py-1 rounded-full font-medium">Auto-calculated</span>
+                <span className="text-sm text-amber-600 bg-amber-100 px-2.5 py-1 rounded-full font-medium">Auto-calculated</span>
               </div>
             </CardHeader>
             <CardContent className="pt-0 space-y-5">
@@ -1122,16 +1020,16 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
               <div className="rounded-xl border border-amber-200/80 bg-white/60 p-5">
                 <div className="flex items-center gap-2 mb-4">
                   <Factory className="h-5 w-5 text-blue-600" />
-                  <h4 className="text-sm font-semibold text-foreground">A. Pulp Capacity Outcome</h4>
+                  <h4 className="text-base font-semibold text-foreground">A. Pulp Capacity Outcome</h4>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4 mb-5">
                   <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
-                    <div className="text-xs text-blue-600 font-medium mb-1">Total Capacity Addition</div>
+                    <div className="text-sm text-blue-600 font-medium mb-1">Total Capacity Addition</div>
                     <div className="text-2xl font-bold text-blue-700">+{derivedAllocation.pulp.totalAddition} kt</div>
                   </div>
                   <div className="p-4 rounded-lg bg-slate-50 border border-slate-200">
-                    <div className="text-xs text-slate-600 font-medium mb-1">Timing</div>
+                    <div className="text-sm text-slate-600 font-medium mb-1">Timing</div>
                     <div className="text-lg font-semibold text-foreground">{derivedAllocation.pulp.timing}</div>
                   </div>
                 </div>
@@ -1140,13 +1038,13 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      <div className="text-sm font-medium text-foreground">Projected Capacity (kt)</div>
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-100 text-amber-700 text-[10px] font-medium">
+                      <div className="text-base font-semibold text-foreground">Projected Capacity (kt)</div>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-100 text-amber-700 text-xs font-medium">
                         <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
                         Editable
                       </span>
                     </div>
-                    <div className="text-xs text-blue-600">Click values to override</div>
+                    <div className="text-sm text-blue-600">Click values to override</div>
                   </div>
                   <div className="grid grid-cols-6 gap-2">
                     {years.map(year => {
@@ -1156,12 +1054,12 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                       
                       return (
                         <div key={year} className="text-center">
-                          <div className="text-xs text-muted-foreground mb-1.5 font-medium">{year}</div>
+                          <div className="text-sm text-muted-foreground mb-1.5 font-medium">{year}</div>
                           {isEditing ? (
                             <Input
                               type="number"
                               defaultValue={value}
-                              className="h-10 text-sm text-center px-1 font-mono"
+                              className="h-10 text-base text-center px-1 font-mono"
                               autoFocus
                               onBlur={(e) => handleCapacityOverride(year, parseInt(e.target.value) || value)}
                               onKeyDown={(e) => {
@@ -1176,14 +1074,14 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                             <button
                               onClick={() => setEditingCapacity(year)}
                               className={cn(
-                                'w-full py-2.5 text-sm font-mono font-bold rounded-lg transition-all border',
+                                'w-full py-2.5 text-base font-mono font-bold rounded-lg transition-all border',
                                 isOverridden 
                                   ? 'bg-blue-100 text-blue-700 border-blue-300 hover:bg-blue-200'
                                   : 'bg-white text-foreground border-border/50 hover:border-amber-300 hover:bg-amber-50'
                               )}
                             >
                               {value}
-                              {isOverridden && <span className="ml-0.5 text-[10px]">*</span>}
+                              {isOverridden && <span className="ml-0.5 text-xs">*</span>}
                             </button>
                           )}
                         </div>
@@ -1197,7 +1095,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
               <div className="rounded-xl border border-amber-200/80 bg-white/60 p-5">
                 <div className="flex items-center gap-2 mb-4">
                   <Package className="h-5 w-5 text-purple-600" />
-                  <h4 className="text-sm font-semibold text-foreground">B. Downstream Allocation Outcome</h4>
+                  <h4 className="text-base font-semibold text-foreground">B. Downstream Allocation Outcome</h4>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
@@ -1205,15 +1103,15 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                   <div className="p-4 rounded-lg bg-blue-50/50 border border-blue-200/50">
                     <div className="flex items-center gap-2 mb-3">
                       <FileText className="h-4 w-4 text-blue-600" />
-                      <span className="text-sm font-medium text-foreground">Paper</span>
+                      <span className="text-base font-semibold text-foreground">Paper</span>
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">Capacity</span>
-                        <span className="text-sm font-bold text-foreground">+{derivedAllocation.downstream.paper.capacity} kt</span>
+                        <span className="text-sm font-medium text-muted-foreground">Capacity</span>
+                        <span className="text-base font-bold text-foreground">+{derivedAllocation.downstream.paper.capacity} kt</span>
                       </div>
                       <div className={cn(
-                        'flex items-center gap-1 text-sm font-medium',
+                        'flex items-center gap-1 text-base font-medium',
                         derivedAllocation.downstream.paper.change === 'expand' ? 'text-emerald-600' :
                         derivedAllocation.downstream.paper.change === 'reduce' ? 'text-amber-600' : 'text-foreground'
                       )}>
@@ -1229,15 +1127,15 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                   <div className="p-4 rounded-lg bg-orange-50/50 border border-orange-200/50">
                     <div className="flex items-center gap-2 mb-3">
                       <Package className="h-4 w-4 text-orange-600" />
-                      <span className="text-sm font-medium text-foreground">Packaging</span>
+                      <span className="text-base font-semibold text-foreground">Packaging</span>
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">Capacity</span>
-                        <span className="text-sm font-bold text-foreground">+{derivedAllocation.downstream.packaging.capacity} kt</span>
+                        <span className="text-sm font-medium text-muted-foreground">Capacity</span>
+                        <span className="text-base font-bold text-foreground">+{derivedAllocation.downstream.packaging.capacity} kt</span>
                       </div>
                       <div className={cn(
-                        'flex items-center gap-1 text-sm font-medium',
+                        'flex items-center gap-1 text-base font-medium',
                         derivedAllocation.downstream.packaging.change === 'expand' ? 'text-emerald-600' :
                         derivedAllocation.downstream.packaging.change === 'reduce' ? 'text-amber-600' : 'text-foreground'
                       )}>
@@ -1256,7 +1154,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
           {/* Helper text */}
           <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/50 border border-border/50">
             <Info className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Behavior settings dynamically update Derived Actions in real-time. Projected capacity values are auto-calculated but can be manually overridden by clicking on them.
             </p>
           </div>

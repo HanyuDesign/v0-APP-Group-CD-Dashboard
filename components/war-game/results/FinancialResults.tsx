@@ -14,6 +14,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
 import { Building2, Globe, Users } from 'lucide-react'
 import { TrafficLight } from '../shared/TrafficLight'
+import { MarketDataTabSwitcher, type MarketDataTab } from './MarketDataTabSwitcher'
 import type { SimulationResult, ProjectIRR, APPSystemPL, PlayerFinancialOutcome } from '@/lib/types/war-game'
 import { PLAYERS, IRR_HURDLE } from '@/lib/data/initial-data'
 import {
@@ -29,6 +30,8 @@ import {
 
 interface FinancialResultsProps {
   result: SimulationResult
+  activeTab?: MarketDataTab
+  onTabChange?: (tab: MarketDataTab) => void
 }
 
 type ViewMode = 'combined' | 'pulp' | 'downstream'
@@ -96,7 +99,7 @@ function SystemPLCard({ systemPL }: { systemPL: APPSystemPL }) {
   return (
     <Card className="border-primary/30 bg-card/80">
       <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-sm">
+        <CardTitle className="flex items-center gap-2 text-lg">
           <Globe className="h-4 w-4 text-primary" />
           APP System P&L (China + Indonesia)
         </CardTitle>
@@ -186,7 +189,7 @@ function PlayerPLSection({ playerFinancials }: { playerFinancials: PlayerFinanci
     <Card className="border-border/50 bg-card/80">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-sm">
+          <CardTitle className="flex items-center gap-2 text-lg">
             <Users className="h-4 w-4 text-primary" />
             Player-Level P&L
           </CardTitle>
@@ -201,16 +204,16 @@ function PlayerPLSection({ playerFinancials }: { playerFinancials: PlayerFinanci
       </CardHeader>
       <CardContent>
         {/* Detailed metrics table */}
-        <Table>
+        <Table className="text-base">
           <TableHeader>
             <TableRow className="border-border/50">
-              <TableHead className="text-sm">Player</TableHead>
-              <TableHead className="text-right text-sm">Revenue Index</TableHead>
-              <TableHead className="text-right text-sm">EBITDA</TableHead>
-              <TableHead className="text-right text-sm">EBITDA Margin</TableHead>
-              <TableHead className="text-right text-sm">Capacity Index</TableHead>
+              <TableHead className="text-base">Player</TableHead>
+              <TableHead className="text-right text-base">Revenue Index</TableHead>
+              <TableHead className="text-right text-base">EBITDA</TableHead>
+              <TableHead className="text-right text-base">EBITDA Margin</TableHead>
+              <TableHead className="text-right text-base">Capacity Index</TableHead>
               {viewMode !== 'combined' && (
-                <TableHead className="text-right text-sm">
+                <TableHead className="text-right text-base">
                   {viewMode === 'pulp' ? 'Pulp Profit' : 'Downstream Profit'}
                 </TableHead>
               )}
@@ -227,7 +230,7 @@ function PlayerPLSection({ playerFinancials }: { playerFinancials: PlayerFinanci
                     isAppChina && 'bg-[#cc0000]/5 border-l-2 border-l-[#cc0000]'
                   )}
                 >
-                  <TableCell className="text-sm py-3">
+                  <TableCell className="text-base py-3">
                     <div className="flex items-center gap-2">
                       <span
                         className="h-2.5 w-2.5 rounded-full"
@@ -236,13 +239,13 @@ function PlayerPLSection({ playerFinancials }: { playerFinancials: PlayerFinanci
                       <span className={cn('font-medium', isAppChina && 'text-[#cc0000]')}>{item.name}</span>
                     </div>
                   </TableCell>
-                  <TableCell className={cn('text-right font-mono text-sm py-3', isAppChina && 'font-semibold')}>
+                  <TableCell className={cn('text-right font-mono text-base py-3', isAppChina && 'font-semibold')}>
                     {item.revenue}
                   </TableCell>
-                  <TableCell className={cn('text-right font-mono text-sm font-semibold py-3', isAppChina && 'text-[#cc0000]')}>
+                  <TableCell className={cn('text-right font-mono text-base font-semibold py-3', isAppChina && 'text-[#cc0000]')}>
                     {item.ebitda}
                   </TableCell>
-                  <TableCell className="text-right font-mono text-sm py-3">
+                  <TableCell className="text-right font-mono text-base py-3">
                     <span className={cn(
                       item.margin >= 20 ? 'text-[#2e7d32]' :
                       item.margin >= 15 ? 'text-[#ed6c02]' : 'text-muted-foreground',
@@ -251,11 +254,11 @@ function PlayerPLSection({ playerFinancials }: { playerFinancials: PlayerFinanci
                       {item.margin}%
                     </span>
                   </TableCell>
-                  <TableCell className={cn('text-right font-mono text-sm py-3', isAppChina && 'font-semibold')}>
+                  <TableCell className={cn('text-right font-mono text-base py-3', isAppChina && 'font-semibold')}>
                     {item.capacityIndex}
                   </TableCell>
                   {viewMode !== 'combined' && (
-                    <TableCell className={cn('text-right font-mono text-sm font-semibold py-3', isAppChina && 'text-[#cc0000]')}>
+                    <TableCell className={cn('text-right font-mono text-base font-semibold py-3', isAppChina && 'text-[#cc0000]')}>
                       {viewMode === 'pulp' ? item.pulpProfit : item.downstreamProfit}
                     </TableCell>
                   )}
@@ -269,24 +272,35 @@ function PlayerPLSection({ playerFinancials }: { playerFinancials: PlayerFinanci
   )
 }
 
-export function FinancialResults({ result }: FinancialResultsProps) {
+export function FinancialResults({ result, activeTab, onTabChange }: FinancialResultsProps) {
   const { playerFinancials, projectIRRs, appSystemPL } = result
 
   return (
     <div className="space-y-4">
-      {/* APP Project IRR */}
+      {/* APP Project IRR – wrapped in a Card so the Market/Financial tab
+          switcher can live next to the section title, mirroring the
+          Player Market Data card on the Market Performance tab. */}
       {projectIRRs.length > 0 && (
-        <div>
-          <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
-            <Building2 className="h-4 w-4 text-primary" />
-            APP Project IRR
-          </h3>
-          <div className="grid grid-cols-2 gap-4">
-            {projectIRRs.map(project => (
-              <IRRCard key={project.projectId} project={project} />
-            ))}
-          </div>
-        </div>
+        <Card className="border-border/50 bg-card/80">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between gap-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Building2 className="h-4 w-4 text-primary" />
+                APP Project IRR
+              </CardTitle>
+              {activeTab && onTabChange && (
+                <MarketDataTabSwitcher activeTab={activeTab} onTabChange={onTabChange} />
+              )}
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4">
+              {projectIRRs.map(project => (
+                <IRRCard key={project.projectId} project={project} />
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* APP System P&L */}

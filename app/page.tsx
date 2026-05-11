@@ -29,8 +29,8 @@ const STEPS: { key: SimulationStep; label: string; shortLabel: string; descripti
   },
   { 
     key: 'reaction-input', 
-    label: 'Reaction Input', 
-    shortLabel: 'Reactions',
+    label: 'Reaction', 
+    shortLabel: 'Reaction',
     description: 'Review AI-generated market reactions'
   },
   { 
@@ -87,7 +87,7 @@ export default function InputPage() {
     } else if (!competitorStepVisited) {
       nextDisabledReason = 'Review the Competitor Configure step before running the simulation.'
     } else if (!reactionStepVisited) {
-      nextDisabledReason = 'Review the Reaction Input step before running the simulation.'
+      nextDisabledReason = 'Review the Reaction step before running the simulation.'
     }
   }
   const isNextDisabled = nextDisabledReason !== null
@@ -161,7 +161,7 @@ export default function InputPage() {
       case 'market-input':
         return 'Next: Competitor Configure'
       case 'competitor-configure':
-        return 'Next: Reaction Input'
+        return 'Next: Reaction'
       case 'reaction-input':
         return 'Run Simulation'
       default:
@@ -197,7 +197,7 @@ export default function InputPage() {
                   onClick={() => handleStepClick(step.key)}
                   disabled={isDisabled}
                   className={cn(
-                    'relative px-4 py-2.5 text-sm font-medium border-b-2 transition-all flex items-center gap-2',
+                    'relative px-4 py-3 text-base font-medium border-b-2 transition-all flex items-center gap-2',
                     isActive 
                       ? 'border-primary text-primary' 
                       : isPast
@@ -209,19 +209,16 @@ export default function InputPage() {
                 >
                   {/* Step number / check */}
                   <span className={cn(
-                    'flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold',
+                    'flex h-6 w-6 items-center justify-center rounded-full text-sm font-semibold',
                     isActive 
                       ? 'bg-primary text-primary-foreground' 
                       : isPast
                         ? 'bg-emerald-100 text-emerald-600'
                         : 'bg-muted text-muted-foreground'
                   )}>
-                    {isPast ? <Check className="h-3 w-3" /> : index + 1}
+                    {isPast ? <Check className="h-3.5 w-3.5" /> : index + 1}
                   </span>
                   <span>{step.label}</span>
-                  {isResults && !result && (
-                    <span className="text-[10px] ml-1">(Run simulation first)</span>
-                  )}
                 </button>
                 {/* Arrow between steps */}
                 {!isLast && (
@@ -232,9 +229,9 @@ export default function InputPage() {
           })}
           
           {/* Progress indicator */}
-          <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
-            <span>Step {currentStepIndex + 1} of {STEPS.length}</span>
-            <div className="h-1.5 w-24 rounded-full bg-secondary overflow-hidden">
+          <div className="ml-auto flex items-center gap-2 text-sm font-medium text-muted-foreground">
+            <span>Step <span className="text-foreground">{currentStepIndex + 1}</span> of {STEPS.length}</span>
+            <div className="h-2 w-32 rounded-full bg-secondary overflow-hidden">
               <div 
                 className="h-full bg-primary transition-all duration-300"
                 style={{ width: `${((currentStepIndex + 1) / STEPS.length) * 100}%` }}
@@ -266,7 +263,7 @@ export default function InputPage() {
           />
         )}
 
-        {/* Step 3: Reaction Input */}
+        {/* Step 3: Reaction */}
         {currentStep === 'reaction-input' && (
           <ReactionInputModule
             settings={reactionSettings}
@@ -299,6 +296,8 @@ export default function InputPage() {
             {currentStepIndex > 0 && currentStep !== 'results' && (
               <Button
                 variant="outline"
+                size="lg"
+                className="text-base"
                 onClick={handleBack}
               >
                 <ArrowLeft className="mr-1.5 h-4 w-4" />
@@ -309,6 +308,8 @@ export default function InputPage() {
             {/* Reset button */}
             <Button
               variant="outline"
+              size="lg"
+              className="text-base"
               onClick={() => {
                 reset()
                 setCompetitorConfig(initializeCompetitorConfig())
@@ -330,10 +331,12 @@ export default function InputPage() {
                     {/* Wrapper span ensures the tooltip still shows when the button is disabled */}
                     <span tabIndex={0}>
                       <Button
+                        size="lg"
                         onClick={currentStep === 'reaction-input' ? handleRunSimulation : handleNext}
                         disabled={status === 'running' || isNextDisabled}
                         aria-disabled={isNextDisabled || status === 'running'}
                         className={cn(
+                          'text-base',
                           currentStep === 'reaction-input' && !isNextDisabled && 'bg-emerald-600 hover:bg-emerald-700'
                         )}
                       >

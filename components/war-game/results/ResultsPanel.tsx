@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Clock, Trees, Factory, Package } from 'lucide-react'
 import { ValueChainInsights } from './ValueChainInsights'
 import { ForestryDetails } from './ForestryDetails'
-import { PulpCapacityDetails } from './PulpCapacityDetails'
+import { PulpCapacityDetails, PulpExportReallocation } from './PulpCapacityDetails'
 import { DownstreamDetails } from './DownstreamDetails'
 import { MarketResults } from './MarketResults'
 import { FinancialResults } from './FinancialResults'
@@ -52,14 +52,13 @@ const NAV_ITEMS: Record<ValueChainStage, { id: string; label: string }[]> = {
     { id: 'forestry-supply-demand', label: 'Supply-Demand Balance' },
   ],
   pulp: [
-    { id: 'pulp-value-chain-flow', label: 'Value Chain Impact Flow' },
+    { id: 'pulp-market-impact', label: 'Market Impact Summary' },
     { id: 'pulp-app-capacity', label: 'APP Capacity Outcome' },
     { id: 'pulp-competitor-response', label: 'Competitor Response' },
+    { id: 'market-data', label: 'Market Data' },
     { id: 'pulp-export-reallocation', label: 'Global Export Reallocation' },
-    { id: 'pulp-market-impact', label: 'Market Impact Summary' },
   ],
   downstream: [
-    { id: 'downstream-health-overview', label: 'Market Health Overview' },
     { id: 'downstream-paper', label: 'Paper' },
     { id: 'downstream-board', label: 'Packaging / Carton Board' },
     { id: 'downstream-tissue', label: 'Tissue' },
@@ -120,13 +119,13 @@ function StickyNav({
       )}
     >
       <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-        <span className="text-sm font-medium text-muted-foreground whitespace-nowrap mr-1">Jump to:</span>
+        <span className="text-base font-medium text-muted-foreground whitespace-nowrap mr-1">Jump to:</span>
         {navItems.map((item) => (
           <button
             key={item.id}
             onClick={() => onSectionClick(item.id)}
             className={cn(
-              'px-3 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap',
+              'px-3.5 py-1.5 rounded-full text-base font-medium transition-all whitespace-nowrap',
               activeSection === item.id
                 ? colors.active
                 : colors.inactive
@@ -140,50 +139,20 @@ function StickyNav({
   )
 }
 
-// Market Data Tabs Component
-function MarketDataTabs({ result, status }: { result: SimulationResult, status: SimulationStatus }) {
+// Market Data Tabs Component – the tab switcher is rendered inside the
+// "Player Market Data" card header (Market tab) and the "APP Project IRR"
+// card header (Financial tab), keeping the controls in context with the
+// data they govern instead of in a separate banner above them.
+function MarketDataTabs({ result, status, id }: { result: SimulationResult, status: SimulationStatus, id?: string }) {
   const [activeTab, setActiveTab] = useState<'market' | 'financial'>('market')
-  
+
   return (
-    <div className="space-y-4">
-      {/* Tab Header */}
-      <div className="flex items-center gap-2">
-        <h3 className="text-sm font-semibold text-muted-foreground">Market Data</h3>
-        <span className="h-px flex-1 bg-border" />
-        <div className="flex gap-1 bg-muted/50 rounded-lg p-1">
-          <button
-            onClick={() => setActiveTab('market')}
-            className={cn(
-              'px-3 py-1.5 text-sm font-medium rounded-md transition-all',
-              activeTab === 'market'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
-          >
-            Market Performance
-          </button>
-          <button
-            onClick={() => setActiveTab('financial')}
-            className={cn(
-              'px-3 py-1.5 text-sm font-medium rounded-md transition-all',
-              activeTab === 'financial'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
-          >
-            Financial Results
-          </button>
-        </div>
-      </div>
-      
-      {/* Tab Content */}
-      <div className={cn(status === 'running' && 'opacity-50')}>
-        {activeTab === 'market' ? (
-          <MarketResults result={result} />
-        ) : (
-          <FinancialResults result={result} />
-        )}
-      </div>
+    <div id={id} className={cn('scroll-mt-96', status === 'running' && 'opacity-50')}>
+      {activeTab === 'market' ? (
+        <MarketResults result={result} activeTab={activeTab} onTabChange={setActiveTab} />
+      ) : (
+        <FinancialResults result={result} activeTab={activeTab} onTabChange={setActiveTab} />
+      )}
     </div>
   )
 }
@@ -316,25 +285,26 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
 
       {/* Detailed Analysis Content */}
       <section>
-        {/* Content */}
-        <div className={cn(status === 'running' && 'opacity-50')}>
+        <div className={cn('space-y-6', status === 'running' && 'opacity-50')}>
           {activeStage === 'forestry' && (
             <ForestryDetails result={result} />
           )}
-          
+
           {activeStage === 'pulp' && (
-            <PulpCapacityDetails result={result} />
+            <>
+              {/* Market Impact Summary → APP Capacity Outcome → Competitor Response */}
+              <PulpCapacityDetails result={result} />
+              {/* Market Data (shared) */}
+              <MarketDataTabs result={result} status={status} id="market-data" />
+              {/* Global Export Reallocation */}
+              <PulpExportReallocation result={result} />
+            </>
           )}
-          
+
           {activeStage === 'downstream' && (
             <DownstreamDetails result={result} />
           )}
         </div>
-      </section>
-
-      {/* Section 3: Market Data with Tabs */}
-      <section>
-        <MarketDataTabs result={result} status={status} />
       </section>
     </div>
   )

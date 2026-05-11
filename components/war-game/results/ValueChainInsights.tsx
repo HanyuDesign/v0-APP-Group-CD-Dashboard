@@ -103,9 +103,9 @@ export function ValueChainInsights({ result, activeStage, onStageChange, stages 
       {/* Header */}
       <div className="flex items-center gap-3">
         <Lightbulb className="h-5 w-5 text-indigo-600" />
-        <h3 className="font-bold text-foreground">Strategic Insights</h3>
-        <span className="text-xs text-indigo-600 bg-indigo-100 px-2 py-0.5 rounded">Value Chain Flow</span>
-        <p className="text-xs text-muted-foreground ml-auto">Click a stage to explore details</p>
+        <h3 className="font-bold text-lg text-foreground">Strategic Insights</h3>
+        <span className="text-sm font-medium text-indigo-600 bg-indigo-100 px-2.5 py-0.5 rounded">Value Chain Flow</span>
+        <p className="text-sm text-muted-foreground ml-auto">Click a stage to explore details</p>
       </div>
 
       {/* Interactive Value Chain Cards */}
@@ -145,35 +145,35 @@ export function ValueChainInsights({ result, activeStage, onStageChange, stages 
                   </div>
                   <div>
                     <h4 className={cn(
-                      'font-semibold text-sm',
+                      'font-semibold text-base',
                       isActive ? 'text-foreground' : 'text-muted-foreground'
                     )}>
                       {stage.label}
                     </h4>
-                    <p className="text-xs text-muted-foreground">{stage.description}</p>
+                    <p className="text-sm text-muted-foreground">{stage.description}</p>
                   </div>
                 </div>
 
                 {/* Metrics */}
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-baseline justify-between gap-2">
                     <span className={cn(
-                      'px-2 py-1 rounded text-xs font-medium',
-                      getStatusColor(data.status, isActive)
-                    )}>
-                      {data.primaryMetric}
-                    </span>
-                    <span className={cn(
-                      'font-mono font-bold text-sm',
+                      'font-mono font-bold text-2xl leading-tight tracking-tight tabular-nums',
                       isActive ? 'text-foreground' : 'text-muted-foreground'
                     )}>
                       {data.primaryValue}
+                    </span>
+                    <span className={cn(
+                      'px-2.5 py-1 rounded text-base font-semibold flex-shrink-0',
+                      getStatusColor(data.status, isActive)
+                    )}>
+                      {data.primaryMetric}
                     </span>
                   </div>
                   
                   {/* Insight preview */}
                   <p className={cn(
-                    'text-xs leading-relaxed line-clamp-2',
+                    'text-base leading-relaxed line-clamp-2',
                     isActive ? 'text-muted-foreground' : 'text-muted-foreground/70'
                   )}>
                     {data.insight}
@@ -191,7 +191,7 @@ export function ValueChainInsights({ result, activeStage, onStageChange, stages 
                       ? 'text-primary'
                       : 'text-muted-foreground/30'
                   )} />
-                  <span className="text-[9px] text-muted-foreground text-center mt-1">
+                  <span className="text-xs font-medium text-muted-foreground text-center mt-1 uppercase tracking-wide">
                     {index === 0 ? 'feeds' : 'drives'}
                   </span>
                 </div>

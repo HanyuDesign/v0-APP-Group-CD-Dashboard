@@ -7,7 +7,10 @@ function Card({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="card"
       className={cn(
-        'bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm',
+        // Tightened vertical rhythm: smaller gap between header / content /
+        // footer (gap-6 -> gap-3) and reduced outer padding (py-6 -> py-4)
+        // so titles sit closer to their content across every module.
+        'bg-card text-card-foreground flex flex-col gap-3 rounded-xl border py-4 shadow-sm',
         className,
       )}
       {...props}

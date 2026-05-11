@@ -5,11 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { 
   Brain, Users, ChevronRight, Info, TreePine, Factory, Package, 
   FileText, Bath, TrendingUp, TrendingDown, Upload, X, FileSpreadsheet,
-  Quote, Lightbulb, Edit3, Check
+  Quote, Lightbulb
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import type { 
   CompetitorConfig, 
   ReactionSettings,
@@ -198,8 +197,6 @@ export function ReactionInputModule({
   marketInput 
 }: ReactionInputModuleProps) {
   const [selectedCompetitor, setSelectedCompetitor] = useState(competitorConfig[0]?.playerId || 'sun-paper')
-  const [editingCell, setEditingCell] = useState<string | null>(null)
-  const [overrides, setOverrides] = useState<Record<string, Record<number, number>>>({})
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
   
@@ -237,28 +234,16 @@ export function ReactionInputModule({
     setUploadedFiles(prev => prev.filter((_, i) => i !== index))
   }
   
-  const handleOverride = (key: string, year: number, value: number) => {
-    setOverrides(prev => ({
-      ...prev,
-      [key]: { ...prev[key], [year]: value }
-    }))
-    setEditingCell(null)
-  }
-  
-  const activeOverridesCount = Object.values(overrides).reduce(
-    (acc, curr) => acc + Object.keys(curr).length, 0
-  )
-
   return (
     <div className="flex gap-6 h-[calc(100vh-280px)] min-h-[600px]">
       {/* LEFT SIDEBAR - Competitor Selection (synced from Step 2) */}
-      <div className="w-64 flex-shrink-0">
+      <div className="w-80 flex-shrink-0">
         <div className="sticky top-4 space-y-3 z-10">
           <div className="rounded-lg border border-border/50 bg-card/50 overflow-hidden">
             {/* Sidebar header */}
             <div className="px-4 py-3 bg-purple-50 border-b border-purple-100">
-              <h3 className="text-sm font-semibold text-purple-900">Market Players</h3>
-              <p className="text-xs text-purple-600 mt-0.5">Synced from Competitor Configure</p>
+              <h3 className="text-base font-semibold text-purple-900">Market Players</h3>
+              <p className="text-sm text-purple-600 mt-0.5">Synced from Competitor Configure</p>
             </div>
             
             {/* Competitor list */}
@@ -278,7 +263,7 @@ export function ReactionInputModule({
                     )}
                   >
                     <div className={cn(
-                      'flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold flex-shrink-0',
+                      'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold flex-shrink-0',
                       isSelected 
                         ? 'bg-white/20 text-white' 
                         : 'bg-secondary text-muted-foreground'
@@ -288,13 +273,13 @@ export function ReactionInputModule({
                     
                     <div className="flex-1 min-w-0">
                       <div className={cn(
-                        'text-sm font-medium truncate',
+                        'text-base font-medium truncate',
                         isSelected ? 'text-white' : ''
                       )}>
                         {competitor.playerName}
                       </div>
                       <div className={cn(
-                        'text-xs truncate capitalize',
+                        'text-sm truncate capitalize',
                         isSelected ? 'text-white/70' : 'text-muted-foreground'
                       )}>
                         {competitor.behaviorSettings.capacityReactionStyle.replace(/-/g, ' ')}
@@ -313,8 +298,8 @@ export function ReactionInputModule({
             {/* Info note */}
             <div className="p-3 border-t border-border/50 bg-muted/30">
               <div className="flex items-start gap-2">
-                <Info className="h-3.5 w-3.5 text-muted-foreground mt-0.5 flex-shrink-0" />
-                <p className="text-xs text-muted-foreground">
+                <Info className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-muted-foreground">
                   Competitor list is configured in Step 2. This page shows AI-generated reactions.
                 </p>
               </div>
@@ -334,10 +319,10 @@ export function ReactionInputModule({
                   <Brain className="h-5 w-5 text-purple-600" />
                 </div>
                 <div>
-                  <CardTitle className="text-base font-semibold">Reaction Summary</CardTitle>
+                  <CardTitle className="text-lg font-semibold">Reaction Summary</CardTitle>
                   <p className="text-xs text-muted-foreground mt-0.5">AI-generated interpretation for {selectedConfig.playerName}</p>
                 </div>
-                <span className="ml-auto inline-flex items-center gap-1 px-2 py-1 rounded bg-purple-100 text-purple-700 text-xs font-medium">
+                <span className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded bg-purple-100 text-purple-700 text-sm font-medium">
                   <Lightbulb className="h-3 w-3" />
                   AI Generated
                 </span>
@@ -385,7 +370,7 @@ export function ReactionInputModule({
                   <TrendingUp className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <CardTitle className="text-base font-semibold">Value Chain Impact</CardTitle>
+                  <CardTitle className="text-lg font-semibold">Value Chain Impact</CardTitle>
                   <p className="text-xs text-muted-foreground mt-0.5">{selectedConfig.playerName}'s projected outcomes</p>
                 </div>
               </div>
@@ -399,7 +384,7 @@ export function ReactionInputModule({
                   <span className="text-xs text-muted-foreground">({selectedConfig.playerName})</span>
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                  <table className="w-full text-base">
                     <thead>
                       <tr className="border-b border-border/50">
                         <th className="text-left py-2 pr-4 font-medium text-muted-foreground">Metric</th>
@@ -440,7 +425,7 @@ export function ReactionInputModule({
                   <span className="text-xs text-muted-foreground">({selectedConfig.playerName})</span>
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                  <table className="w-full text-base">
                     <thead>
                       <tr className="border-b border-border/50">
                         <th className="text-left py-2 pr-4 font-medium text-muted-foreground">Metric</th>
@@ -496,7 +481,7 @@ export function ReactionInputModule({
                         <span className="text-sm font-semibold">{segment.segment}</span>
                       </div>
                       <div className="overflow-x-auto">
-                        <table className="w-full text-xs">
+                        <table className="w-full text-base">
                           <thead>
                             <tr className="border-b border-border/50">
                               <th className="text-left py-1.5 pr-2 font-medium text-muted-foreground">Year</th>
@@ -523,59 +508,7 @@ export function ReactionInputModule({
           </Card>
         )}
 
-        {/* Section 3: Editable Overrides */}
-        <Card className="border-amber-200 bg-amber-50/30">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100">
-                <Edit3 className="h-5 w-5 text-amber-600" />
-              </div>
-              <div>
-                <CardTitle className="text-base font-semibold">Editable Overrides</CardTitle>
-                <p className="text-xs text-muted-foreground mt-0.5">Click values to override AI-generated projections</p>
-              </div>
-              <span className="ml-auto inline-flex items-center gap-1 px-2 py-1 rounded bg-amber-100 text-amber-700 text-xs font-medium">
-                Optional
-              </span>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-0">
-            {activeOverridesCount > 0 ? (
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm text-amber-700">
-                  <Check className="h-4 w-4" />
-                  <span>{activeOverridesCount} override(s) active</span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {Object.entries(overrides).map(([key, yearValues]) =>
-                    Object.entries(yearValues).map(([year, value]) => (
-                      <Badge key={`${key}-${year}`} variant="outline" className="bg-amber-100 text-amber-700 border-amber-200">
-                        {key} {year}: {value}
-                        <button 
-                          onClick={() => {
-                            const newOverrides = { ...overrides }
-                            delete newOverrides[key][parseInt(year)]
-                            if (Object.keys(newOverrides[key]).length === 0) delete newOverrides[key]
-                            setOverrides(newOverrides)
-                          }}
-                          className="ml-1 hover:text-amber-900"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </Badge>
-                    ))
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="text-sm text-muted-foreground">
-                No overrides active. Click on any value in the tables above to manually adjust projections.
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Section 4: External Reference Input */}
+        {/* Section 3: External Reference Input */}
         <Card className="border-border/50">
           <CardHeader className="pb-3">
             <div className="flex items-center gap-3">
@@ -583,10 +516,10 @@ export function ReactionInputModule({
                 <Upload className="h-5 w-5 text-slate-600" />
               </div>
               <div>
-                <CardTitle className="text-base font-semibold">External Reference Input</CardTitle>
+                <CardTitle className="text-lg font-semibold">External Reference Input</CardTitle>
                 <p className="text-xs text-muted-foreground mt-0.5">Upload supporting data files</p>
               </div>
-              <span className="ml-auto inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-100 text-slate-600 text-xs font-medium">
+              <span className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-100 text-slate-600 text-sm font-medium">
                 Reference Only
               </span>
             </div>
