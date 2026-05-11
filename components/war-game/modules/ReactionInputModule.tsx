@@ -237,13 +237,13 @@ export function ReactionInputModule({
   return (
     <div className="flex gap-6 h-[calc(100vh-280px)] min-h-[600px]">
       {/* LEFT SIDEBAR - Competitor Selection (synced from Step 2) */}
-      <div className="w-64 flex-shrink-0">
+      <div className="w-80 flex-shrink-0">
         <div className="sticky top-4 space-y-3 z-10">
           <div className="rounded-lg border border-border/50 bg-card/50 overflow-hidden">
             {/* Sidebar header */}
             <div className="px-4 py-3 bg-purple-50 border-b border-purple-100">
-              <h3 className="text-sm font-semibold text-purple-900">Market Players</h3>
-              <p className="text-xs text-purple-600 mt-0.5">Synced from Competitor Configure</p>
+              <h3 className="text-base font-semibold text-purple-900">Market Players</h3>
+              <p className="text-sm text-purple-600 mt-0.5">Synced from Competitor Configure</p>
             </div>
             
             {/* Competitor list */}
@@ -263,7 +263,7 @@ export function ReactionInputModule({
                     )}
                   >
                     <div className={cn(
-                      'flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold flex-shrink-0',
+                      'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold flex-shrink-0',
                       isSelected 
                         ? 'bg-white/20 text-white' 
                         : 'bg-secondary text-muted-foreground'
@@ -273,13 +273,13 @@ export function ReactionInputModule({
                     
                     <div className="flex-1 min-w-0">
                       <div className={cn(
-                        'text-sm font-medium truncate',
+                        'text-base font-medium truncate',
                         isSelected ? 'text-white' : ''
                       )}>
                         {competitor.playerName}
                       </div>
                       <div className={cn(
-                        'text-xs truncate capitalize',
+                        'text-sm truncate capitalize',
                         isSelected ? 'text-white/70' : 'text-muted-foreground'
                       )}>
                         {competitor.behaviorSettings.capacityReactionStyle.replace(/-/g, ' ')}
@@ -298,8 +298,8 @@ export function ReactionInputModule({
             {/* Info note */}
             <div className="p-3 border-t border-border/50 bg-muted/30">
               <div className="flex items-start gap-2">
-                <Info className="h-3.5 w-3.5 text-muted-foreground mt-0.5 flex-shrink-0" />
-                <p className="text-xs text-muted-foreground">
+                <Info className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-muted-foreground">
                   Competitor list is configured in Step 2. This page shows AI-generated reactions.
                 </p>
               </div>
