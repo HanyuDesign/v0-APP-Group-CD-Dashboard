@@ -217,7 +217,7 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full text-base">
+            <table className="w-full text-lg">
               <thead>
                 <tr className="border-b border-border/50">
                   <th className="text-left py-2 px-3 font-medium text-muted-foreground w-48">Source</th>

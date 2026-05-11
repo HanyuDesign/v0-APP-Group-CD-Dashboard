@@ -178,7 +178,7 @@ function DownstreamTable({
 
         {/* Capacity & Output Table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-base">
+          <table className="w-full text-lg">
             <thead>
               <tr className="border-b border-border/50">
                 <th className="text-left py-2 pr-4 font-medium text-muted-foreground w-36">Metric</th>
@@ -200,7 +200,7 @@ function DownstreamTable({
                     <td key={year} className="text-center py-2.5 px-2">
                       <span className="font-mono">{value}</span>
                       {idx > 0 && delta > 0 && (
-                        <span className="text-base text-emerald-600 ml-1.5 tabular-nums">+{delta}</span>
+                        <span className="text-lg text-emerald-600 ml-1.5 tabular-nums">+{delta}</span>
                       )}
                     </td>
                   )

@@ -49,7 +49,7 @@ export function MarketResults({ result, activeTab, onTabChange }: MarketResultsP
           </div>
         </CardHeader>
         <CardContent>
-          <Table className="text-base">
+          <Table className="text-lg">
             <TableHeader>
               <TableRow className="border-border/50">
                 <TableHead className="text-base">Player</TableHead>
@@ -72,7 +72,7 @@ export function MarketResults({ result, activeTab, onTabChange }: MarketResultsP
                       isAppChina && 'bg-[#cc0000]/5 border-l-2 border-l-[#cc0000]'
                     )}
                   >
-                    <TableCell className="text-base py-3">
+                    <TableCell className="text-lg py-3">
                       <div className="flex items-center gap-2">
                         <span
                           className="h-2.5 w-2.5 rounded-full"
@@ -82,13 +82,13 @@ export function MarketResults({ result, activeTab, onTabChange }: MarketResultsP
                         {player.isAIDriven && <AIBadge size="sm" />}
                       </div>
                     </TableCell>
-                    <TableCell className={cn('text-right font-mono text-base py-3', isAppChina && 'font-semibold')}>
+                    <TableCell className={cn('text-right font-mono text-lg py-3', isAppChina && 'font-semibold')}>
                       {outcome.pulpCapacity} kt
                     </TableCell>
-                    <TableCell className={cn('text-right font-mono text-base py-3', isAppChina && 'font-semibold')}>
+                    <TableCell className={cn('text-right font-mono text-lg py-3', isAppChina && 'font-semibold')}>
                       {outcome.pulpVolume} kt
                     </TableCell>
-                    <TableCell className="text-right font-mono text-base py-3">
+                    <TableCell className="text-right font-mono text-lg py-3">
                       <span className={cn(
                         outcome.pulpUtilization >= 85 ? 'text-success' :
                         outcome.pulpUtilization >= 75 ? 'text-warning' : 'text-destructive',
@@ -97,10 +97,10 @@ export function MarketResults({ result, activeTab, onTabChange }: MarketResultsP
                         {outcome.pulpUtilization}%
                       </span>
                     </TableCell>
-                    <TableCell className={cn('text-right font-mono text-base py-3', isAppChina && 'font-semibold')}>
+                    <TableCell className={cn('text-right font-mono text-lg py-3', isAppChina && 'font-semibold')}>
                       {Math.round(outcome.pulpMarketShare)}%
                     </TableCell>
-                    <TableCell className={cn('text-right font-mono text-base py-3', isAppChina && 'font-semibold')}>
+                    <TableCell className={cn('text-right font-mono text-lg py-3', isAppChina && 'font-semibold')}>
                       {/* Cost derived from utilization - lower utilization = higher unit cost */}
                       ${Math.round(420 - outcome.pulpUtilization * 0.8)} /t
                     </TableCell>
