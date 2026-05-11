@@ -681,7 +681,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                               <button
                                 onClick={() => handleSettingChange(selectedConfig.playerId, 'capacityReactionStyle', option.value)}
                                 className={cn(
-                                  'w-full flex items-center justify-between px-4 py-3 text-base font-semibold rounded-lg border transition-all text-left',
+                                  'w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg border transition-all text-left',
                                   selectedConfig.behaviorSettings.capacityReactionStyle === option.value
                                     ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
                                     : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
@@ -750,7 +750,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                               <button
                                 onClick={() => handleSettingChange(selectedConfig.playerId, 'reactionTiming', option.value)}
                                 className={cn(
-                                  'px-3 py-2.5 text-base font-semibold rounded-lg border transition-all',
+                                  'px-3 py-2.5 text-sm font-medium rounded-lg border transition-all',
                                   selectedConfig.behaviorSettings.reactionTiming === option.value
                                     ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
                                     : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
@@ -782,7 +782,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                               <button
                                 onClick={() => handleSettingChange(selectedConfig.playerId, 'utilizationTarget', option.value)}
                                 className={cn(
-                                  'px-3 py-2.5 text-base font-semibold rounded-lg border transition-all',
+                                  'px-3 py-2.5 text-sm font-medium rounded-lg border transition-all',
                                   selectedConfig.behaviorSettings.utilizationTarget === option.value
                                     ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
                                     : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
@@ -825,7 +825,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                       <div className="space-y-2">
                         {/* Premium */}
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-muted-foreground w-20">Premium</span>
+                          <span className="text-base font-medium text-muted-foreground w-20">Premium</span>
                           <div className="grid grid-cols-3 gap-2 flex-1 max-w-xs">
                             {TIER_STRATEGY_OPTIONS.map((opt) => (
                               <button
@@ -845,7 +845,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                         </div>
                         {/* Mid-tier */}
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-muted-foreground w-20">Mid-tier</span>
+                          <span className="text-base font-medium text-muted-foreground w-20">Mid-tier</span>
                           <div className="grid grid-cols-3 gap-2 flex-1 max-w-xs">
                             {TIER_STRATEGY_OPTIONS.map((opt) => (
                               <button
@@ -912,7 +912,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                       <div className="space-y-2">
                         {/* Premium */}
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-muted-foreground w-20">Premium</span>
+                          <span className="text-base font-medium text-muted-foreground w-20">Premium</span>
                           <div className="grid grid-cols-3 gap-2 flex-1 max-w-xs">
                             {TIER_STRATEGY_OPTIONS.map((opt) => (
                               <button
@@ -932,7 +932,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                         </div>
                         {/* Mid-tier */}
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-muted-foreground w-20">Mid-tier</span>
+                          <span className="text-base font-medium text-muted-foreground w-20">Mid-tier</span>
                           <div className="grid grid-cols-3 gap-2 flex-1 max-w-xs">
                             {TIER_STRATEGY_OPTIONS.map((opt) => (
                               <button
