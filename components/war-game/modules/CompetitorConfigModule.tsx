@@ -832,7 +832,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                                 key={opt.value}
                                 onClick={() => handleDownstreamChange('paper', 'premiumTier', opt.value)}
                                 className={cn(
-                                  'px-3 py-2 text-base font-semibold rounded-lg border transition-all',
+                                  'px-3 py-2.5 text-sm font-medium rounded-lg border transition-all',
                                   currentDownstream.paper.premiumTier === opt.value
                                     ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
                                     : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
@@ -852,7 +852,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                                 key={opt.value}
                                 onClick={() => handleDownstreamChange('paper', 'midTier', opt.value)}
                                 className={cn(
-                                  'px-3 py-2 text-base font-semibold rounded-lg border transition-all',
+                                  'px-3 py-2.5 text-sm font-medium rounded-lg border transition-all',
                                   currentDownstream.paper.midTier === opt.value
                                     ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
                                     : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
@@ -919,7 +919,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                                 key={opt.value}
                                 onClick={() => handleDownstreamChange('packaging', 'premiumTier', opt.value)}
                                 className={cn(
-                                  'px-3 py-2 text-base font-semibold rounded-lg border transition-all',
+                                  'px-3 py-2.5 text-sm font-medium rounded-lg border transition-all',
                                   currentDownstream.packaging.premiumTier === opt.value
                                     ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
                                     : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
@@ -939,7 +939,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                                 key={opt.value}
                                 onClick={() => handleDownstreamChange('packaging', 'midTier', opt.value)}
                                 className={cn(
-                                  'px-3 py-2 text-base font-semibold rounded-lg border transition-all',
+                                  'px-3 py-2.5 text-sm font-medium rounded-lg border transition-all',
                                   currentDownstream.packaging.midTier === opt.value
                                     ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
                                     : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
