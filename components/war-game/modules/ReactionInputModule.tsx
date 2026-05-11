@@ -320,7 +320,6 @@ export function ReactionInputModule({
                 </div>
                 <div>
                   <CardTitle className="text-lg font-semibold">Reaction Summary</CardTitle>
-                  <p className="text-xs text-muted-foreground mt-0.5">AI-generated interpretation for {selectedConfig.playerName}</p>
                 </div>
                 <span className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded bg-purple-100 text-purple-700 text-sm font-medium">
                   <Lightbulb className="h-3 w-3" />
@@ -331,8 +330,8 @@ export function ReactionInputModule({
             <CardContent className="pt-0">
               {/* Persona Tag */}
               <div className="mb-3">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-sm font-semibold shadow-sm">
-                  <Users className="h-3.5 w-3.5" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-base font-semibold shadow-sm">
+                  <Users className="h-4 w-4" />
                   {reactionSummary.persona}
                 </span>
               </div>
@@ -340,18 +339,18 @@ export function ReactionInputModule({
               {/* Quote-style summary */}
               <div className="relative pl-5 border-l-4 border-purple-300 mb-4">
                 <Quote className="absolute -left-3.5 -top-1 h-6 w-6 text-purple-300 bg-purple-50 rounded" />
-                <p className="text-base text-foreground italic leading-relaxed">
+                <p className="text-lg text-foreground italic leading-relaxed">
                   "{reactionSummary.summary}"
                 </p>
               </div>
               
               {/* Rationale bullets */}
               <div className="space-y-2">
-                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Supporting Rationale</div>
+                <div className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Supporting Rationale</div>
                 <ul className="space-y-1.5">
                   {reactionSummary.rationale.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <ChevronRight className="h-4 w-4 text-purple-400 mt-0.5 flex-shrink-0" />
+                    <li key={idx} className="flex items-start gap-2 text-base text-muted-foreground leading-relaxed">
+                      <ChevronRight className="h-4 w-4 text-purple-400 mt-1 flex-shrink-0" />
                       {item}
                     </li>
                   ))}
