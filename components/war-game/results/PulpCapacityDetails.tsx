@@ -261,16 +261,16 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
           {/* Summary stats */}
           <div className="grid grid-cols-3 gap-4 mt-4">
             <div className="p-3 rounded-lg bg-white border border-red-200 text-center">
-              <div className="text-xs text-muted-foreground">Total Pulp Added</div>
-              <div className="text-xl font-bold text-red-600">+{appChinaPulpAdd} kt</div>
+              <div className="text-base text-muted-foreground">Total Pulp Added</div>
+              <div className="text-2xl font-bold text-red-600 leading-tight tracking-tight tabular-nums">+{appChinaPulpAdd} kt</div>
             </div>
             <div className="p-3 rounded-lg bg-white border border-red-200 text-center">
-              <div className="text-xs text-muted-foreground">Board Capacity</div>
-              <div className="text-xl font-bold text-red-500">+{appChinaBoardAdd} kt</div>
+              <div className="text-base text-muted-foreground">Board Capacity</div>
+              <div className="text-2xl font-bold text-red-500 leading-tight tracking-tight tabular-nums">+{appChinaBoardAdd} kt</div>
             </div>
             <div className="p-3 rounded-lg bg-white border border-red-200 text-center">
-              <div className="text-xs text-muted-foreground">Tissue Capacity</div>
-              <div className="text-xl font-bold text-red-500">+{appChinaTissueAdd} kt</div>
+              <div className="text-base text-muted-foreground">Tissue Capacity</div>
+              <div className="text-2xl font-bold text-red-500 leading-tight tracking-tight tabular-nums">+{appChinaTissueAdd} kt</div>
             </div>
           </div>
         </CardContent>
