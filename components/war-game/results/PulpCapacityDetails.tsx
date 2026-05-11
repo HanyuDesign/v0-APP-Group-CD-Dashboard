@@ -113,7 +113,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
             {/* Supply Impact */}
             <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
               <div className="text-base text-blue-600 font-semibold mb-2">Supply Impact</div>
-              <div className="text-3xl font-bold text-blue-700 leading-tight tracking-tight">
+              <div className="text-2xl font-bold text-blue-700 leading-tight tracking-tight">
                 +{appChinaPulpAdd + totalCompetitorPulpChange} kt
               </div>
               <div className="text-base text-muted-foreground mt-1">Net capacity addition</div>
@@ -138,7 +138,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
             <div className="p-4 rounded-lg bg-amber-50 border border-amber-200">
               <div className="text-base text-amber-600 font-semibold mb-2">Price Pressure</div>
               <div className={cn(
-                'text-3xl font-bold leading-tight tracking-tight',
+                'text-2xl font-bold leading-tight tracking-tight',
                 (appChinaPulpAdd + totalCompetitorPulpChange) > 400 ? 'text-red-600' :
                 (appChinaPulpAdd + totalCompetitorPulpChange) > 200 ? 'text-amber-600' : 'text-emerald-600'
               )}>
@@ -169,7 +169,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
             {/* Competitive Position */}
             <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200">
               <div className="text-base text-emerald-600 font-semibold mb-2">Competitive Position</div>
-              <div className="text-3xl font-bold text-emerald-700 leading-tight tracking-tight">
+              <div className="text-2xl font-bold text-emerald-700 leading-tight tracking-tight">
                 {competitorsDelaying > competitorsExpanding ? 'Strong' :
                  competitorsDelaying === competitorsExpanding ? 'Neutral' : 'Challenged'}
               </div>
