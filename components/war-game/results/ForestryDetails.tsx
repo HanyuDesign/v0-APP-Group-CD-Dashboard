@@ -307,19 +307,19 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
               
               return (
                 <div key={yearData.year} className="text-center p-3 rounded-lg bg-muted/30">
-                  <div className="text-xs text-muted-foreground mb-1">{yearData.year}</div>
+                  <div className="text-base text-muted-foreground mb-1">{yearData.year}</div>
                   <div className={cn(
-                    'text-xl font-bold',
+                    'text-2xl font-bold leading-tight tracking-tight tabular-nums',
                     importDep > 60 ? 'text-amber-600' : importDep > 40 ? 'text-blue-600' : 'text-green-600'
                   )}>
                     {importDep}%
                   </div>
                   {yearData.year !== 2026 && (
                     <div className={cn(
-                      'text-xs flex items-center justify-center gap-0.5 mt-1',
+                      'text-sm font-medium flex items-center justify-center gap-0.5 mt-1 tabular-nums',
                       trend > 0 ? 'text-amber-500' : trend < 0 ? 'text-green-500' : 'text-muted-foreground'
                     )}>
-                      {trend > 0 ? <TrendingUp className="h-3 w-3" /> : trend < 0 ? <TrendingDown className="h-3 w-3" /> : null}
+                      {trend > 0 ? <TrendingUp className="h-3.5 w-3.5" /> : trend < 0 ? <TrendingDown className="h-3.5 w-3.5" /> : null}
                       {trend > 0 ? '+' : ''}{trend}%
                     </div>
                   )}
@@ -327,7 +327,7 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
               )
             })}
           </div>
-          <p className="text-xs text-muted-foreground mt-3 text-center">
+          <p className="text-base text-muted-foreground mt-3 text-center">
             Import dependency = (Imports / Total Supply) × 100
           </p>
         </CardContent>
@@ -344,9 +344,9 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
         <CardContent>
           <div className="flex items-center gap-4">
             <div className="flex-1">
-              <div className="flex items-center justify-between text-sm mb-2">
+              <div className="flex items-center justify-between text-base mb-2">
                 <span className="text-muted-foreground">Additional Wood Demand (from APP expansion)</span>
-                <span className="font-bold text-amber-600">+{woodDemandIncrease} kt/yr</span>
+                <span className="font-bold text-amber-600 text-lg tabular-nums">+{woodDemandIncrease} kt/yr</span>
               </div>
               <div className="h-3 rounded-full bg-muted overflow-hidden">
                 <div 
@@ -354,15 +354,15 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
                   style={{ width: `${Math.min(woodDemandIncrease / 10, 100)}%` }}
                 />
               </div>
-              <div className="flex justify-between text-xs text-muted-foreground mt-1">
+              <div className="flex justify-between text-sm font-medium text-muted-foreground mt-1">
                 <span>Low pressure</span>
                 <span>High pressure</span>
               </div>
             </div>
             <div className="w-48 p-3 rounded-lg bg-amber-50 border border-amber-200 text-center">
-              <div className="text-xs text-amber-600 mb-1">Balance Assessment</div>
+              <div className="text-base text-amber-600 mb-1 font-medium">Balance Assessment</div>
               <div className={cn(
-                'text-lg font-bold',
+                'text-2xl font-bold leading-tight tracking-tight',
                 woodDemandIncrease > 500 ? 'text-red-600' : woodDemandIncrease > 300 ? 'text-amber-600' : 'text-green-600'
               )}>
                 {woodDemandIncrease > 500 ? 'Tight' : woodDemandIncrease > 300 ? 'Manageable' : 'Comfortable'}
