@@ -75,7 +75,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                             'text-base font-medium',
                             yearlySupplyChange > 0 ? 'text-emerald-600' : yearlySupplyChange < 0 ? 'text-amber-600' : 'text-muted-foreground'
                           )}>
-                            {yearlySupplyChange > 0 ? '+' : ''}{yearlySupplyChange} <span className="text-xs text-muted-foreground">kt</span>
+                            {yearlySupplyChange > 0 ? '+' : ''}{yearlySupplyChange} <span className="text-base text-muted-foreground">kt</span>
                           </span>
                         )}
                       </td>

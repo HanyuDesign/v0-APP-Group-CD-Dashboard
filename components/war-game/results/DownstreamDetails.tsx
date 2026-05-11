@@ -99,8 +99,8 @@ function MarginIndicator({ level }: { level: 'low' | 'moderate' | 'high' }) {
   const { color, icon: Icon, label } = config[level]
   
   return (
-    <span className={cn('inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-sm font-medium', color)}>
-      <Icon className="h-3 w-3" />
+    <span className={cn('inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold', color)}>
+      <Icon className="h-3.5 w-3.5" />
       {label}
     </span>
   )
@@ -147,30 +147,30 @@ function DownstreamTable({
       <CardContent className="pt-0 space-y-4">
         {/* Key Metrics Summary */}
         <div className="grid grid-cols-4 gap-3">
-          <div className="p-2.5 rounded-lg bg-white/70 text-center">
-            <div className="text-[10px] text-muted-foreground mb-0.5">Supply</div>
-            <div className="text-lg font-bold">{data.supply} kt</div>
+          <div className="p-3 rounded-lg bg-white/70 text-center">
+            <div className="text-base font-medium text-muted-foreground mb-1">Supply</div>
+            <div className="text-2xl font-bold tabular-nums leading-tight tracking-tight">{data.supply} kt</div>
           </div>
-          <div className="p-2.5 rounded-lg bg-white/70 text-center">
-            <div className="text-[10px] text-muted-foreground mb-0.5">Demand</div>
-            <div className="text-lg font-bold">{data.demand} kt</div>
+          <div className="p-3 rounded-lg bg-white/70 text-center">
+            <div className="text-base font-medium text-muted-foreground mb-1">Demand</div>
+            <div className="text-2xl font-bold tabular-nums leading-tight tracking-tight">{data.demand} kt</div>
           </div>
-          <div className="p-2.5 rounded-lg bg-white/70 text-center">
-            <div className="text-[10px] text-muted-foreground mb-0.5">Utilization</div>
+          <div className="p-3 rounded-lg bg-white/70 text-center">
+            <div className="text-base font-medium text-muted-foreground mb-1">Utilization</div>
             <div className={cn(
-              'text-lg font-bold',
+              'text-2xl font-bold tabular-nums leading-tight tracking-tight',
               data.utilization >= 85 ? 'text-emerald-600' : data.utilization >= 75 ? 'text-amber-600' : 'text-red-600'
             )}>
               {data.utilization.toFixed(1)}%
             </div>
           </div>
-          <div className="p-2.5 rounded-lg bg-white/70 text-center">
-            <div className="text-[10px] text-muted-foreground mb-0.5">Balance</div>
+          <div className="p-3 rounded-lg bg-white/70 text-center">
+            <div className="text-base font-medium text-muted-foreground mb-1">Balance</div>
             <div className={cn(
-              'text-lg font-bold flex items-center justify-center gap-1',
+              'text-2xl font-bold flex items-center justify-center gap-1 tabular-nums leading-tight tracking-tight',
               data.balance > 20 ? 'text-amber-600' : data.balance < -20 ? 'text-emerald-600' : 'text-foreground'
             )}>
-              {data.balance > 0 ? <TrendingUp className="h-4 w-4" /> : data.balance < 0 ? <TrendingDown className="h-4 w-4" /> : <Minus className="h-4 w-4" />}
+              {data.balance > 0 ? <TrendingUp className="h-5 w-5" /> : data.balance < 0 ? <TrendingDown className="h-5 w-5" /> : <Minus className="h-5 w-5" />}
               {data.balance > 0 ? '+' : ''}{data.balance}
             </div>
           </div>
@@ -200,7 +200,7 @@ function DownstreamTable({
                     <td key={year} className="text-center py-2.5 px-2">
                       <span className="font-mono">{value}</span>
                       {idx > 0 && delta > 0 && (
-                        <span className="text-[10px] text-emerald-600 ml-1">+{delta}</span>
+                        <span className="text-base text-emerald-600 ml-1.5 tabular-nums">+{delta}</span>
                       )}
                     </td>
                   )

@@ -105,7 +105,7 @@ export function ValueChainInsights({ result, activeStage, onStageChange, stages 
         <Lightbulb className="h-5 w-5 text-indigo-600" />
         <h3 className="font-bold text-lg text-foreground">Strategic Insights</h3>
         <span className="text-sm font-medium text-indigo-600 bg-indigo-100 px-2.5 py-0.5 rounded">Value Chain Flow</span>
-        <p className="text-sm text-muted-foreground ml-auto">Click a stage to explore details</p>
+        <p className="text-base text-muted-foreground ml-auto">Click a stage to explore details</p>
       </div>
 
       {/* Interactive Value Chain Cards */}
