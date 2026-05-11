@@ -118,11 +118,11 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
               </div>
               <div className="text-base text-muted-foreground mt-1">Net capacity addition</div>
               <div className="mt-3 pt-3 border-t border-blue-200 space-y-1.5">
-                <div className="flex justify-between items-center text-sm">
+                <div className="flex justify-between items-center text-base">
                   <span className="text-muted-foreground">APP China</span>
                   <span className="text-red-600 font-semibold tabular-nums">+{appChinaPulpAdd} kt</span>
                 </div>
-                <div className="flex justify-between items-center text-sm">
+                <div className="flex justify-between items-center text-base">
                   <span className="text-muted-foreground">Competitors</span>
                   <span className={cn(
                     'font-semibold tabular-nums',
@@ -175,11 +175,11 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
               </div>
               <div className="text-base text-muted-foreground mt-1">APP market position outlook</div>
               <div className="mt-3 pt-3 border-t border-emerald-200 space-y-1.5">
-                <div className="flex justify-between items-center text-sm">
+                <div className="flex justify-between items-center text-base">
                   <span className="text-muted-foreground">Deterred competitors</span>
                   <span className="text-amber-600 font-semibold tabular-nums">{competitorsDelaying}</span>
                 </div>
-                <div className="flex justify-between items-center text-sm">
+                <div className="flex justify-between items-center text-base">
                   <span className="text-muted-foreground">Following competitors</span>
                   <span className="text-emerald-600 font-semibold tabular-nums">{competitorsExpanding}</span>
                 </div>
