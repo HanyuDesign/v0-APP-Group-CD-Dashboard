@@ -178,7 +178,7 @@ function DownstreamTable({
 
         {/* Capacity & Output Table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-base">
             <thead>
               <tr className="border-b border-border/50">
                 <th className="text-left py-2 pr-4 font-medium text-muted-foreground w-36">Metric</th>

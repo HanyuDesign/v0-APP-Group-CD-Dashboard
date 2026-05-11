@@ -384,7 +384,7 @@ export function ReactionInputModule({
                   <span className="text-xs text-muted-foreground">({selectedConfig.playerName})</span>
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                  <table className="w-full text-base">
                     <thead>
                       <tr className="border-b border-border/50">
                         <th className="text-left py-2 pr-4 font-medium text-muted-foreground">Metric</th>
@@ -425,7 +425,7 @@ export function ReactionInputModule({
                   <span className="text-xs text-muted-foreground">({selectedConfig.playerName})</span>
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                  <table className="w-full text-base">
                     <thead>
                       <tr className="border-b border-border/50">
                         <th className="text-left py-2 pr-4 font-medium text-muted-foreground">Metric</th>
@@ -481,7 +481,7 @@ export function ReactionInputModule({
                         <span className="text-sm font-semibold">{segment.segment}</span>
                       </div>
                       <div className="overflow-x-auto">
-                        <table className="w-full text-xs">
+                        <table className="w-full text-base">
                           <thead>
                             <tr className="border-b border-border/50">
                               <th className="text-left py-1.5 pr-2 font-medium text-muted-foreground">Year</th>

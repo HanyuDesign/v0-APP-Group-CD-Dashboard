@@ -50,7 +50,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
         <CardContent className="space-y-4">
           {/* Impact Table */}
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full text-base">
               <thead>
                 <tr className="border-b border-blue-200">
                   <th className="text-left py-3 px-4 text-sm font-semibold text-blue-700 w-40">Metric</th>
@@ -209,7 +209,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-base">
               <thead>
                 <tr className="border-b border-red-200">
                   <th className="text-left py-2 px-3 font-medium text-muted-foreground w-48">Metric</th>
@@ -290,7 +290,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
         <CardContent>
           <TooltipProvider>
             <div className="overflow-x-auto">
-              <table className="w-full table-fixed">
+              <table className="w-full table-fixed text-base">
                 <thead>
                   <tr className="border-b border-border/50">
                     <th className="text-left py-3 px-2 text-sm font-semibold text-muted-foreground" style={{ width: '12%' }}>Player</th>
@@ -440,7 +440,7 @@ export function PulpExportReallocation({ result }: PulpCapacityDetailsProps) {
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-base">
             <thead>
               <tr className="border-b border-border/50">
                 <th className="text-left py-2 px-3 font-medium text-muted-foreground w-40">Exporter</th>

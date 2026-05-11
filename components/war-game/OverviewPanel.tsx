@@ -106,7 +106,7 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
         </div>
         <div className="p-4 bg-white">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-base">
               <thead>
                 <tr className="border-b border-border/50">
                   <th className="text-left py-2 px-3 font-medium text-muted-foreground w-48">Year</th>
@@ -236,7 +236,7 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
         </div>
         <div className="p-4 bg-white">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-base">
               <thead>
                 <tr className="border-b border-border/50">
                   <th className="text-left py-2 px-2 font-medium text-muted-foreground">Player</th>
@@ -379,7 +379,7 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                   <FileText className="h-4 w-4" />
                   Paper
                 </div>
-                <table className="w-full text-sm">
+                <table className="w-full text-base">
                   <thead>
                     <tr className="border-b border-border/50">
                       <th className="text-left py-2 px-2 font-medium text-muted-foreground">Player</th>
@@ -418,7 +418,7 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                   <Package className="h-4 w-4" />
                   Packaging / Carton Board
                 </div>
-                <table className="w-full text-sm">
+                <table className="w-full text-base">
                   <thead>
                     <tr className="border-b border-border/50">
                       <th className="text-left py-2 px-2 font-medium text-muted-foreground">Player</th>
@@ -457,7 +457,7 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
                   <Bath className="h-4 w-4" />
                   Tissue
                 </div>
-                <table className="w-full text-sm">
+                <table className="w-full text-base">
                   <thead>
                     <tr className="border-b border-border/50">
                       <th className="text-left py-2 px-2 font-medium text-muted-foreground">Player</th>
