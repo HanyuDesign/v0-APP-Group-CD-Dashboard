@@ -204,7 +204,7 @@ function PlayerPLSection({ playerFinancials }: { playerFinancials: PlayerFinanci
       </CardHeader>
       <CardContent>
         {/* Detailed metrics table */}
-        <Table>
+        <Table className="text-base">
           <TableHeader>
             <TableRow className="border-border/50">
               <TableHead className="text-sm">Player</TableHead>
@@ -230,7 +230,7 @@ function PlayerPLSection({ playerFinancials }: { playerFinancials: PlayerFinanci
                     isAppChina && 'bg-[#cc0000]/5 border-l-2 border-l-[#cc0000]'
                   )}
                 >
-                  <TableCell className="text-sm py-3">
+                  <TableCell className="text-base py-3">
                     <div className="flex items-center gap-2">
                       <span
                         className="h-2.5 w-2.5 rounded-full"
@@ -239,13 +239,13 @@ function PlayerPLSection({ playerFinancials }: { playerFinancials: PlayerFinanci
                       <span className={cn('font-medium', isAppChina && 'text-[#cc0000]')}>{item.name}</span>
                     </div>
                   </TableCell>
-                  <TableCell className={cn('text-right font-mono text-sm py-3', isAppChina && 'font-semibold')}>
+                  <TableCell className={cn('text-right font-mono text-base py-3', isAppChina && 'font-semibold')}>
                     {item.revenue}
                   </TableCell>
-                  <TableCell className={cn('text-right font-mono text-sm font-semibold py-3', isAppChina && 'text-[#cc0000]')}>
+                  <TableCell className={cn('text-right font-mono text-base font-semibold py-3', isAppChina && 'text-[#cc0000]')}>
                     {item.ebitda}
                   </TableCell>
-                  <TableCell className="text-right font-mono text-sm py-3">
+                  <TableCell className="text-right font-mono text-base py-3">
                     <span className={cn(
                       item.margin >= 20 ? 'text-[#2e7d32]' :
                       item.margin >= 15 ? 'text-[#ed6c02]' : 'text-muted-foreground',
@@ -254,11 +254,11 @@ function PlayerPLSection({ playerFinancials }: { playerFinancials: PlayerFinanci
                       {item.margin}%
                     </span>
                   </TableCell>
-                  <TableCell className={cn('text-right font-mono text-sm py-3', isAppChina && 'font-semibold')}>
+                  <TableCell className={cn('text-right font-mono text-base py-3', isAppChina && 'font-semibold')}>
                     {item.capacityIndex}
                   </TableCell>
                   {viewMode !== 'combined' && (
-                    <TableCell className={cn('text-right font-mono text-sm font-semibold py-3', isAppChina && 'text-[#cc0000]')}>
+                    <TableCell className={cn('text-right font-mono text-base font-semibold py-3', isAppChina && 'text-[#cc0000]')}>
                       {viewMode === 'pulp' ? item.pulpProfit : item.downstreamProfit}
                     </TableCell>
                   )}
