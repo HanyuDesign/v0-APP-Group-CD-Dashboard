@@ -62,7 +62,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
               <tbody>
                 {/* Net Supply Change Row */}
                 <tr className="border-b border-blue-100 bg-white/50">
-                  <td className="py-3 px-4 text-sm font-medium text-amber-700">Net Supply Change</td>
+                  <td className="py-3 px-4 text-base font-medium text-amber-700">Net Supply Change</td>
                   {years.map((year, idx) => {
                     const yearlySupplyChange = idx === 0 ? 0 :
                       Math.round((appChinaPulpAdd + totalCompetitorPulpChange) * (idx * 0.15 - 0.1))
@@ -72,7 +72,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                           <span className="text-muted-foreground">-</span>
                         ) : (
                           <span className={cn(
-                            'text-sm font-medium',
+                            'text-base font-medium',
                             yearlySupplyChange > 0 ? 'text-emerald-600' : yearlySupplyChange < 0 ? 'text-amber-600' : 'text-muted-foreground'
                           )}>
                             {yearlySupplyChange > 0 ? '+' : ''}{yearlySupplyChange} <span className="text-xs text-muted-foreground">kt</span>
@@ -84,7 +84,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                 </tr>
                 {/* Price Signal Row */}
                 <tr className="bg-white/30">
-                  <td className="py-3 px-4 text-sm font-medium text-muted-foreground">Price Signal</td>
+                  <td className="py-3 px-4 text-base font-medium text-muted-foreground">Price Signal</td>
                   {years.map((year, idx) => {
                     const totalChange = appChinaPulpAdd + totalCompetitorPulpChange
                     const priceSignal = idx === 0 ? null :
@@ -95,8 +95,8 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                         {idx === 0 ? (
                           <span className="text-muted-foreground">-</span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
-                            <ArrowRight className="h-3 w-3" />
+                          <span className="inline-flex items-center gap-1 text-base text-muted-foreground">
+                            <ArrowRight className="h-3.5 w-3.5" />
                             {priceSignal}
                           </span>
                         )}
@@ -360,7 +360,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                         <td className="py-3 px-2">
                           <div className="flex items-center gap-2">
                             <span className="h-3 w-3 rounded-full flex-shrink-0" style={{ backgroundColor: player.color }} />
-                            <span className="font-semibold text-sm truncate">{player.nameCn}</span>
+                            <span className="font-semibold text-base truncate">{player.nameCn}</span>
                           </div>
                         </td>
                         <td className="py-3 px-2">
@@ -384,7 +384,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                           return (
                             <td key={year} className="text-center py-3 px-2">
                               <span className={cn(
-                                'font-mono text-sm',
+                                'font-mono text-base',
                                 isBase ? 'text-muted-foreground' : val > 0 ? 'text-emerald-600 font-bold' : val < 0 ? 'text-amber-600 font-bold' : 'text-muted-foreground'
                               )}>
                                 {isBase ? val : val > 0 ? `+${val}` : val < 0 ? val : '-'}
@@ -403,7 +403,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                           </span>
                         </td>
                         <td className="py-3 px-2">
-                          <p className="text-xs text-muted-foreground leading-snug">
+                          <p className="text-base text-muted-foreground leading-snug">
                             {getRationale()}
                           </p>
                         </td>
