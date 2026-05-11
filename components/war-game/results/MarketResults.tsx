@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { Users } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { AIBadge } from '../shared/AIBadge'
 import { MarketDataTabSwitcher, type MarketDataTab } from './MarketDataTabSwitcher'
@@ -38,7 +39,10 @@ export function MarketResults({ result, activeTab, onTabChange }: MarketResultsP
       <Card className="border-border/50 bg-card/80">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between gap-3">
-            <CardTitle className="text-sm">Player Market Data</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <Users className="h-4 w-4 text-primary" />
+              Player Market Data
+            </CardTitle>
             {activeTab && onTabChange && (
               <MarketDataTabSwitcher activeTab={activeTab} onTabChange={onTabChange} />
             )}
