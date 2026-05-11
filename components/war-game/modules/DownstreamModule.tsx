@@ -55,28 +55,28 @@ function DemandCard({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {icon}
-          <span className="font-medium text-sm">{title}</span>
+          <span className="font-semibold text-base">{title}</span>
         </div>
         {trend === 'shrinking' && <TrendingDown className="h-4 w-4 text-destructive" />}
         {trend === 'growing' && <TrendingUp className="h-4 w-4 text-success" />}
         {trend === 'stable' && <Minus className="h-4 w-4 text-muted-foreground" />}
       </div>
       
-      <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{description}</p>
       
       <div className="mt-3">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">Demand Scenario</span>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-sm text-muted-foreground">Demand Scenario</span>
           <Select
             value={demandValue}
             onValueChange={(v) => onDemandChange(v as DemandScenario)}
           >
-            <SelectTrigger className="h-7 w-28 text-xs bg-white border-2">
+            <SelectTrigger className="h-9 w-32 text-sm bg-white border-2">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {demandOptions.map(opt => (
-                <SelectItem key={opt} value={opt}>
+                <SelectItem key={opt} value={opt} className="text-sm">
                   {POLICY_LABELS.demandScenario[opt]}
                 </SelectItem>
               ))}
@@ -125,7 +125,7 @@ function CapacityInput({
       value={value || ''}
       onChange={handleChange}
       className={cn(
-        "h-8 w-[68px] text-sm text-center px-1 mx-auto font-mono",
+        "h-9 w-[76px] text-base text-center px-1 mx-auto font-mono",
         "bg-white border-2 border-[#cc0000]/30 focus:border-[#cc0000]",
         disabled && "bg-muted/50 cursor-not-allowed"
       )}
@@ -180,7 +180,7 @@ function EditableCell({
         onChange={(e) => setTempValue(e.target.value)}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
-        className="h-7 w-[68px] text-sm text-center px-1 mx-auto font-mono border-2 border-blue-500"
+        className="h-9 w-[76px] text-base text-center px-1 mx-auto font-mono border-2 border-blue-500"
         autoFocus
         min={0}
       />
@@ -192,7 +192,7 @@ function EditableCell({
       onClick={handleClick}
       className={cn(
         "relative cursor-pointer px-2 py-1 rounded transition-colors hover:bg-blue-50 group",
-        "text-sm font-mono text-center"
+        "text-base font-mono text-center"
       )}
     >
       {value}
@@ -260,17 +260,17 @@ function SupplySection({
       {/* Sub-module header */}
       <div className="flex items-center gap-2 px-4 py-2.5 bg-muted/40 border-b border-border/50">
         {icon}
-        <span className="font-semibold text-sm">{title}</span>
+        <span className="font-semibold text-base">{title}</span>
       </div>
 
       {/* Combined Table */}
       <div className="overflow-x-auto">
-        <Table>
+        <Table className="text-base">
           <TableHeader>
             <TableRow className="bg-muted/20">
-              <TableHead className="text-xs font-semibold w-44 py-2">Player</TableHead>
+              <TableHead className="text-sm font-semibold w-44 py-2">Player</TableHead>
               {years.map(year => (
-                <TableHead key={year} className="text-xs text-center font-semibold w-[80px] py-2">{year}</TableHead>
+                <TableHead key={year} className="text-sm text-center font-semibold w-[88px] py-2">{year}</TableHead>
               ))}
             </TableRow>
           </TableHeader>
@@ -289,7 +289,7 @@ function SupplySection({
                         className="h-2.5 w-2.5 rounded-full flex-shrink-0"
                         style={{ backgroundColor: player?.color || '#6c757d' }}
                       />
-                      <span className="text-sm">{comp.playerName}</span>
+                      <span className="text-base">{comp.playerName}</span>
                     </div>
                   </TableCell>
                   {years.map((year) => {
@@ -318,16 +318,16 @@ function SupplySection({
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full flex-shrink-0 bg-[#cc0000]" />
                   <div>
-                    <span className="text-sm font-semibold text-[#cc0000]">APP China</span>
-                    <span className="ml-2 text-[10px] text-muted-foreground">(Additions)</span>
+                    <span className="text-base font-semibold text-[#cc0000]">APP China</span>
+                    <span className="ml-2 text-xs text-muted-foreground">(Additions)</span>
                   </div>
-                  <span className="px-1.5 py-0.5 text-[9px] font-semibold bg-[#cc0000]/10 text-[#cc0000] rounded uppercase">Input</span>
+                  <span className="px-2 py-0.5 text-xs font-semibold bg-[#cc0000]/10 text-[#cc0000] rounded uppercase">Input</span>
                 </div>
               </TableCell>
               {years.map((year, idx) => (
                 <TableCell key={year} className="text-center py-2.5 px-1">
                   {idx === 0 ? (
-                    <span className="text-sm font-semibold text-[#cc0000] bg-[#cc0000]/10 px-2 py-1 rounded">
+                    <span className="text-base font-semibold text-[#cc0000] bg-[#cc0000]/10 px-2 py-1 rounded">
                       {baseCapacity}
                     </span>
                   ) : (
@@ -347,14 +347,14 @@ function SupplySection({
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full flex-shrink-0 bg-[#cc0000]/50" />
                   <div>
-                    <span className="text-sm font-semibold text-[#cc0000]/80">Total Capacity</span>
-                    <span className="ml-2 text-[10px] text-muted-foreground">(Auto-calculated)</span>
+                    <span className="text-base font-semibold text-[#cc0000]/80">Total Capacity</span>
+                    <span className="ml-2 text-xs text-muted-foreground">(Auto-calculated)</span>
                   </div>
                 </div>
               </TableCell>
               {years.map((year) => (
                 <TableCell key={year} className="text-center py-2.5">
-                  <span className="text-sm font-bold text-[#cc0000]/80 font-mono">
+                  <span className="text-base font-bold text-[#cc0000]/80 font-mono">
                     {appTotalCapacity[year]}
                   </span>
                 </TableCell>
