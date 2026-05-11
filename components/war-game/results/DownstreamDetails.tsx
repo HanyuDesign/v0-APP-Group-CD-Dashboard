@@ -4,10 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { 
   FileText, Package, Bath, TrendingUp, TrendingDown, Minus,
-  AlertTriangle, CheckCircle, Lightbulb, BarChart3
+  AlertTriangle, CheckCircle, BarChart3
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { AIBadge } from '../shared/AIBadge'
 import { TrafficLight } from '../shared/TrafficLight'
 import type { SimulationResult } from '@/lib/types/war-game'
 import { PLAYERS } from '@/lib/data/initial-data'
@@ -240,116 +239,9 @@ function DownstreamTable({
 export function DownstreamDetails({ result }: DownstreamDetailsProps) {
   const downstreamData = generateDownstreamData(result)
   const { segmentOutcomes, playerMarketOutcomes, input } = result
-  
-  // Calculate overall metrics
-  const avgUtilization = Object.values(downstreamData).reduce((sum, d) => sum + d.utilization, 0) / 3
-  const tightSegments = Object.values(downstreamData).filter(d => d.balance < -20).length
-  const oversuppliedSegments = Object.values(downstreamData).filter(d => d.balance > 50).length
-  
+
   return (
     <div className="space-y-4">
-      {/* Market Health Overview */}
-      <div id="downstream-health-overview" className="rounded-xl border-2 border-purple-200 bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 p-4 scroll-mt-96">
-        <div className="flex items-center gap-2 mb-4">
-          <Lightbulb className="h-5 w-5 text-purple-600" />
-          <h3 className="font-bold text-purple-900">Downstream Market Health</h3>
-          <AIBadge size="sm" />
-        </div>
-        
-        {/* Summary Cards */}
-        <div className="grid grid-cols-4 gap-4 mb-4">
-          <div className="p-3 rounded-lg bg-white border border-purple-200 text-center">
-            <div className="text-xs text-muted-foreground mb-1">Avg Utilization</div>
-            <div className={cn(
-              'text-2xl font-bold',
-              avgUtilization >= 85 ? 'text-emerald-600' : avgUtilization >= 75 ? 'text-amber-600' : 'text-red-600'
-            )}>
-              {avgUtilization.toFixed(0)}%
-            </div>
-          </div>
-          <div className="p-3 rounded-lg bg-white border border-purple-200 text-center">
-            <div className="text-xs text-muted-foreground mb-1">Tight Markets</div>
-            <div className={cn(
-              'text-2xl font-bold',
-              tightSegments > 0 ? 'text-emerald-600' : 'text-muted-foreground'
-            )}>
-              {tightSegments}
-            </div>
-            <div className="text-[10px] text-muted-foreground">Pricing power</div>
-          </div>
-          <div className="p-3 rounded-lg bg-white border border-purple-200 text-center">
-            <div className="text-xs text-muted-foreground mb-1">Oversupplied</div>
-            <div className={cn(
-              'text-2xl font-bold',
-              oversuppliedSegments > 0 ? 'text-red-600' : 'text-emerald-600'
-            )}>
-              {oversuppliedSegments}
-            </div>
-            <div className="text-[10px] text-muted-foreground">Margin risk</div>
-          </div>
-          <div className="p-3 rounded-lg bg-white border border-purple-200 text-center">
-            <div className="text-xs text-muted-foreground mb-1">Overall Status</div>
-            <div className={cn(
-              'text-lg font-bold',
-              avgUtilization >= 80 && oversuppliedSegments === 0 ? 'text-emerald-600' :
-              avgUtilization >= 70 ? 'text-amber-600' : 'text-red-600'
-            )}>
-              {avgUtilization >= 80 && oversuppliedSegments === 0 ? 'Healthy' :
-               avgUtilization >= 70 ? 'Cautious' : 'Stressed'}
-            </div>
-          </div>
-        </div>
-
-        {/* AI Insight */}
-        <div className="p-3 rounded-lg bg-white/70 border border-purple-200">
-          <p className="text-sm text-muted-foreground">
-            {avgUtilization >= 85 
-              ? `Strong demand fundamentals with ${avgUtilization.toFixed(0)}% average utilization. Downstream markets can absorb planned capacity additions without significant margin compression.`
-              : avgUtilization >= 75
-                ? `Moderate demand environment with ${avgUtilization.toFixed(0)}% average utilization. Some segments may face margin pressure from additional supply.`
-                : `Weak demand conditions with ${avgUtilization.toFixed(0)}% average utilization. Significant margin compression expected across multiple segments.`
-            }
-          </p>
-        </div>
-
-        {/* Outlook Grid */}
-        <div className="grid grid-cols-3 gap-4 mt-4">
-          <div className="text-center p-3 rounded-lg bg-white/50">
-            <div className="text-xs text-muted-foreground mb-1">Paper Outlook</div>
-            <div className={cn(
-              'flex items-center justify-center gap-1 font-medium',
-              downstreamData.paper.marginPressure === 'low' ? 'text-emerald-600' : 
-              downstreamData.paper.marginPressure === 'moderate' ? 'text-amber-600' : 'text-red-600'
-            )}>
-              {downstreamData.paper.marginPressure === 'low' ? <TrendingUp className="h-4 w-4" /> : <Minus className="h-4 w-4" />}
-              {downstreamData.paper.marginPressure === 'low' ? 'Growth' : downstreamData.paper.marginPressure === 'moderate' ? 'Stable' : 'Pressure'}
-            </div>
-          </div>
-          <div className="text-center p-3 rounded-lg bg-white/50">
-            <div className="text-xs text-muted-foreground mb-1">Packaging Outlook</div>
-            <div className={cn(
-              'flex items-center justify-center gap-1 font-medium',
-              downstreamData.board.marginPressure === 'low' ? 'text-emerald-600' : 
-              downstreamData.board.marginPressure === 'moderate' ? 'text-amber-600' : 'text-red-600'
-            )}>
-              {downstreamData.board.marginPressure === 'low' ? <TrendingUp className="h-4 w-4" /> : <Minus className="h-4 w-4" />}
-              {downstreamData.board.marginPressure === 'low' ? 'Growth' : downstreamData.board.marginPressure === 'moderate' ? 'Stable' : 'Pressure'}
-            </div>
-          </div>
-          <div className="text-center p-3 rounded-lg bg-white/50">
-            <div className="text-xs text-muted-foreground mb-1">Tissue Outlook</div>
-            <div className={cn(
-              'flex items-center justify-center gap-1 font-medium',
-              downstreamData.tissue.marginPressure === 'low' ? 'text-emerald-600' : 
-              downstreamData.tissue.marginPressure === 'moderate' ? 'text-amber-600' : 'text-red-600'
-            )}>
-              {downstreamData.tissue.marginPressure === 'low' ? <TrendingUp className="h-4 w-4" /> : <Minus className="h-4 w-4" />}
-              {downstreamData.tissue.marginPressure === 'low' ? 'Growth' : downstreamData.tissue.marginPressure === 'moderate' ? 'Stable' : 'Pressure'}
-            </div>
-          </div>
-        </div>
-      </div>
-      
       {/* Paper Market */}
       <div id="downstream-paper" className="scroll-mt-96">
         <DownstreamTable

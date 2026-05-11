@@ -59,11 +59,9 @@ const NAV_ITEMS: Record<ValueChainStage, { id: string; label: string }[]> = {
     { id: 'pulp-export-reallocation', label: 'Global Export Reallocation' },
   ],
   downstream: [
-    { id: 'downstream-health-overview', label: 'Market Health Overview' },
     { id: 'downstream-paper', label: 'Paper' },
     { id: 'downstream-board', label: 'Packaging / Carton Board' },
     { id: 'downstream-tissue', label: 'Tissue' },
-    { id: 'market-data', label: 'Market Data' },
   ],
 }
 
@@ -304,10 +302,7 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
           )}
 
           {activeStage === 'downstream' && (
-            <>
-              <DownstreamDetails result={result} />
-              <MarketDataTabs result={result} status={status} id="market-data" />
-            </>
+            <DownstreamDetails result={result} />
           )}
         </div>
       </section>
