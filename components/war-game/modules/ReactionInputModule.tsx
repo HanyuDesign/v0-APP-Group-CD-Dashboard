@@ -5,11 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { 
   Brain, Users, ChevronRight, Info, TreePine, Factory, Package, 
   FileText, Bath, TrendingUp, TrendingDown, Upload, X, FileSpreadsheet,
-  Quote, Lightbulb, Edit3, Check
+  Quote, Lightbulb
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import type { 
   CompetitorConfig, 
   ReactionSettings,
@@ -198,8 +197,6 @@ export function ReactionInputModule({
   marketInput 
 }: ReactionInputModuleProps) {
   const [selectedCompetitor, setSelectedCompetitor] = useState(competitorConfig[0]?.playerId || 'sun-paper')
-  const [editingCell, setEditingCell] = useState<string | null>(null)
-  const [overrides, setOverrides] = useState<Record<string, Record<number, number>>>({})
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
   
@@ -237,18 +234,6 @@ export function ReactionInputModule({
     setUploadedFiles(prev => prev.filter((_, i) => i !== index))
   }
   
-  const handleOverride = (key: string, year: number, value: number) => {
-    setOverrides(prev => ({
-      ...prev,
-      [key]: { ...prev[key], [year]: value }
-    }))
-    setEditingCell(null)
-  }
-  
-  const activeOverridesCount = Object.values(overrides).reduce(
-    (acc, curr) => acc + Object.keys(curr).length, 0
-  )
-
   return (
     <div className="flex gap-6 h-[calc(100vh-280px)] min-h-[600px]">
       {/* LEFT SIDEBAR - Competitor Selection (synced from Step 2) */}
@@ -523,59 +508,7 @@ export function ReactionInputModule({
           </Card>
         )}
 
-        {/* Section 3: Editable Overrides */}
-        <Card className="border-amber-200 bg-amber-50/30">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100">
-                <Edit3 className="h-5 w-5 text-amber-600" />
-              </div>
-              <div>
-                <CardTitle className="text-base font-semibold">Editable Overrides</CardTitle>
-                <p className="text-xs text-muted-foreground mt-0.5">Click values to override AI-generated projections</p>
-              </div>
-              <span className="ml-auto inline-flex items-center gap-1 px-2 py-1 rounded bg-amber-100 text-amber-700 text-xs font-medium">
-                Optional
-              </span>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-0">
-            {activeOverridesCount > 0 ? (
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm text-amber-700">
-                  <Check className="h-4 w-4" />
-                  <span>{activeOverridesCount} override(s) active</span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {Object.entries(overrides).map(([key, yearValues]) =>
-                    Object.entries(yearValues).map(([year, value]) => (
-                      <Badge key={`${key}-${year}`} variant="outline" className="bg-amber-100 text-amber-700 border-amber-200">
-                        {key} {year}: {value}
-                        <button 
-                          onClick={() => {
-                            const newOverrides = { ...overrides }
-                            delete newOverrides[key][parseInt(year)]
-                            if (Object.keys(newOverrides[key]).length === 0) delete newOverrides[key]
-                            setOverrides(newOverrides)
-                          }}
-                          className="ml-1 hover:text-amber-900"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </Badge>
-                    ))
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="text-sm text-muted-foreground">
-                No overrides active. Click on any value in the tables above to manually adjust projections.
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Section 4: External Reference Input */}
+        {/* Section 3: External Reference Input */}
         <Card className="border-border/50">
           <CardHeader className="pb-3">
             <div className="flex items-center gap-3">
