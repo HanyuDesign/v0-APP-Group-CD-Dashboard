@@ -371,7 +371,6 @@ export function ReactionInputModule({
                 </div>
                 <div>
                   <CardTitle className="text-lg font-semibold">Value Chain Impact</CardTitle>
-                  <p className="text-xs text-muted-foreground mt-0.5">{selectedConfig.playerName}'s projected outcomes</p>
                 </div>
               </div>
             </CardHeader>
@@ -475,7 +474,7 @@ export function ReactionInputModule({
                         {segment.segment === 'Paper' && <FileText className="h-4 w-4 text-muted-foreground" />}
                         {segment.segment === 'Packaging' && <Package className="h-4 w-4 text-muted-foreground" />}
                         {segment.segment === 'Tissue' && <Bath className="h-4 w-4 text-muted-foreground" />}
-                        <span className="text-sm font-semibold">{segment.segment}</span>
+                        <span className="text-base font-semibold">{segment.segment}</span>
                       </div>
                       <div className="overflow-x-auto">
                         <table className="w-full text-base">
@@ -514,7 +513,7 @@ export function ReactionInputModule({
               </div>
               <div>
                 <CardTitle className="text-lg font-semibold">External Reference Input</CardTitle>
-                <p className="text-xs text-muted-foreground mt-0.5">Upload supporting data files</p>
+                <p className="text-sm text-muted-foreground mt-0.5">Upload supporting data files</p>
               </div>
               <span className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-100 text-slate-600 text-sm font-medium">
                 Reference Only
@@ -537,8 +536,8 @@ export function ReactionInputModule({
                 className="w-full border-2 border-dashed border-border/50 rounded-lg p-6 text-center hover:border-border hover:bg-muted/30 transition-all"
               >
                 <FileSpreadsheet className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                <div className="text-sm font-medium text-foreground">Upload Excel or CSV files</div>
-                <div className="text-xs text-muted-foreground mt-1">Files are for reference only and will not override model calculations</div>
+                <div className="text-base font-medium text-foreground">Upload Excel or CSV files</div>
+                <div className="text-sm text-muted-foreground mt-1">Files are for reference only and will not override model calculations</div>
               </button>
             ) : (
               <div className="space-y-2">
@@ -546,8 +545,8 @@ export function ReactionInputModule({
                   <div key={idx} className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
                     <FileSpreadsheet className="h-5 w-5 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium truncate">{file.name}</div>
-                      <div className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</div>
+                      <div className="text-base font-medium truncate">{file.name}</div>
+                      <div className="text-sm text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</div>
                     </div>
                     <button
                       onClick={() => removeFile(idx)}
@@ -559,7 +558,7 @@ export function ReactionInputModule({
                 ))}
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full text-sm text-muted-foreground hover:text-foreground py-2"
+                  className="w-full text-base text-muted-foreground hover:text-foreground py-2"
                 >
                   + Add more files
                 </button>
