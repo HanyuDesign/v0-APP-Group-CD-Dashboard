@@ -380,8 +380,7 @@ export function ReactionInputModule({
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <TreePine className="h-4 w-4 text-green-600" />
-                  <h4 className="text-sm font-semibold">2.1 Forestry & Woodchips</h4>
-                  <span className="text-xs text-muted-foreground">({selectedConfig.playerName})</span>
+                  <h4 className="text-base font-semibold">2.1 Forestry & Woodchips</h4>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-base">
@@ -421,8 +420,7 @@ export function ReactionInputModule({
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <Factory className="h-4 w-4 text-blue-600" />
-                  <h4 className="text-sm font-semibold">2.2 Pulp Capacity</h4>
-                  <span className="text-xs text-muted-foreground">({selectedConfig.playerName})</span>
+                  <h4 className="text-base font-semibold">2.2 Pulp Capacity</h4>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-base">
@@ -467,8 +465,7 @@ export function ReactionInputModule({
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <Package className="h-4 w-4 text-amber-600" />
-                  <h4 className="text-sm font-semibold">2.3 Downstream Markets</h4>
-                  <span className="text-xs text-muted-foreground">({selectedConfig.playerName})</span>
+                  <h4 className="text-base font-semibold">2.3 Downstream Markets</h4>
                 </div>
                 
                 <div className="grid grid-cols-3 gap-4">

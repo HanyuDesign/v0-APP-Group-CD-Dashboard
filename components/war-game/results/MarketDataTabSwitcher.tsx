@@ -23,7 +23,7 @@ export function MarketDataTabSwitcher({ activeTab, onTabChange, className }: Mar
         aria-selected={activeTab === 'market'}
         onClick={() => onTabChange('market')}
         className={cn(
-          'px-3 py-1.5 text-xs font-medium rounded-md transition-all',
+          'px-3.5 py-1.5 text-sm font-medium rounded-md transition-all',
           activeTab === 'market'
             ? 'bg-background text-foreground shadow-sm'
             : 'text-muted-foreground hover:text-foreground'
@@ -37,7 +37,7 @@ export function MarketDataTabSwitcher({ activeTab, onTabChange, className }: Mar
         aria-selected={activeTab === 'financial'}
         onClick={() => onTabChange('financial')}
         className={cn(
-          'px-3 py-1.5 text-xs font-medium rounded-md transition-all',
+          'px-3.5 py-1.5 text-sm font-medium rounded-md transition-all',
           activeTab === 'financial'
             ? 'bg-background text-foreground shadow-sm'
             : 'text-muted-foreground hover:text-foreground'
