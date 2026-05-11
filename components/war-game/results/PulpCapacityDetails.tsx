@@ -53,9 +53,9 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
             <table className="w-full text-base">
               <thead>
                 <tr className="border-b border-blue-200">
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-blue-700 w-40">Metric</th>
+                  <th className="text-left py-3 px-4 text-base font-semibold text-blue-700 w-40">Metric</th>
                   {years.map(year => (
-                    <th key={year} className="text-center py-3 px-4 text-sm font-semibold text-blue-700">{year}</th>
+                    <th key={year} className="text-center py-3 px-4 text-base font-semibold text-blue-700">{year}</th>
                   ))}
                 </tr>
               </thead>
@@ -293,13 +293,13 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
               <table className="w-full table-fixed text-base">
                 <thead>
                   <tr className="border-b border-border/50">
-                    <th className="text-left py-3 px-2 text-sm font-semibold text-muted-foreground" style={{ width: '12%' }}>Player</th>
-                    <th className="text-left py-3 px-2 text-sm font-semibold text-muted-foreground" style={{ width: '14%' }}>Strategy</th>
-                    {years.map(year => (
-                      <th key={year} className="text-center py-3 px-2 text-sm font-semibold text-muted-foreground" style={{ width: '9%' }}>{year}</th>
-                    ))}
-                    <th className="text-left py-3 px-2 text-sm font-semibold text-muted-foreground" style={{ width: '11%' }}>Action</th>
-                    <th className="text-left py-3 px-2 text-sm font-semibold text-muted-foreground" style={{ width: '23%' }}>Rationale</th>
+                  <th className="text-left py-3 px-2 text-base font-semibold text-muted-foreground" style={{ width: '12%' }}>Player</th>
+                  <th className="text-left py-3 px-2 text-base font-semibold text-muted-foreground" style={{ width: '14%' }}>Strategy</th>
+                  {years.map(year => (
+                    <th key={year} className="text-center py-3 px-2 text-base font-semibold text-muted-foreground" style={{ width: '9%' }}>{year}</th>
+                  ))}
+                  <th className="text-left py-3 px-2 text-base font-semibold text-muted-foreground" style={{ width: '11%' }}>Action</th>
+                  <th className="text-left py-3 px-2 text-base font-semibold text-muted-foreground" style={{ width: '23%' }}>Rationale</th>
                   </tr>
                 </thead>
                 <tbody>

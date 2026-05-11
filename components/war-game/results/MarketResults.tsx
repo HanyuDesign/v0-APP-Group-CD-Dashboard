@@ -52,12 +52,12 @@ export function MarketResults({ result, activeTab, onTabChange }: MarketResultsP
           <Table className="text-base">
             <TableHeader>
               <TableRow className="border-border/50">
-                <TableHead className="text-sm">Player</TableHead>
-                <TableHead className="text-right text-sm">Pulp Capacity</TableHead>
-                <TableHead className="text-right text-sm">Pulp Volume</TableHead>
-                <TableHead className="text-right text-sm">Utilization</TableHead>
-                <TableHead className="text-right text-sm">Market Share</TableHead>
-                <TableHead className="text-right text-sm">Cost per Ton</TableHead>
+                <TableHead className="text-base">Player</TableHead>
+                <TableHead className="text-right text-base">Pulp Capacity</TableHead>
+                <TableHead className="text-right text-base">Pulp Volume</TableHead>
+                <TableHead className="text-right text-base">Utilization</TableHead>
+                <TableHead className="text-right text-base">Market Share</TableHead>
+                <TableHead className="text-right text-base">Cost per Ton</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

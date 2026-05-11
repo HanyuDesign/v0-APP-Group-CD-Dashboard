@@ -207,13 +207,13 @@ function PlayerPLSection({ playerFinancials }: { playerFinancials: PlayerFinanci
         <Table className="text-base">
           <TableHeader>
             <TableRow className="border-border/50">
-              <TableHead className="text-sm">Player</TableHead>
-              <TableHead className="text-right text-sm">Revenue Index</TableHead>
-              <TableHead className="text-right text-sm">EBITDA</TableHead>
-              <TableHead className="text-right text-sm">EBITDA Margin</TableHead>
-              <TableHead className="text-right text-sm">Capacity Index</TableHead>
+              <TableHead className="text-base">Player</TableHead>
+              <TableHead className="text-right text-base">Revenue Index</TableHead>
+              <TableHead className="text-right text-base">EBITDA</TableHead>
+              <TableHead className="text-right text-base">EBITDA Margin</TableHead>
+              <TableHead className="text-right text-base">Capacity Index</TableHead>
               {viewMode !== 'combined' && (
-                <TableHead className="text-right text-sm">
+                <TableHead className="text-right text-base">
                   {viewMode === 'pulp' ? 'Pulp Profit' : 'Downstream Profit'}
                 </TableHead>
               )}
