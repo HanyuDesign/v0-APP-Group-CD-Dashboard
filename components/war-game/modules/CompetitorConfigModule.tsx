@@ -873,7 +873,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                           <Globe className="h-4 w-4 text-muted-foreground" />
                           Market Split
                         </span>
-                        <div className="flex items-center gap-4 text-sm font-medium">
+                        <div className="flex items-center gap-4 text-base font-medium">
                           <span className="text-muted-foreground">Domestic <span className="font-bold text-red-600">{100 - currentDownstream.paper.exportPercent}%</span></span>
                           <span className="text-muted-foreground">Export <span className="font-bold text-red-600">{currentDownstream.paper.exportPercent}%</span></span>
                         </div>
@@ -886,7 +886,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                         step={5}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-sm font-medium text-muted-foreground">
+                      <div className="flex justify-between text-base font-medium text-muted-foreground">
                         <span>100% Domestic</span>
                         <span>50 / 50</span>
                         <span>100% Export</span>
@@ -960,7 +960,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                           <Globe className="h-4 w-4 text-muted-foreground" />
                           Market Split
                         </span>
-                        <div className="flex items-center gap-4 text-sm font-medium">
+                        <div className="flex items-center gap-4 text-base font-medium">
                           <span className="text-muted-foreground">Domestic <span className="font-bold text-red-600">{100 - currentDownstream.packaging.exportPercent}%</span></span>
                           <span className="text-muted-foreground">Export <span className="font-bold text-red-600">{currentDownstream.packaging.exportPercent}%</span></span>
                         </div>
@@ -973,7 +973,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                         step={5}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-sm font-medium text-muted-foreground">
+                      <div className="flex justify-between text-base font-medium text-muted-foreground">
                         <span>100% Domestic</span>
                         <span>50 / 50</span>
                         <span>100% Export</span>
