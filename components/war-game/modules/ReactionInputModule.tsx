@@ -319,7 +319,7 @@ export function ReactionInputModule({
                   <Brain className="h-5 w-5 text-purple-600" />
                 </div>
                 <div>
-                  <CardTitle className="text-base font-semibold">Reaction Summary</CardTitle>
+                  <CardTitle className="text-lg font-semibold">Reaction Summary</CardTitle>
                   <p className="text-xs text-muted-foreground mt-0.5">AI-generated interpretation for {selectedConfig.playerName}</p>
                 </div>
                 <span className="ml-auto inline-flex items-center gap-1 px-2 py-1 rounded bg-purple-100 text-purple-700 text-xs font-medium">
@@ -370,7 +370,7 @@ export function ReactionInputModule({
                   <TrendingUp className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <CardTitle className="text-base font-semibold">Value Chain Impact</CardTitle>
+                  <CardTitle className="text-lg font-semibold">Value Chain Impact</CardTitle>
                   <p className="text-xs text-muted-foreground mt-0.5">{selectedConfig.playerName}'s projected outcomes</p>
                 </div>
               </div>
@@ -516,7 +516,7 @@ export function ReactionInputModule({
                 <Upload className="h-5 w-5 text-slate-600" />
               </div>
               <div>
-                <CardTitle className="text-base font-semibold">External Reference Input</CardTitle>
+                <CardTitle className="text-lg font-semibold">External Reference Input</CardTitle>
                 <p className="text-xs text-muted-foreground mt-0.5">Upload supporting data files</p>
               </div>
               <span className="ml-auto inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-100 text-slate-600 text-xs font-medium">

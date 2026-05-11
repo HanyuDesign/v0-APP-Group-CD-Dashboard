@@ -583,7 +583,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                     <Wand2 className="h-5 w-5 text-cyan-600" />
                   </div>
                   <div>
-                    <CardTitle className="text-base font-semibold">Strategic Intent</CardTitle>
+                    <CardTitle className="text-lg font-semibold">Strategic Intent</CardTitle>
                     <p className="text-xs text-muted-foreground mt-0.5">
                       Describe {selectedConfig.playerName}&apos;s strategy &mdash; the Behavior Settings below will update automatically and stay fully editable.
                     </p>
@@ -648,7 +648,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                     <Target className="h-5 w-5 text-red-600" />
                   </div>
                   <div>
-                    <CardTitle className="text-base font-semibold">Behavior Settings</CardTitle>
+                    <CardTitle className="text-lg font-semibold">Behavior Settings</CardTitle>
                     <p className="text-xs text-muted-foreground mt-0.5">Editable competitor response parameters &mdash; adjust freely or use Strategic Intent to pre-fill</p>
                   </div>
                 </div>
@@ -995,7 +995,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                     <Lightbulb className="h-5 w-5 text-amber-600" />
                   </div>
                   <div>
-                    <CardTitle className="text-base font-semibold">Derived Actions</CardTitle>
+                    <CardTitle className="text-lg font-semibold">Derived Actions</CardTitle>
                     <p className="text-xs text-muted-foreground mt-0.5">Auto-calculated outcomes based on behavior settings</p>
                   </div>
                 </div>

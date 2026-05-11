@@ -42,7 +42,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
       {/* Section 1: Market Impact Summary */}
       <Card id="pulp-market-impact" className="border-border/50 bg-blue-50/30 scroll-mt-96">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm flex items-center gap-2 text-blue-700">
+          <CardTitle className="text-lg flex items-center gap-2 text-blue-700">
             <BarChart3 className="h-4 w-4 text-blue-600" />
             Market Impact Summary
           </CardTitle>
@@ -193,7 +193,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
       <Card id="pulp-app-capacity" className="border-2 border-red-200 bg-red-50/30 scroll-mt-96">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm flex items-center gap-2">
+            <CardTitle className="text-lg flex items-center gap-2">
               <Building2 className="h-4 w-4 text-red-600" />
               APP Capacity Outcome
             </CardTitle>
@@ -280,7 +280,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
       <Card id="pulp-competitor-response" className="border-border/50 bg-card/80 scroll-mt-96">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm flex items-center gap-2">
+            <CardTitle className="text-lg flex items-center gap-2">
               <Users className="h-4 w-4 text-blue-600" />
               Competitor Response
             </CardTitle>
@@ -431,7 +431,7 @@ export function PulpExportReallocation({ result }: PulpCapacityDetailsProps) {
     <Card id="pulp-export-reallocation" className="border-border/50 bg-card/80 scroll-mt-96">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm flex items-center gap-2">
+          <CardTitle className="text-lg flex items-center gap-2">
             <Globe className="h-4 w-4 text-indigo-600" />
             Global Export Reallocation
           </CardTitle>

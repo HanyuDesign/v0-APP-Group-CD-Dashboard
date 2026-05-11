@@ -104,7 +104,7 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
             <div className="p-2 rounded-lg bg-green-100">
               <Lightbulb className="h-5 w-5 text-green-600" />
             </div>
-            <CardTitle className="text-base">AI Forestry Analysis</CardTitle>
+            <CardTitle className="text-lg">AI Forestry Analysis</CardTitle>
             <AIBadge size="sm" />
           </div>
         </CardHeader>
@@ -208,7 +208,7 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
       <Card id="forestry-woodchip-supply" className="border-border/50 bg-card/80 scroll-mt-96">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm flex items-center gap-2">
+            <CardTitle className="text-lg flex items-center gap-2">
               <Trees className="h-4 w-4 text-green-600" />
               Woodchip Supply Projection
             </CardTitle>
@@ -292,7 +292,7 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
       {/* Import Dependency Indicators */}
       <Card id="forestry-import-dependency" className="border-border/50 bg-card/80 scroll-mt-96">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm flex items-center gap-2">
+          <CardTitle className="text-lg flex items-center gap-2">
             <Ship className="h-4 w-4 text-blue-600" />
             Import Dependency Trend
           </CardTitle>
@@ -336,7 +336,7 @@ export function ForestryDetails({ result }: ForestryDetailsProps) {
       {/* Supply-Demand Balance */}
       <Card id="forestry-supply-demand" className="border-border/50 bg-card/80 scroll-mt-96">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm flex items-center gap-2">
+          <CardTitle className="text-lg flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-amber-600" />
             Supply-Demand Balance
           </CardTitle>

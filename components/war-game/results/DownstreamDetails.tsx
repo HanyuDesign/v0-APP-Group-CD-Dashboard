@@ -136,7 +136,7 @@ function DownstreamTable({
             <div className={cn('flex h-8 w-8 items-center justify-center rounded-lg', config.iconColor)}>
               <Icon className="h-4 w-4" />
             </div>
-            <CardTitle className="text-base font-semibold">{config.label}</CardTitle>
+            <CardTitle className="text-lg font-semibold">{config.label}</CardTitle>
           </div>
           <div className="flex items-center gap-2">
             <MarginIndicator level={data.marginPressure} />

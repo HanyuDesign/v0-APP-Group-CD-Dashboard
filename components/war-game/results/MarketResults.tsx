@@ -39,7 +39,7 @@ export function MarketResults({ result, activeTab, onTabChange }: MarketResultsP
       <Card className="border-border/50 bg-card/80">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between gap-3">
-            <CardTitle className="flex items-center gap-2 text-sm">
+            <CardTitle className="flex items-center gap-2 text-lg">
               <Users className="h-4 w-4 text-primary" />
               Player Market Data
             </CardTitle>

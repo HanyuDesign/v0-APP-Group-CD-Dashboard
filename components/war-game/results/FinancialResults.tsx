@@ -99,7 +99,7 @@ function SystemPLCard({ systemPL }: { systemPL: APPSystemPL }) {
   return (
     <Card className="border-primary/30 bg-card/80">
       <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-sm">
+        <CardTitle className="flex items-center gap-2 text-lg">
           <Globe className="h-4 w-4 text-primary" />
           APP System P&L (China + Indonesia)
         </CardTitle>
@@ -189,7 +189,7 @@ function PlayerPLSection({ playerFinancials }: { playerFinancials: PlayerFinanci
     <Card className="border-border/50 bg-card/80">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-sm">
+          <CardTitle className="flex items-center gap-2 text-lg">
             <Users className="h-4 w-4 text-primary" />
             Player-Level P&L
           </CardTitle>
@@ -284,7 +284,7 @@ export function FinancialResults({ result, activeTab, onTabChange }: FinancialRe
         <Card className="border-border/50 bg-card/80">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between gap-3">
-              <CardTitle className="flex items-center gap-2 text-sm">
+              <CardTitle className="flex items-center gap-2 text-lg">
                 <Building2 className="h-4 w-4 text-primary" />
                 APP Project IRR
               </CardTitle>
