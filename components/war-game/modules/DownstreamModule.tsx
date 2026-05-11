@@ -51,38 +51,36 @@ function DemandCard({
   trend,
 }: DemandCardProps) {
   return (
-    <div className="rounded-lg border border-border/50 bg-card/50 p-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+    <div className="rounded-lg border border-border/50 bg-card/50 p-4">
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
           {icon}
-          <span className="font-semibold text-base">{title}</span>
+          <span className="font-semibold text-lg leading-tight">{title}</span>
         </div>
-        {trend === 'shrinking' && <TrendingDown className="h-4 w-4 text-destructive" />}
-        {trend === 'growing' && <TrendingUp className="h-4 w-4 text-success" />}
-        {trend === 'stable' && <Minus className="h-4 w-4 text-muted-foreground" />}
+        {trend === 'shrinking' && <TrendingDown className="h-5 w-5 text-destructive flex-shrink-0" />}
+        {trend === 'growing' && <TrendingUp className="h-5 w-5 text-success flex-shrink-0" />}
+        {trend === 'stable' && <Minus className="h-5 w-5 text-muted-foreground flex-shrink-0" />}
       </div>
       
-      <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+      <p className="mt-2 text-base text-muted-foreground">{description}</p>
       
-      <div className="mt-3">
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-sm text-muted-foreground">Demand Scenario</span>
-          <Select
-            value={demandValue}
-            onValueChange={(v) => onDemandChange(v as DemandScenario)}
-          >
-            <SelectTrigger className="h-9 w-32 text-sm bg-white border-2">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {demandOptions.map(opt => (
-                <SelectItem key={opt} value={opt} className="text-sm">
-                  {POLICY_LABELS.demandScenario[opt]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="mt-4 space-y-2">
+        <span className="block text-sm font-medium text-muted-foreground">Demand Scenario</span>
+        <Select
+          value={demandValue}
+          onValueChange={(v) => onDemandChange(v as DemandScenario)}
+        >
+          <SelectTrigger className="h-10 w-full text-base bg-white border-2">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {demandOptions.map(opt => (
+              <SelectItem key={opt} value={opt} className="text-base">
+                {POLICY_LABELS.demandScenario[opt]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </div>
   )
