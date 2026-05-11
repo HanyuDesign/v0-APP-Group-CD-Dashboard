@@ -119,13 +119,13 @@ function StickyNav({
       )}
     >
       <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-        <span className="text-sm font-medium text-muted-foreground whitespace-nowrap mr-1">Jump to:</span>
+        <span className="text-base font-medium text-muted-foreground whitespace-nowrap mr-1">Jump to:</span>
         {navItems.map((item) => (
           <button
             key={item.id}
             onClick={() => onSectionClick(item.id)}
             className={cn(
-              'px-3 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap',
+              'px-3.5 py-1.5 rounded-full text-base font-medium transition-all whitespace-nowrap',
               activeSection === item.id
                 ? colors.active
                 : colors.inactive

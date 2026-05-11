@@ -158,7 +158,7 @@ export function ValueChainInsights({ result, activeStage, onStageChange, stages 
                 <div className="space-y-2">
                   <div className="flex items-baseline justify-between gap-2">
                     <span className={cn(
-                      'font-mono font-bold text-3xl leading-tight tracking-tight tabular-nums',
+                      'font-mono font-bold text-2xl leading-tight tracking-tight tabular-nums',
                       isActive ? 'text-foreground' : 'text-muted-foreground'
                     )}>
                       {data.primaryValue}
