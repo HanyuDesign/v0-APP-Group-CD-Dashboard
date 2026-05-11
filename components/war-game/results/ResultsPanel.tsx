@@ -50,7 +50,6 @@ const NAV_ITEMS: Record<ValueChainStage, { id: string; label: string }[]> = {
     { id: 'forestry-woodchip-supply', label: 'Woodchip Supply Projection' },
     { id: 'forestry-import-dependency', label: 'Import Dependency Trend' },
     { id: 'forestry-supply-demand', label: 'Supply-Demand Balance' },
-    { id: 'market-data', label: 'Market Data' },
   ],
   pulp: [
     { id: 'pulp-market-impact', label: 'Market Impact Summary' },
@@ -290,10 +289,7 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
       <section>
         <div className={cn('space-y-6', status === 'running' && 'opacity-50')}>
           {activeStage === 'forestry' && (
-            <>
-              <ForestryDetails result={result} />
-              <MarketDataTabs result={result} status={status} id="market-data" />
-            </>
+            <ForestryDetails result={result} />
           )}
 
           {activeStage === 'pulp' && (
