@@ -296,6 +296,8 @@ export default function InputPage() {
             {currentStepIndex > 0 && currentStep !== 'results' && (
               <Button
                 variant="outline"
+                size="lg"
+                className="text-base"
                 onClick={handleBack}
               >
                 <ArrowLeft className="mr-1.5 h-4 w-4" />
@@ -306,6 +308,8 @@ export default function InputPage() {
             {/* Reset button */}
             <Button
               variant="outline"
+              size="lg"
+              className="text-base"
               onClick={() => {
                 reset()
                 setCompetitorConfig(initializeCompetitorConfig())
@@ -327,10 +331,12 @@ export default function InputPage() {
                     {/* Wrapper span ensures the tooltip still shows when the button is disabled */}
                     <span tabIndex={0}>
                       <Button
+                        size="lg"
                         onClick={currentStep === 'reaction-input' ? handleRunSimulation : handleNext}
                         disabled={status === 'running' || isNextDisabled}
                         aria-disabled={isNextDisabled || status === 'running'}
                         className={cn(
+                          'text-base',
                           currentStep === 'reaction-input' && !isNextDisabled && 'bg-emerald-600 hover:bg-emerald-700'
                         )}
                       >
