@@ -102,6 +102,14 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /* Bump the root rem from the browser default of 16px to 17px so every
+     rem-based text utility (text-xs through text-2xl) and Tailwind spacing
+     token scales up ~6% across the entire app. This makes dense tables,
+     labels and body copy noticeably easier to read without forcing us to
+     touch each component individually. */
+  html {
+    font-size: 17px;
+  }
   body {
     @apply bg-background text-foreground;
   }
