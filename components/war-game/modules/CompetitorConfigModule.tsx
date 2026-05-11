@@ -873,9 +873,15 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                           <Globe className="h-4 w-4 text-muted-foreground" />
                           Market Split
                         </span>
-                        <div className="flex items-center gap-4 text-base font-medium">
-                          <span className="text-muted-foreground">Domestic <span className="font-bold text-red-600">{100 - currentDownstream.paper.exportPercent}%</span></span>
-                          <span className="text-muted-foreground">Export <span className="font-bold text-red-600">{currentDownstream.paper.exportPercent}%</span></span>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-muted-foreground">Domestic</span>
+                            <span className="text-red-600 font-bold text-lg">{100 - currentDownstream.paper.exportPercent}%</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-muted-foreground">Export</span>
+                            <span className="text-red-600 font-bold text-lg">{currentDownstream.paper.exportPercent}%</span>
+                          </div>
                         </div>
                       </label>
                       <Slider
@@ -886,7 +892,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                         step={5}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-base font-medium text-muted-foreground">
+                      <div className="flex justify-between text-sm font-medium text-muted-foreground">
                         <span>100% Domestic</span>
                         <span>50 / 50</span>
                         <span>100% Export</span>
@@ -960,9 +966,15 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                           <Globe className="h-4 w-4 text-muted-foreground" />
                           Market Split
                         </span>
-                        <div className="flex items-center gap-4 text-base font-medium">
-                          <span className="text-muted-foreground">Domestic <span className="font-bold text-red-600">{100 - currentDownstream.packaging.exportPercent}%</span></span>
-                          <span className="text-muted-foreground">Export <span className="font-bold text-red-600">{currentDownstream.packaging.exportPercent}%</span></span>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-muted-foreground">Domestic</span>
+                            <span className="text-red-600 font-bold text-lg">{100 - currentDownstream.packaging.exportPercent}%</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-muted-foreground">Export</span>
+                            <span className="text-red-600 font-bold text-lg">{currentDownstream.packaging.exportPercent}%</span>
+                          </div>
                         </div>
                       </label>
                       <Slider
@@ -973,7 +985,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                         step={5}
                         className="w-full"
                       />
-                      <div className="flex justify-between text-base font-medium text-muted-foreground">
+                      <div className="flex justify-between text-sm font-medium text-muted-foreground">
                         <span>100% Domestic</span>
                         <span>50 / 50</span>
                         <span>100% Export</span>
