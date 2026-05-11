@@ -102,15 +102,15 @@ export function WoodchipSupplyOutput({ settings }: WoodchipSupplyOutputProps) {
         <div className="grid grid-cols-2 gap-6">
           {/* Left Column: China Woodchip Supply Table */}
           <div className="rounded-lg border border-success/30 bg-success/5 p-4">
-            <h4 className="text-sm font-semibold text-success mb-3">China Woodchip Supply</h4>
+            <h4 className="text-base font-semibold text-success mb-3">China Woodchip Supply</h4>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-base">
                 <thead>
                   <tr className="border-b border-success/20">
-                    <th className="text-left py-2 px-2 font-medium text-muted-foreground text-xs">Year</th>
+                    <th className="text-left py-2 px-2 font-medium text-muted-foreground text-sm">Year</th>
                     {YEARS.map((year) => (
                       <th key={year} className={cn(
-                        'text-center py-2 px-2 font-medium text-xs',
+                        'text-center py-2 px-2 font-medium text-sm',
                         chinaSupply[year].isPolicyActive && settings.chinaLoggingPolicy !== 'baseline'
                           ? 'text-success'
                           : 'text-foreground'
@@ -122,14 +122,14 @@ export function WoodchipSupplyOutput({ settings }: WoodchipSupplyOutputProps) {
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="py-2 px-2 text-muted-foreground text-xs">Supply (kt)</td>
+                    <td className="py-2 px-2 text-muted-foreground text-sm">Supply (kt)</td>
                     {YEARS.map((year) => {
                       const data = chinaSupply[year]
                       return (
                         <td key={year} className="text-center py-2 px-2">
                           <div className="flex flex-col items-center gap-0.5">
                             <span className={cn(
-                              'font-mono font-semibold text-sm',
+                              'font-mono font-semibold text-base',
                               data.isPolicyActive && data.delta !== 0
                                 ? data.delta > 0 ? 'text-emerald-600' : 'text-amber-600'
                                 : 'text-foreground'
@@ -138,10 +138,10 @@ export function WoodchipSupplyOutput({ settings }: WoodchipSupplyOutputProps) {
                             </span>
                             {data.isPolicyActive && data.delta !== 0 && (
                               <span className={cn(
-                                'text-[10px] flex items-center font-medium',
+                                'text-xs flex items-center font-medium',
                                 data.delta > 0 ? 'text-emerald-600' : 'text-amber-600'
                               )}>
-                                {data.delta > 0 ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                                {data.delta > 0 ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
                                 {data.delta > 0 ? '+' : ''}{data.delta}
                               </span>
                             )}
@@ -153,22 +153,22 @@ export function WoodchipSupplyOutput({ settings }: WoodchipSupplyOutputProps) {
                 </tbody>
               </table>
             </div>
-            <p className="text-[10px] text-muted-foreground mt-2 italic">
+            <p className="text-xs text-muted-foreground mt-2 italic">
               Affected by: Real Estate ({settings.chinaRealEstateCondition}) + Logging Policy ({settings.chinaLoggingPolicy} from {settings.chinaLoggingPolicyStartYear})
             </p>
           </div>
 
           {/* Right Column: Vietnam Supply to China Table */}
           <div className="rounded-lg border border-chart-2/30 bg-chart-2/5 p-4">
-            <h4 className="text-sm font-semibold text-chart-2 mb-3">Vietnam Supply to China</h4>
+            <h4 className="text-base font-semibold text-chart-2 mb-3">Vietnam Supply to China</h4>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-base">
                 <thead>
                   <tr className="border-b border-chart-2/20">
-                    <th className="text-left py-2 px-2 font-medium text-muted-foreground text-xs">Year</th>
+                    <th className="text-left py-2 px-2 font-medium text-muted-foreground text-sm">Year</th>
                     {YEARS.map((year) => (
                       <th key={year} className={cn(
-                        'text-center py-2 px-2 font-medium text-xs',
+                        'text-center py-2 px-2 font-medium text-sm',
                         vietnamSupply[year].isPolicyActive && settings.vietnamExportPolicy !== 'baseline'
                           ? 'text-chart-2'
                           : 'text-foreground'
@@ -180,14 +180,14 @@ export function WoodchipSupplyOutput({ settings }: WoodchipSupplyOutputProps) {
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="py-2 px-2 text-muted-foreground text-xs">Supply (kt)</td>
+                    <td className="py-2 px-2 text-muted-foreground text-sm">Supply (kt)</td>
                     {YEARS.map((year) => {
                       const data = vietnamSupply[year]
                       return (
                         <td key={year} className="text-center py-2 px-2">
                           <div className="flex flex-col items-center gap-0.5">
                             <span className={cn(
-                              'font-mono font-semibold text-sm',
+                              'font-mono font-semibold text-base',
                               data.isPolicyActive && data.delta !== 0
                                 ? data.delta > 0 ? 'text-emerald-600' : 'text-amber-600'
                                 : 'text-foreground'
@@ -196,10 +196,10 @@ export function WoodchipSupplyOutput({ settings }: WoodchipSupplyOutputProps) {
                             </span>
                             {data.isPolicyActive && data.delta !== 0 && (
                               <span className={cn(
-                                'text-[10px] flex items-center font-medium',
+                                'text-xs flex items-center font-medium',
                                 data.delta > 0 ? 'text-emerald-600' : 'text-amber-600'
                               )}>
-                                {data.delta > 0 ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                                {data.delta > 0 ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
                                 {data.delta > 0 ? '+' : ''}{data.delta}
                               </span>
                             )}
@@ -211,7 +211,7 @@ export function WoodchipSupplyOutput({ settings }: WoodchipSupplyOutputProps) {
                 </tbody>
               </table>
             </div>
-            <p className="text-[10px] text-muted-foreground mt-2 italic">
+            <p className="text-xs text-muted-foreground mt-2 italic">
               Affected by: Vietnam Export Policy ({settings.vietnamExportPolicy} from {settings.vietnamExportPolicyStartYear})
             </p>
           </div>
