@@ -19,38 +19,18 @@ interface ForestryModuleProps {
 
 const YEARS: PolicyStartYear[] = [2026, 2027, 2028, 2029, 2030, 2031]
 
-type Accent = 'amber' | 'emerald' | 'blue'
-
-const ACCENT_CLASSES: Record<Accent, { selected: string; hover: string }> = {
-  amber: {
-    selected: 'bg-amber-100 border-amber-300 text-amber-700 shadow-sm',
-    hover: 'hover:border-amber-200 hover:bg-amber-50/50',
-  },
-  emerald: {
-    selected: 'bg-emerald-100 border-emerald-300 text-emerald-700 shadow-sm',
-    hover: 'hover:border-emerald-200 hover:bg-emerald-50/50',
-  },
-  blue: {
-    selected: 'bg-blue-100 border-blue-300 text-blue-700 shadow-sm',
-    hover: 'hover:border-blue-200 hover:bg-blue-50/50',
-  },
-}
-
-// Choice group styled like Behavior Settings — individual rounded buttons with subtle accent fill on selected
+// Choice group styled like Behavior Settings — individual rounded buttons with light-red fill on selected
 function ChoiceGroup<T extends string>({
   value,
   options,
   labels,
   onChange,
-  accent,
 }: {
   value: T
   options: T[]
   labels: Record<T, string>
   onChange: (value: T) => void
-  accent: Accent
 }) {
-  const accentClass = ACCENT_CLASSES[accent]
   return (
     <div className="grid grid-cols-3 gap-2">
       {options.map((option) => (
@@ -60,8 +40,8 @@ function ChoiceGroup<T extends string>({
           className={cn(
             'px-3 py-2.5 text-sm font-medium rounded-lg border transition-all',
             value === option
-              ? accentClass.selected
-              : cn('bg-white border-border/50 text-muted-foreground', accentClass.hover)
+              ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
+              : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
           )}
         >
           {labels[option]}
@@ -98,7 +78,6 @@ export function ForestryModule({
               options={['downturn', 'stable', 'recovery'] as RealEstateCondition[]}
               labels={{ downturn: 'Downturn', stable: 'Stable', recovery: 'Recovery' }}
               onChange={(value) => onChange({ ...settings, chinaRealEstateCondition: value })}
-              accent="amber"
             />
             <p className="text-sm text-muted-foreground italic">
               Applies across all years. Downturn increases wood availability; Recovery reduces it.
@@ -144,7 +123,6 @@ export function ForestryModule({
                   options={['tight', 'baseline', 'relaxed'] as PolicyLevel[]}
                   labels={{ tight: 'Tight', baseline: 'Baseline', relaxed: 'Relaxed' }}
                   onChange={(value) => onChange({ ...settings, chinaLoggingPolicy: value })}
-                  accent="emerald"
                 />
               </div>
             </div>
@@ -186,7 +164,6 @@ export function ForestryModule({
                   options={['restricted', 'baseline', 'expanded'] as ExportPolicyLevel[]}
                   labels={{ restricted: 'Restricted', baseline: 'Baseline', expanded: 'Expanded' }}
                   onChange={(value) => onChange({ ...settings, vietnamExportPolicy: value })}
-                  accent="blue"
                 />
               </div>
             </div>
