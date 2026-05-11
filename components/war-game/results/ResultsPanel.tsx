@@ -142,50 +142,20 @@ function StickyNav({
   )
 }
 
-// Market Data Tabs Component
+// Market Data Tabs Component – the tab switcher is rendered inside the
+// "Player Market Data" card header (Market tab) and the "APP Project IRR"
+// card header (Financial tab), keeping the controls in context with the
+// data they govern instead of in a separate banner above them.
 function MarketDataTabs({ result, status, id }: { result: SimulationResult, status: SimulationStatus, id?: string }) {
   const [activeTab, setActiveTab] = useState<'market' | 'financial'>('market')
-  
+
   return (
-    <div id={id} className="space-y-4 scroll-mt-96">
-      {/* Tab Header */}
-      <div className="flex items-center gap-2">
-        <h3 className="text-sm font-semibold text-muted-foreground">Market Data</h3>
-        <span className="h-px flex-1 bg-border" />
-        <div className="flex gap-1 bg-muted/50 rounded-lg p-1">
-          <button
-            onClick={() => setActiveTab('market')}
-            className={cn(
-              'px-3 py-1.5 text-sm font-medium rounded-md transition-all',
-              activeTab === 'market'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
-          >
-            Market Performance
-          </button>
-          <button
-            onClick={() => setActiveTab('financial')}
-            className={cn(
-              'px-3 py-1.5 text-sm font-medium rounded-md transition-all',
-              activeTab === 'financial'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
-          >
-            Financial Results
-          </button>
-        </div>
-      </div>
-      
-      {/* Tab Content */}
-      <div className={cn(status === 'running' && 'opacity-50')}>
-        {activeTab === 'market' ? (
-          <MarketResults result={result} />
-        ) : (
-          <FinancialResults result={result} />
-        )}
-      </div>
+    <div id={id} className={cn('scroll-mt-96', status === 'running' && 'opacity-50')}>
+      {activeTab === 'market' ? (
+        <MarketResults result={result} activeTab={activeTab} onTabChange={setActiveTab} />
+      ) : (
+        <FinancialResults result={result} activeTab={activeTab} onTabChange={setActiveTab} />
+      )}
     </div>
   )
 }

@@ -11,17 +11,20 @@ import {
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import { AIBadge } from '../shared/AIBadge'
+import { MarketDataTabSwitcher, type MarketDataTab } from './MarketDataTabSwitcher'
 import type { SimulationResult } from '@/lib/types/war-game'
 import { PLAYERS } from '@/lib/data/initial-data'
 
 interface MarketResultsProps {
   result: SimulationResult
+  activeTab?: MarketDataTab
+  onTabChange?: (tab: MarketDataTab) => void
 }
 
 // Define the specific players to show in order
 const DISPLAY_PLAYERS = ['sun-paper', 'chenming', 'liansheng', 'others-china', 'app-china']
 
-export function MarketResults({ result }: MarketResultsProps) {
+export function MarketResults({ result, activeTab, onTabChange }: MarketResultsProps) {
   const { playerMarketOutcomes } = result
 
   // Filter and sort outcomes to show only specific players
@@ -34,7 +37,12 @@ export function MarketResults({ result }: MarketResultsProps) {
       {/* Player market details table */}
       <Card className="border-border/50 bg-card/80">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm">Player Market Data</CardTitle>
+          <div className="flex items-center justify-between gap-3">
+            <CardTitle className="text-sm">Player Market Data</CardTitle>
+            {activeTab && onTabChange && (
+              <MarketDataTabSwitcher activeTab={activeTab} onTabChange={onTabChange} />
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <Table>

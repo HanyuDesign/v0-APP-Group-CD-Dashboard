@@ -14,6 +14,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
 import { Building2, Globe, Users } from 'lucide-react'
 import { TrafficLight } from '../shared/TrafficLight'
+import { MarketDataTabSwitcher, type MarketDataTab } from './MarketDataTabSwitcher'
 import type { SimulationResult, ProjectIRR, APPSystemPL, PlayerFinancialOutcome } from '@/lib/types/war-game'
 import { PLAYERS, IRR_HURDLE } from '@/lib/data/initial-data'
 import {
@@ -29,6 +30,8 @@ import {
 
 interface FinancialResultsProps {
   result: SimulationResult
+  activeTab?: MarketDataTab
+  onTabChange?: (tab: MarketDataTab) => void
 }
 
 type ViewMode = 'combined' | 'pulp' | 'downstream'
@@ -269,24 +272,35 @@ function PlayerPLSection({ playerFinancials }: { playerFinancials: PlayerFinanci
   )
 }
 
-export function FinancialResults({ result }: FinancialResultsProps) {
+export function FinancialResults({ result, activeTab, onTabChange }: FinancialResultsProps) {
   const { playerFinancials, projectIRRs, appSystemPL } = result
 
   return (
     <div className="space-y-4">
-      {/* APP Project IRR */}
+      {/* APP Project IRR – wrapped in a Card so the Market/Financial tab
+          switcher can live next to the section title, mirroring the
+          Player Market Data card on the Market Performance tab. */}
       {projectIRRs.length > 0 && (
-        <div>
-          <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
-            <Building2 className="h-4 w-4 text-primary" />
-            APP Project IRR
-          </h3>
-          <div className="grid grid-cols-2 gap-4">
-            {projectIRRs.map(project => (
-              <IRRCard key={project.projectId} project={project} />
-            ))}
-          </div>
-        </div>
+        <Card className="border-border/50 bg-card/80">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between gap-3">
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <Building2 className="h-4 w-4 text-primary" />
+                APP Project IRR
+              </CardTitle>
+              {activeTab && onTabChange && (
+                <MarketDataTabSwitcher activeTab={activeTab} onTabChange={onTabChange} />
+              )}
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4">
+              {projectIRRs.map(project => (
+                <IRRCard key={project.projectId} project={project} />
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* APP System P&L */}
