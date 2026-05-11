@@ -147,27 +147,27 @@ function DownstreamTable({
       <CardContent className="pt-0 space-y-4">
         {/* Key Metrics Summary */}
         <div className="grid grid-cols-4 gap-3">
-          <div className="p-2.5 rounded-lg bg-white/70 text-center">
-            <div className="text-[10px] text-muted-foreground mb-0.5">Supply</div>
-            <div className="text-lg font-bold">{data.supply} kt</div>
+          <div className="p-3 rounded-lg bg-white/70 text-center">
+            <div className="text-sm font-medium text-muted-foreground mb-1">Supply</div>
+            <div className="text-xl font-bold tabular-nums">{data.supply} kt</div>
           </div>
-          <div className="p-2.5 rounded-lg bg-white/70 text-center">
-            <div className="text-[10px] text-muted-foreground mb-0.5">Demand</div>
-            <div className="text-lg font-bold">{data.demand} kt</div>
+          <div className="p-3 rounded-lg bg-white/70 text-center">
+            <div className="text-sm font-medium text-muted-foreground mb-1">Demand</div>
+            <div className="text-xl font-bold tabular-nums">{data.demand} kt</div>
           </div>
-          <div className="p-2.5 rounded-lg bg-white/70 text-center">
-            <div className="text-[10px] text-muted-foreground mb-0.5">Utilization</div>
+          <div className="p-3 rounded-lg bg-white/70 text-center">
+            <div className="text-sm font-medium text-muted-foreground mb-1">Utilization</div>
             <div className={cn(
-              'text-lg font-bold',
+              'text-xl font-bold tabular-nums',
               data.utilization >= 85 ? 'text-emerald-600' : data.utilization >= 75 ? 'text-amber-600' : 'text-red-600'
             )}>
               {data.utilization.toFixed(1)}%
             </div>
           </div>
-          <div className="p-2.5 rounded-lg bg-white/70 text-center">
-            <div className="text-[10px] text-muted-foreground mb-0.5">Balance</div>
+          <div className="p-3 rounded-lg bg-white/70 text-center">
+            <div className="text-sm font-medium text-muted-foreground mb-1">Balance</div>
             <div className={cn(
-              'text-lg font-bold flex items-center justify-center gap-1',
+              'text-xl font-bold flex items-center justify-center gap-1 tabular-nums',
               data.balance > 20 ? 'text-amber-600' : data.balance < -20 ? 'text-emerald-600' : 'text-foreground'
             )}>
               {data.balance > 0 ? <TrendingUp className="h-4 w-4" /> : data.balance < 0 ? <TrendingDown className="h-4 w-4" /> : <Minus className="h-4 w-4" />}
@@ -200,7 +200,7 @@ function DownstreamTable({
                     <td key={year} className="text-center py-2.5 px-2">
                       <span className="font-mono">{value}</span>
                       {idx > 0 && delta > 0 && (
-                        <span className="text-[10px] text-emerald-600 ml-1">+{delta}</span>
+                        <span className="text-xs font-medium text-emerald-600 ml-1 tabular-nums">+{delta}</span>
                       )}
                     </td>
                   )
