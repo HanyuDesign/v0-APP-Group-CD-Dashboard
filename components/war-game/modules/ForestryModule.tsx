@@ -1,7 +1,6 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { TreePine, Globe, Building2 } from 'lucide-react'
 import type { ForestrySettings, PolicyLevel, ExportPolicyLevel, RealEstateCondition, PolicyStartYear } from '@/lib/types/war-game'
@@ -20,8 +19,8 @@ interface ForestryModuleProps {
 
 const YEARS: PolicyStartYear[] = [2026, 2027, 2028, 2029, 2030, 2031]
 
-// Segmented button component for policy selection
-function SegmentedControl<T extends string>({
+// Choice group styled like Behavior Settings — individual rounded buttons with light-red fill on selected
+function ChoiceGroup<T extends string>({
   value,
   options,
   labels,
@@ -33,16 +32,16 @@ function SegmentedControl<T extends string>({
   onChange: (value: T) => void
 }) {
   return (
-    <div className="flex rounded-lg border border-border/50 overflow-hidden">
+    <div className="grid grid-cols-3 gap-2">
       {options.map((option) => (
         <button
           key={option}
           onClick={() => onChange(option)}
           className={cn(
-            'flex-1 px-3 py-2 text-sm font-medium transition-all',
+            'px-3 py-2.5 text-sm font-medium rounded-lg border transition-all',
             value === option
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-secondary/30 text-muted-foreground hover:bg-secondary/50'
+              ? 'bg-red-100 border-red-300 text-red-700 shadow-sm'
+              : 'bg-white border-border/50 text-muted-foreground hover:border-red-200 hover:bg-red-50/50'
           )}
         >
           {labels[option]}
@@ -71,10 +70,10 @@ export function ForestryModule({
             <Building2 className="h-4 w-4 text-amber-600" />
             <h3 className="font-semibold text-base">Domestic Demand Driver (China)</h3>
           </div>
-          
+
           <div className="space-y-3">
-            <Label className="text-sm text-muted-foreground">China Real Estate Market Condition</Label>
-            <SegmentedControl
+            <span className="text-base font-medium text-muted-foreground">China Real Estate Market Condition</span>
+            <ChoiceGroup
               value={settings.chinaRealEstateCondition}
               options={['downturn', 'stable', 'recovery'] as RealEstateCondition[]}
               labels={{ downturn: 'Downturn', stable: 'Stable', recovery: 'Recovery' }}
@@ -94,31 +93,32 @@ export function ForestryModule({
               <TreePine className="h-4 w-4 text-success" />
               <span className="text-base font-semibold text-success">China Logging Policy</span>
             </div>
-            
-            <div className="space-y-3">
-              <div className="space-y-1.5">
-                <Label className="text-sm text-muted-foreground">Policy Start Year</Label>
+
+            <div className="space-y-4">
+              {/* Policy Start Year — matches Demand Scenario row layout */}
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-base font-medium text-muted-foreground flex-shrink-0">Policy Start Year</span>
                 <Select
                   value={String(settings.chinaLoggingPolicyStartYear)}
-                  onValueChange={(value) => onChange({ 
-                    ...settings, 
-                    chinaLoggingPolicyStartYear: Number(value) as PolicyStartYear 
+                  onValueChange={(value) => onChange({
+                    ...settings,
+                    chinaLoggingPolicyStartYear: Number(value) as PolicyStartYear
                   })}
                 >
-                  <SelectTrigger className="h-9 text-sm">
+                  <SelectTrigger className="h-10 min-w-32 text-base bg-white border-2">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {YEARS.map((year) => (
-                      <SelectItem key={year} value={String(year)} className="text-sm">{year}</SelectItem>
+                      <SelectItem key={year} value={String(year)} className="text-base">{year}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              
-              <div className="space-y-1.5">
-                <Label className="text-sm text-muted-foreground">Policy Level</Label>
-                <SegmentedControl
+
+              <div className="space-y-2">
+                <span className="text-base font-medium text-muted-foreground">Policy Level</span>
+                <ChoiceGroup
                   value={settings.chinaLoggingPolicy}
                   options={['tight', 'baseline', 'relaxed'] as PolicyLevel[]}
                   labels={{ tight: 'Tight', baseline: 'Baseline', relaxed: 'Relaxed' }}
@@ -134,31 +134,32 @@ export function ForestryModule({
               <Globe className="h-4 w-4 text-chart-2" />
               <span className="text-base font-semibold text-chart-2">Vietnam Export Policy</span>
             </div>
-            
-            <div className="space-y-3">
-              <div className="space-y-1.5">
-                <Label className="text-sm text-muted-foreground">Policy Start Year</Label>
+
+            <div className="space-y-4">
+              {/* Policy Start Year — matches Demand Scenario row layout */}
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-base font-medium text-muted-foreground flex-shrink-0">Policy Start Year</span>
                 <Select
                   value={String(settings.vietnamExportPolicyStartYear)}
-                  onValueChange={(value) => onChange({ 
-                    ...settings, 
-                    vietnamExportPolicyStartYear: Number(value) as PolicyStartYear 
+                  onValueChange={(value) => onChange({
+                    ...settings,
+                    vietnamExportPolicyStartYear: Number(value) as PolicyStartYear
                   })}
                 >
-                  <SelectTrigger className="h-9 text-sm">
+                  <SelectTrigger className="h-10 min-w-32 text-base bg-white border-2">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {YEARS.map((year) => (
-                      <SelectItem key={year} value={String(year)} className="text-sm">{year}</SelectItem>
+                      <SelectItem key={year} value={String(year)} className="text-base">{year}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              
-              <div className="space-y-1.5">
-                <Label className="text-sm text-muted-foreground">Policy Level</Label>
-                <SegmentedControl
+
+              <div className="space-y-2">
+                <span className="text-base font-medium text-muted-foreground">Policy Level</span>
+                <ChoiceGroup
                   value={settings.vietnamExportPolicy}
                   options={['restricted', 'baseline', 'expanded'] as ExportPolicyLevel[]}
                   labels={{ restricted: 'Restricted', baseline: 'Baseline', expanded: 'Expanded' }}

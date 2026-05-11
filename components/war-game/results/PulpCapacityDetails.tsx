@@ -50,7 +50,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
         <CardContent className="space-y-4">
           {/* Impact Table */}
           <div className="overflow-x-auto">
-            <table className="w-full text-base">
+            <table className="w-full text-lg">
               <thead>
                 <tr className="border-b border-blue-200">
                   <th className="text-left py-3 px-4 text-base font-semibold text-blue-700 w-40">Metric</th>
@@ -62,7 +62,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
               <tbody>
                 {/* Net Supply Change Row */}
                 <tr className="border-b border-blue-100 bg-white/50">
-                  <td className="py-3 px-4 text-base font-medium text-amber-700">Net Supply Change</td>
+                  <td className="py-3 px-4 text-lg font-medium text-amber-700">Net Supply Change</td>
                   {years.map((year, idx) => {
                     const yearlySupplyChange = idx === 0 ? 0 :
                       Math.round((appChinaPulpAdd + totalCompetitorPulpChange) * (idx * 0.15 - 0.1))
@@ -72,10 +72,10 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                           <span className="text-muted-foreground">-</span>
                         ) : (
                           <span className={cn(
-                            'text-base font-medium',
+                            'text-lg font-medium',
                             yearlySupplyChange > 0 ? 'text-emerald-600' : yearlySupplyChange < 0 ? 'text-amber-600' : 'text-muted-foreground'
                           )}>
-                            {yearlySupplyChange > 0 ? '+' : ''}{yearlySupplyChange} <span className="text-base text-muted-foreground">kt</span>
+                            {yearlySupplyChange > 0 ? '+' : ''}{yearlySupplyChange} <span className="text-lg text-muted-foreground">kt</span>
                           </span>
                         )}
                       </td>
@@ -84,7 +84,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                 </tr>
                 {/* Price Signal Row */}
                 <tr className="bg-white/30">
-                  <td className="py-3 px-4 text-base font-medium text-muted-foreground">Price Signal</td>
+                  <td className="py-3 px-4 text-lg font-medium text-muted-foreground">Price Signal</td>
                   {years.map((year, idx) => {
                     const totalChange = appChinaPulpAdd + totalCompetitorPulpChange
                     const priceSignal = idx === 0 ? null :
@@ -95,7 +95,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                         {idx === 0 ? (
                           <span className="text-muted-foreground">-</span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-base text-muted-foreground">
+                          <span className="inline-flex items-center gap-1 text-lg text-muted-foreground">
                             <ArrowRight className="h-3.5 w-3.5" />
                             {priceSignal}
                           </span>
@@ -209,7 +209,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full text-base">
+            <table className="w-full text-lg">
               <thead>
                 <tr className="border-b border-red-200">
                   <th className="text-left py-2 px-3 font-medium text-muted-foreground w-48">Metric</th>
@@ -290,7 +290,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
         <CardContent>
           <TooltipProvider>
             <div className="overflow-x-auto">
-              <table className="w-full table-fixed text-base">
+              <table className="w-full table-fixed text-lg">
                 <thead>
                   <tr className="border-b border-border/50">
                   <th className="text-left py-3 px-2 text-base font-semibold text-muted-foreground" style={{ width: '12%' }}>Player</th>
@@ -360,7 +360,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                         <td className="py-3 px-2">
                           <div className="flex items-center gap-2">
                             <span className="h-3 w-3 rounded-full flex-shrink-0" style={{ backgroundColor: player.color }} />
-                            <span className="font-semibold text-base truncate">{player.nameCn}</span>
+                            <span className="font-semibold text-lg truncate">{player.nameCn}</span>
                           </div>
                         </td>
                         <td className="py-3 px-2">
@@ -384,7 +384,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                           return (
                             <td key={year} className="text-center py-3 px-2">
                               <span className={cn(
-                                'font-mono text-base',
+                                'font-mono text-lg',
                                 isBase ? 'text-muted-foreground' : val > 0 ? 'text-emerald-600 font-bold' : val < 0 ? 'text-amber-600 font-bold' : 'text-muted-foreground'
                               )}>
                                 {isBase ? val : val > 0 ? `+${val}` : val < 0 ? val : '-'}
@@ -403,7 +403,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                           </span>
                         </td>
                         <td className="py-3 px-2">
-                          <p className="text-base text-muted-foreground leading-snug">
+                          <p className="text-lg text-muted-foreground leading-snug">
                             {getRationale()}
                           </p>
                         </td>
@@ -440,7 +440,7 @@ export function PulpExportReallocation({ result }: PulpCapacityDetailsProps) {
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
-          <table className="w-full text-base">
+          <table className="w-full text-lg">
             <thead>
               <tr className="border-b border-border/50">
                 <th className="text-left py-2 px-3 font-medium text-muted-foreground w-40">Exporter</th>
