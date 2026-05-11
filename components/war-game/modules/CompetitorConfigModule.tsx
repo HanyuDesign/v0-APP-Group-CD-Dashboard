@@ -591,8 +591,8 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                 </div>
                 <div className="flex items-center gap-3 text-right">
                   <div>
-                    <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">Base Capacity</div>
-                    <div className="text-xl font-bold text-cyan-700 leading-tight">{selectedStrategy.baseCapacity} kt</div>
+                    <div className="text-sm uppercase tracking-wide text-muted-foreground font-medium">Base Capacity</div>
+                    <div className="text-2xl font-bold text-cyan-700 leading-tight tracking-tight tabular-nums">{selectedStrategy.baseCapacity} kt</div>
                   </div>
                 </div>
               </div>
@@ -629,7 +629,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                   ) : (
                     <div className="flex items-start gap-2 rounded-lg border border-dashed border-cyan-200 bg-white/40 px-3 py-2">
                       <Info className="h-4 w-4 text-cyan-600 flex-shrink-0 mt-0.5" />
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm text-muted-foreground leading-snug">
                         Generate to pre-fill the Behavior Settings, then fine-tune them manually.
                       </p>
                     </div>
