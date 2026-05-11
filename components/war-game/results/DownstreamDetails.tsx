@@ -99,7 +99,7 @@ function MarginIndicator({ level }: { level: 'low' | 'moderate' | 'high' }) {
   const { color, icon: Icon, label } = config[level]
   
   return (
-    <span className={cn('inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium', color)}>
+    <span className={cn('inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-sm font-medium', color)}>
       <Icon className="h-3 w-3" />
       {label}
     </span>

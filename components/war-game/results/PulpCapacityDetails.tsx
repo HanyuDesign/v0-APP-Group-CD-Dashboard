@@ -198,7 +198,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
               APP Capacity Outcome
             </CardTitle>
             <span className={cn(
-              'px-3 py-1 rounded-full text-xs font-semibold',
+              'px-3 py-1 rounded-full text-sm font-semibold',
               appChinaPulpAdd > 250 && 'bg-red-100 text-red-700',
               appChinaPulpAdd > 100 && appChinaPulpAdd <= 250 && 'bg-amber-100 text-amber-700',
               appChinaPulpAdd <= 100 && 'bg-blue-100 text-blue-700'
@@ -367,7 +367,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <span className={cn(
-                                'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border cursor-help whitespace-nowrap',
+                                'inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium border cursor-help whitespace-nowrap',
                                 strategy.color
                               )}>
                                 {strategy.label}
@@ -394,7 +394,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
                         })}
                         <td className="py-3 px-2">
                           <span className={cn(
-                            'px-2 py-1 rounded text-xs font-semibold whitespace-nowrap',
+                            'px-2.5 py-1 rounded text-sm font-semibold whitespace-nowrap',
                             change.action === 'add' && 'bg-emerald-100 text-emerald-700',
                             change.action === 'delay' && 'bg-amber-100 text-amber-700',
                             change.action === 'maintain' && 'bg-gray-100 text-gray-700'

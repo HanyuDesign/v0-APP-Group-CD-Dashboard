@@ -652,7 +652,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                     <p className="text-xs text-muted-foreground mt-0.5">Editable competitor response parameters &mdash; adjust freely or use Strategic Intent to pre-fill</p>
                   </div>
                 </div>
-                <span className="text-xs text-red-600 bg-red-100 px-2.5 py-1 rounded-full font-medium">Editable</span>
+                <span className="text-sm text-red-600 bg-red-100 px-2.5 py-1 rounded-full font-medium">Editable</span>
               </div>
             </CardHeader>
             <CardContent className="pt-0">
@@ -689,7 +689,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                               >
                                 <span>{option.label}</span>
                                 <span className={cn(
-                                  'text-xs px-2 py-0.5 rounded',
+                                  'text-sm px-2 py-0.5 rounded',
                                   selectedConfig.behaviorSettings.capacityReactionStyle === option.value
                                     ? 'bg-red-200/50 text-red-700'
                                     : 'bg-muted text-muted-foreground'
@@ -999,7 +999,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                     <p className="text-xs text-muted-foreground mt-0.5">Auto-calculated outcomes based on behavior settings</p>
                   </div>
                 </div>
-                <span className="text-xs text-amber-600 bg-amber-100 px-2.5 py-1 rounded-full font-medium">Auto-calculated</span>
+                <span className="text-sm text-amber-600 bg-amber-100 px-2.5 py-1 rounded-full font-medium">Auto-calculated</span>
               </div>
             </CardHeader>
             <CardContent className="pt-0 space-y-5">
@@ -1027,7 +1027,7 @@ export function CompetitorConfigModule({ config, onChange, appCapacityAdditions 
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <div className="text-sm font-medium text-foreground">Projected Capacity (kt)</div>
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-100 text-amber-700 text-[10px] font-medium">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-100 text-amber-700 text-xs font-medium">
                         <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
                         Editable
                       </span>

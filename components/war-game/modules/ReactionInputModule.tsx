@@ -322,7 +322,7 @@ export function ReactionInputModule({
                   <CardTitle className="text-lg font-semibold">Reaction Summary</CardTitle>
                   <p className="text-xs text-muted-foreground mt-0.5">AI-generated interpretation for {selectedConfig.playerName}</p>
                 </div>
-                <span className="ml-auto inline-flex items-center gap-1 px-2 py-1 rounded bg-purple-100 text-purple-700 text-xs font-medium">
+                <span className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded bg-purple-100 text-purple-700 text-sm font-medium">
                   <Lightbulb className="h-3 w-3" />
                   AI Generated
                 </span>
@@ -519,7 +519,7 @@ export function ReactionInputModule({
                 <CardTitle className="text-lg font-semibold">External Reference Input</CardTitle>
                 <p className="text-xs text-muted-foreground mt-0.5">Upload supporting data files</p>
               </div>
-              <span className="ml-auto inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-100 text-slate-600 text-xs font-medium">
+              <span className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-100 text-slate-600 text-sm font-medium">
                 Reference Only
               </span>
             </div>

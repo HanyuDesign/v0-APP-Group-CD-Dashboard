@@ -223,7 +223,7 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-blue-100 text-blue-700 text-xs font-medium">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-100 text-blue-700 text-sm font-medium">
                   <Info className="h-3 w-3" />
                   Total Capacity (kt)
                 </div>
@@ -361,7 +361,7 @@ export function OverviewPanel({ input, showHeader = true }: OverviewPanelProps) 
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-red-100 text-red-700 text-xs font-medium">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-red-100 text-red-700 text-sm font-medium">
                       <Info className="h-3 w-3" />
                       Total Capacity (kt)
                     </div>

@@ -143,7 +143,7 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
           <div className="mb-4 flex items-center gap-2">
             <Package className="h-4 w-4 text-primary" />
             <span className="text-base font-semibold text-primary">APP Capacity Decisions</span>
-            <span className="ml-auto px-2 py-0.5 text-[10px] font-medium bg-primary/10 text-primary rounded uppercase">User Input</span>
+            <span className="ml-auto px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded uppercase">User Input</span>
           </div>
           
           <Table>
@@ -219,7 +219,7 @@ export function PulpModule({ settings, onChange }: PulpModuleProps) {
           <div className="mb-4 flex items-center gap-2">
             <Users className="h-4 w-4 text-muted-foreground" />
             <span className="text-base font-semibold">Competitor Capacity Reference</span>
-            <span className="ml-auto px-2 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground rounded uppercase">Read Only</span>
+            <span className="ml-auto px-2 py-0.5 text-xs font-medium bg-muted text-muted-foreground rounded uppercase">Read Only</span>
           </div>
           
           <Table>

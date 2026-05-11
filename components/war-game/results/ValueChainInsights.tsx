@@ -104,7 +104,7 @@ export function ValueChainInsights({ result, activeStage, onStageChange, stages 
       <div className="flex items-center gap-3">
         <Lightbulb className="h-5 w-5 text-indigo-600" />
         <h3 className="font-bold text-foreground">Strategic Insights</h3>
-        <span className="text-xs text-indigo-600 bg-indigo-100 px-2 py-0.5 rounded">Value Chain Flow</span>
+        <span className="text-sm text-indigo-600 bg-indigo-100 px-2.5 py-0.5 rounded">Value Chain Flow</span>
         <p className="text-xs text-muted-foreground ml-auto">Click a stage to explore details</p>
       </div>
 
@@ -158,7 +158,7 @@ export function ValueChainInsights({ result, activeStage, onStageChange, stages 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className={cn(
-                      'px-2 py-1 rounded text-xs font-medium',
+                      'px-2.5 py-1 rounded text-sm font-medium',
                       getStatusColor(data.status, isActive)
                     )}>
                       {data.primaryMetric}
