@@ -153,7 +153,7 @@ export function WoodchipSupplyOutput({ settings }: WoodchipSupplyOutputProps) {
                 </tbody>
               </table>
             </div>
-            <p className="text-xs text-muted-foreground mt-2 italic">
+            <p className="text-sm text-muted-foreground mt-2 italic">
               Affected by: Real Estate ({settings.chinaRealEstateCondition}) + Logging Policy ({settings.chinaLoggingPolicy} from {settings.chinaLoggingPolicyStartYear})
             </p>
           </div>
@@ -211,7 +211,7 @@ export function WoodchipSupplyOutput({ settings }: WoodchipSupplyOutputProps) {
                 </tbody>
               </table>
             </div>
-            <p className="text-xs text-muted-foreground mt-2 italic">
+            <p className="text-sm text-muted-foreground mt-2 italic">
               Affected by: Vietnam Export Policy ({settings.vietnamExportPolicy} from {settings.vietnamExportPolicyStartYear})
             </p>
           </div>

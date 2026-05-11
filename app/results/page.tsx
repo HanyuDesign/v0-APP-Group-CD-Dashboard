@@ -156,10 +156,10 @@ export default function ResultsPage() {
           <div className="flex items-center">
             <button
               onClick={handleBackToInput}
-              className="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-emerald-600 hover:text-emerald-700 flex items-center gap-2"
+              className="px-4 py-3 text-base font-medium border-b-2 border-transparent text-emerald-600 hover:text-emerald-700 flex items-center gap-2"
             >
-              <span className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold bg-emerald-100 text-emerald-600">
-                <Check className="h-3 w-3" />
+              <span className="flex h-6 w-6 items-center justify-center rounded-full text-sm font-semibold bg-emerald-100 text-emerald-600">
+                <Check className="h-3.5 w-3.5" />
               </span>
               Market Input
             </button>
@@ -170,10 +170,10 @@ export default function ResultsPage() {
           <div className="flex items-center">
             <button
               onClick={handleBackToInput}
-              className="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-emerald-600 hover:text-emerald-700 flex items-center gap-2"
+              className="px-4 py-3 text-base font-medium border-b-2 border-transparent text-emerald-600 hover:text-emerald-700 flex items-center gap-2"
             >
-              <span className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold bg-emerald-100 text-emerald-600">
-                <Check className="h-3 w-3" />
+              <span className="flex h-6 w-6 items-center justify-center rounded-full text-sm font-semibold bg-emerald-100 text-emerald-600">
+                <Check className="h-3.5 w-3.5" />
               </span>
               Competitor Configure
             </button>
@@ -184,10 +184,10 @@ export default function ResultsPage() {
           <div className="flex items-center">
             <button
               onClick={handleBackToInput}
-              className="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-emerald-600 hover:text-emerald-700 flex items-center gap-2"
+              className="px-4 py-3 text-base font-medium border-b-2 border-transparent text-emerald-600 hover:text-emerald-700 flex items-center gap-2"
             >
-              <span className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold bg-emerald-100 text-emerald-600">
-                <Check className="h-3 w-3" />
+              <span className="flex h-6 w-6 items-center justify-center rounded-full text-sm font-semibold bg-emerald-100 text-emerald-600">
+                <Check className="h-3.5 w-3.5" />
               </span>
               Reaction
             </button>
@@ -196,18 +196,18 @@ export default function ResultsPage() {
           
           {/* Step 4: Simulation Results - Active */}
           <button
-            className="px-4 py-2.5 text-sm font-medium border-b-2 border-primary text-primary flex items-center gap-2"
+            className="px-4 py-3 text-base font-medium border-b-2 border-primary text-primary flex items-center gap-2"
           >
-            <span className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold bg-primary text-primary-foreground">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full text-sm font-semibold bg-primary text-primary-foreground">
               4
             </span>
             Simulation Results
           </button>
           
           {/* Progress indicator */}
-          <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
-            <span>Step 4 of 4</span>
-            <div className="h-1.5 w-24 rounded-full bg-secondary overflow-hidden">
+          <div className="ml-auto flex items-center gap-2 text-sm font-medium text-muted-foreground">
+            <span>Step <span className="text-foreground">4</span> of 4</span>
+            <div className="h-2 w-32 rounded-full bg-secondary overflow-hidden">
               <div className="h-full bg-primary w-full" />
             </div>
           </div>

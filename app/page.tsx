@@ -197,7 +197,7 @@ export default function InputPage() {
                   onClick={() => handleStepClick(step.key)}
                   disabled={isDisabled}
                   className={cn(
-                    'relative px-4 py-2.5 text-sm font-medium border-b-2 transition-all flex items-center gap-2',
+                    'relative px-4 py-3 text-base font-medium border-b-2 transition-all flex items-center gap-2',
                     isActive 
                       ? 'border-primary text-primary' 
                       : isPast
@@ -209,14 +209,14 @@ export default function InputPage() {
                 >
                   {/* Step number / check */}
                   <span className={cn(
-                    'flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold',
+                    'flex h-6 w-6 items-center justify-center rounded-full text-sm font-semibold',
                     isActive 
                       ? 'bg-primary text-primary-foreground' 
                       : isPast
                         ? 'bg-emerald-100 text-emerald-600'
                         : 'bg-muted text-muted-foreground'
                   )}>
-                    {isPast ? <Check className="h-3 w-3" /> : index + 1}
+                    {isPast ? <Check className="h-3.5 w-3.5" /> : index + 1}
                   </span>
                   <span>{step.label}</span>
                 </button>
@@ -229,9 +229,9 @@ export default function InputPage() {
           })}
           
           {/* Progress indicator */}
-          <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
-            <span>Step {currentStepIndex + 1} of {STEPS.length}</span>
-            <div className="h-1.5 w-24 rounded-full bg-secondary overflow-hidden">
+          <div className="ml-auto flex items-center gap-2 text-sm font-medium text-muted-foreground">
+            <span>Step <span className="text-foreground">{currentStepIndex + 1}</span> of {STEPS.length}</span>
+            <div className="h-2 w-32 rounded-full bg-secondary overflow-hidden">
               <div 
                 className="h-full bg-primary transition-all duration-300"
                 style={{ width: `${((currentStepIndex + 1) / STEPS.length) * 100}%` }}

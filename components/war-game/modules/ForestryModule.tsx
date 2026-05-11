@@ -69,7 +69,7 @@ export function ForestryModule({
         <div className="rounded-lg border border-border/50 bg-secondary/20 p-4">
           <div className="flex items-center gap-2 mb-4">
             <Building2 className="h-4 w-4 text-amber-600" />
-            <h3 className="font-semibold text-sm">Domestic Demand Driver (China)</h3>
+            <h3 className="font-semibold text-base">Domestic Demand Driver (China)</h3>
           </div>
           
           <div className="space-y-3">
@@ -80,7 +80,7 @@ export function ForestryModule({
               labels={{ downturn: 'Downturn', stable: 'Stable', recovery: 'Recovery' }}
               onChange={(value) => onChange({ ...settings, chinaRealEstateCondition: value })}
             />
-            <p className="text-xs text-muted-foreground italic">
+            <p className="text-sm text-muted-foreground italic">
               Applies across all years. Downturn increases wood availability; Recovery reduces it.
             </p>
           </div>
@@ -170,7 +170,7 @@ export function ForestryModule({
         </div>
 
         {/* Helper text */}
-        <p className="text-xs text-muted-foreground italic border-t border-border/30 pt-3">
+        <p className="text-sm text-muted-foreground italic border-t border-border/30 pt-3">
           Policy changes take effect from the selected year onward and impact woodchip supply dynamically over time.
         </p>
       </CardContent>

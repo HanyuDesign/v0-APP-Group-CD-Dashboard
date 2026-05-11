@@ -366,10 +366,10 @@ function SupplySection({
 
       {/* Helper text */}
       <div className="px-4 py-2 bg-muted/20 border-t border-border/30 space-y-1">
-        <p className="text-[11px] text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           <span className="font-medium text-[#cc0000]">APP:</span> Enter yearly capacity additions. Total capacity is automatically calculated.
         </p>
-        <p className="text-[11px] text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           <span className="font-medium text-blue-600">Competitors:</span> Click any value to adjust total capacity assumptions.
         </p>
       </div>
