@@ -148,29 +148,29 @@ function DownstreamTable({
         {/* Key Metrics Summary */}
         <div className="grid grid-cols-4 gap-3">
           <div className="p-3 rounded-lg bg-white/70 text-center">
-            <div className="text-sm font-medium text-muted-foreground mb-1">Supply</div>
-            <div className="text-xl font-bold tabular-nums">{data.supply} kt</div>
+            <div className="text-base font-medium text-muted-foreground mb-1">Supply</div>
+            <div className="text-2xl font-bold tabular-nums leading-tight tracking-tight">{data.supply} kt</div>
           </div>
           <div className="p-3 rounded-lg bg-white/70 text-center">
-            <div className="text-sm font-medium text-muted-foreground mb-1">Demand</div>
-            <div className="text-xl font-bold tabular-nums">{data.demand} kt</div>
+            <div className="text-base font-medium text-muted-foreground mb-1">Demand</div>
+            <div className="text-2xl font-bold tabular-nums leading-tight tracking-tight">{data.demand} kt</div>
           </div>
           <div className="p-3 rounded-lg bg-white/70 text-center">
-            <div className="text-sm font-medium text-muted-foreground mb-1">Utilization</div>
+            <div className="text-base font-medium text-muted-foreground mb-1">Utilization</div>
             <div className={cn(
-              'text-xl font-bold tabular-nums',
+              'text-2xl font-bold tabular-nums leading-tight tracking-tight',
               data.utilization >= 85 ? 'text-emerald-600' : data.utilization >= 75 ? 'text-amber-600' : 'text-red-600'
             )}>
               {data.utilization.toFixed(1)}%
             </div>
           </div>
           <div className="p-3 rounded-lg bg-white/70 text-center">
-            <div className="text-sm font-medium text-muted-foreground mb-1">Balance</div>
+            <div className="text-base font-medium text-muted-foreground mb-1">Balance</div>
             <div className={cn(
-              'text-xl font-bold flex items-center justify-center gap-1 tabular-nums',
+              'text-2xl font-bold flex items-center justify-center gap-1 tabular-nums leading-tight tracking-tight',
               data.balance > 20 ? 'text-amber-600' : data.balance < -20 ? 'text-emerald-600' : 'text-foreground'
             )}>
-              {data.balance > 0 ? <TrendingUp className="h-4 w-4" /> : data.balance < 0 ? <TrendingDown className="h-4 w-4" /> : <Minus className="h-4 w-4" />}
+              {data.balance > 0 ? <TrendingUp className="h-5 w-5" /> : data.balance < 0 ? <TrendingDown className="h-5 w-5" /> : <Minus className="h-5 w-5" />}
               {data.balance > 0 ? '+' : ''}{data.balance}
             </div>
           </div>
