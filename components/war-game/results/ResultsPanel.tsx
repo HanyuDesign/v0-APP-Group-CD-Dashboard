@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Clock, Trees, Factory, Package } from 'lucide-react'
 import { ValueChainInsights } from './ValueChainInsights'
 import { ForestryDetails } from './ForestryDetails'
-import { PulpCapacityDetails } from './PulpCapacityDetails'
+import { PulpCapacityDetails, PulpExportReallocation } from './PulpCapacityDetails'
 import { DownstreamDetails } from './DownstreamDetails'
 import { MarketResults } from './MarketResults'
 import { FinancialResults } from './FinancialResults'
@@ -50,19 +50,21 @@ const NAV_ITEMS: Record<ValueChainStage, { id: string; label: string }[]> = {
     { id: 'forestry-woodchip-supply', label: 'Woodchip Supply Projection' },
     { id: 'forestry-import-dependency', label: 'Import Dependency Trend' },
     { id: 'forestry-supply-demand', label: 'Supply-Demand Balance' },
+    { id: 'market-data', label: 'Market Data' },
   ],
   pulp: [
-    { id: 'pulp-value-chain-flow', label: 'Value Chain Impact Flow' },
+    { id: 'pulp-market-impact', label: 'Market Impact Summary' },
     { id: 'pulp-app-capacity', label: 'APP Capacity Outcome' },
     { id: 'pulp-competitor-response', label: 'Competitor Response' },
+    { id: 'market-data', label: 'Market Data' },
     { id: 'pulp-export-reallocation', label: 'Global Export Reallocation' },
-    { id: 'pulp-market-impact', label: 'Market Impact Summary' },
   ],
   downstream: [
     { id: 'downstream-health-overview', label: 'Market Health Overview' },
     { id: 'downstream-paper', label: 'Paper' },
     { id: 'downstream-board', label: 'Packaging / Carton Board' },
     { id: 'downstream-tissue', label: 'Tissue' },
+    { id: 'market-data', label: 'Market Data' },
   ],
 }
 
@@ -141,11 +143,11 @@ function StickyNav({
 }
 
 // Market Data Tabs Component
-function MarketDataTabs({ result, status }: { result: SimulationResult, status: SimulationStatus }) {
+function MarketDataTabs({ result, status, id }: { result: SimulationResult, status: SimulationStatus, id?: string }) {
   const [activeTab, setActiveTab] = useState<'market' | 'financial'>('market')
   
   return (
-    <div className="space-y-4">
+    <div id={id} className="space-y-4 scroll-mt-96">
       {/* Tab Header */}
       <div className="flex items-center gap-2">
         <h3 className="text-sm font-semibold text-muted-foreground">Market Data</h3>
@@ -316,25 +318,32 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
 
       {/* Detailed Analysis Content */}
       <section>
-        {/* Content */}
-        <div className={cn(status === 'running' && 'opacity-50')}>
+        <div className={cn('space-y-6', status === 'running' && 'opacity-50')}>
           {activeStage === 'forestry' && (
-            <ForestryDetails result={result} />
+            <>
+              <ForestryDetails result={result} />
+              <MarketDataTabs result={result} status={status} id="market-data" />
+            </>
           )}
-          
+
           {activeStage === 'pulp' && (
-            <PulpCapacityDetails result={result} />
+            <>
+              {/* Market Impact Summary → APP Capacity Outcome → Competitor Response */}
+              <PulpCapacityDetails result={result} />
+              {/* Market Data (shared) */}
+              <MarketDataTabs result={result} status={status} id="market-data" />
+              {/* Global Export Reallocation */}
+              <PulpExportReallocation result={result} />
+            </>
           )}
-          
+
           {activeStage === 'downstream' && (
-            <DownstreamDetails result={result} />
+            <>
+              <DownstreamDetails result={result} />
+              <MarketDataTabs result={result} status={status} id="market-data" />
+            </>
           )}
         </div>
-      </section>
-
-      {/* Section 3: Market Data with Tabs */}
-      <section>
-        <MarketDataTabs result={result} status={status} />
       </section>
     </div>
   )
