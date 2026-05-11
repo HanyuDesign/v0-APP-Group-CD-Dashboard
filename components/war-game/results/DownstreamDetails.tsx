@@ -200,7 +200,7 @@ function DownstreamTable({
                     <td key={year} className="text-center py-2.5 px-2">
                       <span className="font-mono">{value}</span>
                       {idx > 0 && delta > 0 && (
-                        <span className="text-base font-semibold text-emerald-600 ml-1.5 tabular-nums">+{delta}</span>
+                        <span className="text-base text-emerald-600 ml-1.5 tabular-nums">+{delta}</span>
                       )}
                     </td>
                   )

@@ -267,7 +267,7 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
         {/* Section 2: Detailed Analysis Header + Navigation */}
         <section className="mt-4">
           <div className="flex items-center gap-2 mb-3">
-            <h3 className="text-sm font-semibold text-muted-foreground">Detailed Analysis</h3>
+            <h3 className="text-base font-semibold text-muted-foreground">Detailed Analysis</h3>
             <span className="h-px flex-1 bg-border" />
           </div>
           
