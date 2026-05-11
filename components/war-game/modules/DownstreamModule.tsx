@@ -64,13 +64,13 @@ function DemandCard({
       
       <p className="mt-2 text-base text-muted-foreground">{description}</p>
       
-      <div className="mt-4 space-y-2">
-        <span className="block text-sm font-medium text-muted-foreground">Demand Scenario</span>
+      <div className="mt-4 flex items-center justify-between gap-3">
+        <span className="text-base font-medium text-muted-foreground flex-shrink-0">Demand Scenario</span>
         <Select
           value={demandValue}
           onValueChange={(v) => onDemandChange(v as DemandScenario)}
         >
-          <SelectTrigger className="h-10 w-full text-base bg-white border-2">
+          <SelectTrigger className="h-10 min-w-32 text-base bg-white border-2">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
