@@ -207,7 +207,7 @@ function BalancePill({ balance }: { balance: MarketBalance }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ring-1',
+        'inline-flex items-center rounded-full px-2.5 py-0.5 text-[11.5px] font-semibold uppercase tracking-wider ring-1',
         map.cls,
       )}
     >
@@ -235,7 +235,7 @@ function PostureTag({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ring-1',
+        'inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11.5px] font-medium ring-1',
         toneCls,
       )}
     >
@@ -255,13 +255,13 @@ function StateRow({
   accent?: boolean
 }) {
   return (
-    <div className="grid grid-cols-[5.5rem_1fr] items-baseline gap-2">
-      <dt className="text-[10.5px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+    <div className="grid grid-cols-[6.5rem_1fr] items-baseline gap-3">
+      <dt className="text-[12px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
         {label}
       </dt>
       <dd
         className={cn(
-          'text-[13px] leading-snug',
+          'text-[15px] leading-snug',
           accent ? 'font-medium text-foreground' : 'text-foreground/85',
         )}
       >
@@ -291,36 +291,36 @@ function PhaseCard({ phase }: { phase: MarketPhase }) {
       )}
     >
       {/* Phase header */}
-      <header className="space-y-1.5">
+      <header className="space-y-2">
         <div className="flex items-center justify-between gap-2">
-          <span className="font-mono text-[10.5px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+          <span className="font-mono text-[12px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
             Phase {phase.index} of 3 · {phase.window}
           </span>
           {phase.isStrategicWindow && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-700 ring-1 ring-amber-200">
-              <Target className="h-2.5 w-2.5" />
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-[11.5px] font-semibold uppercase tracking-wider text-amber-700 ring-1 ring-amber-200">
+              <Target className="h-3 w-3" />
               Strategic window
             </span>
           )}
         </div>
-        <h4 className={cn('text-base font-semibold tracking-tight', accentText)}>
+        <h4 className={cn('text-xl font-semibold tracking-tight', accentText)}>
           {phase.label}
         </h4>
-        <p className="text-[13px] leading-relaxed text-muted-foreground">{phase.tagline}</p>
+        <p className="text-base leading-relaxed text-muted-foreground">{phase.tagline}</p>
       </header>
 
       {/* Visual indicators */}
-      <div className="space-y-3 rounded-md border border-border/40 bg-muted/30 p-3">
+      <div className="space-y-3.5 rounded-md border border-border/40 bg-muted/30 p-4">
         {/* Pricing pressure meter */}
         <div>
           <div className="flex items-baseline justify-between">
-            <span className="flex items-center gap-1.5 text-[10.5px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-              <Gauge className="h-3 w-3" />
+            <span className="flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+              <Gauge className="h-3.5 w-3.5" />
               Pricing pressure
             </span>
             <span
               className={cn(
-                'font-mono text-[11px] font-semibold tabular-nums',
+                'font-mono text-sm font-semibold tabular-nums',
                 pressureTextTone(phase.pressure),
               )}
             >
@@ -328,7 +328,7 @@ function PhaseCard({ phase }: { phase: MarketPhase }) {
             </span>
           </div>
           <div
-            className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-border/60"
+            className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-border/60"
             role="progressbar"
             aria-valuenow={phase.pressure}
             aria-valuemin={0}
@@ -343,8 +343,8 @@ function PhaseCard({ phase }: { phase: MarketPhase }) {
         </div>
         {/* Market balance */}
         <div className="flex items-center justify-between">
-          <span className="flex items-center gap-1.5 text-[10.5px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-            <Scale className="h-3 w-3" />
+          <span className="flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+            <Scale className="h-3.5 w-3.5" />
             Market balance
           </span>
           <BalancePill balance={phase.balance} />
@@ -352,7 +352,7 @@ function PhaseCard({ phase }: { phase: MarketPhase }) {
       </div>
 
       {/* State transition lines */}
-      <dl className="space-y-2">
+      <dl className="space-y-2.5">
         <StateRow label="Market" value={phase.state.market} />
         <StateRow label="APP" value={phase.state.app} accent />
         <StateRow label="Competitors" value={phase.state.competitors} />
@@ -386,16 +386,16 @@ function PhaseStepper({ phases }: { phases: MarketPhase[] }) {
       {/* Header */}
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <div className="flex items-center gap-2">
-          <TrendingUp className="h-3.5 w-3.5 text-indigo-600" />
-          <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <TrendingUp className="h-4 w-4 text-indigo-600" />
+          <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             Market Evolution Phases
           </span>
-          <span className="text-xs text-muted-foreground/80">
+          <span className="text-[13px] text-muted-foreground/80">
             · Step through 2026 — 2031
           </span>
         </div>
-        <span className="flex items-center gap-1.5 text-[10.5px] font-medium uppercase tracking-[0.12em] text-muted-foreground/80">
-          <Gauge className="h-3 w-3" />
+        <span className="flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-[0.12em] text-muted-foreground/80">
+          <Gauge className="h-3.5 w-3.5" />
           Pricing pressure trajectory
         </span>
       </div>
@@ -421,7 +421,7 @@ function PhaseStepper({ phases }: { phases: MarketPhase[] }) {
                 >
                   <span
                     className={cn(
-                      'relative flex h-8 w-8 items-center justify-center rounded-full transition-all ring-background',
+                      'relative flex h-9 w-9 items-center justify-center rounded-full transition-all ring-background',
                       isActive
                         ? cn(
                             'ring-[3px] shadow-sm',
@@ -435,7 +435,7 @@ function PhaseStepper({ phases }: { phases: MarketPhase[] }) {
                   >
                     <span
                       className={cn(
-                        'font-mono text-xs font-semibold tabular-nums',
+                        'font-mono text-sm font-semibold tabular-nums',
                         isActive || isPast ? 'text-white' : 'text-muted-foreground',
                       )}
                     >
@@ -445,7 +445,7 @@ function PhaseStepper({ phases }: { phases: MarketPhase[] }) {
                   <span className="flex flex-col items-center gap-0.5">
                     <span
                       className={cn(
-                        'text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors',
+                        'text-[13px] font-semibold uppercase tracking-[0.12em] transition-colors',
                         isActive ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground/80',
                       )}
                     >
@@ -453,7 +453,7 @@ function PhaseStepper({ phases }: { phases: MarketPhase[] }) {
                     </span>
                     <span
                       className={cn(
-                        'font-mono text-[10.5px] tabular-nums',
+                        'font-mono text-[12px] tabular-nums',
                         isActive ? 'text-muted-foreground' : 'text-muted-foreground/60',
                       )}
                     >
@@ -471,7 +471,7 @@ function PhaseStepper({ phases }: { phases: MarketPhase[] }) {
       <PhaseCard key={phase.key} phase={phase} />
 
       {/* Step hint — calm scroll cue */}
-      <div className="flex items-center justify-between px-1 text-[11px] text-muted-foreground/70">
+      <div className="flex items-center justify-between px-1 text-[13px] text-muted-foreground/70">
         <button
           type="button"
           onClick={() => setActive((i) => Math.max(0, i - 1))}
@@ -588,19 +588,19 @@ function APPStrategicPosition({
           </div>
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-red-700">
+              <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-red-700">
                 APP Strategic Position
               </span>
               <AIBadge size="sm" />
             </div>
-            <h3 className="mt-1 text-lg font-semibold tracking-tight text-foreground">
+            <h3 className="mt-1.5 text-2xl font-semibold tracking-tight text-foreground">
               Did APP&apos;s strategy work?
             </h3>
           </div>
         </div>
         <span
           className={cn(
-            'inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold',
+            'inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold',
             stance.tone,
           )}
         >
@@ -609,7 +609,7 @@ function APPStrategicPosition({
       </header>
 
       {/* Strategic takeaway — full width, single calm column */}
-      <p className="w-full border-l-2 border-red-300 pl-5 pr-2 text-[15px] leading-relaxed text-foreground/85 text-pretty">
+      <p className="w-full border-l-2 border-red-300 pl-5 pr-2 text-lg leading-relaxed text-foreground/85 text-pretty">
         {takeaway}
       </p>
 
@@ -673,16 +673,16 @@ function APPStrategicPosition({
         helper="Year-by-year APP China additions and market release"
       >
         <div className="overflow-x-auto rounded-md border border-border/40 bg-card/40">
-          <table className="w-full text-sm">
+          <table className="w-full text-base">
             <thead>
               <tr className="border-b border-border/50">
-                <th className="w-48 px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <th className="w-48 px-3 py-3 text-left text-base font-semibold text-foreground/80">
                   Metric
                 </th>
                 {YEARS.map((year) => (
                   <th
                     key={year}
-                    className="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-muted-foreground"
+                    className="px-3 py-3 text-center text-base font-semibold text-foreground/80"
                   >
                     {year}
                   </th>
@@ -691,7 +691,7 @@ function APPStrategicPosition({
             </thead>
             <tbody>
               <tr className="border-b border-border/30">
-                <td className="px-3 py-2.5">
+                <td className="px-3 py-3">
                   <div className="flex items-center gap-2">
                     <span className="h-2.5 w-2.5 rounded-full bg-red-600" />
                     <span className="font-medium text-foreground">APP China capacity</span>
@@ -700,10 +700,10 @@ function APPStrategicPosition({
                 {YEARS.map((year) => {
                   const value = input.appCapacity.appChina[year]
                   return (
-                    <td key={year} className="px-3 py-2.5 text-center">
+                    <td key={year} className="px-3 py-3 text-center">
                       <span
                         className={cn(
-                          'font-mono text-sm font-semibold tabular-nums',
+                          'font-mono text-base font-semibold tabular-nums',
                           year === 2026
                             ? 'text-foreground'
                             : value > 0
@@ -718,14 +718,14 @@ function APPStrategicPosition({
                 })}
               </tr>
               <tr>
-                <td className="px-3 py-2.5 text-muted-foreground">Market release (70%)</td>
+                <td className="px-3 py-3 text-muted-foreground">Market release (70%)</td>
                 {YEARS.map((year) => {
                   const value = input.appCapacity.appChina[year]
                   const release = Math.round(value * 0.7)
                   return (
                     <td
                       key={year}
-                      className="px-3 py-2.5 text-center font-mono text-sm tabular-nums text-muted-foreground"
+                      className="px-3 py-3 text-center font-mono text-base tabular-nums text-muted-foreground"
                     >
                       {year === 2026 ? release : release > 0 ? `+${release}` : '—'}
                     </td>
@@ -768,17 +768,17 @@ function CompetitorDynamics({
           </div>
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-blue-700">
+              <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-blue-700">
                 Competitor Dynamics
               </span>
               <AIBadge size="sm" />
             </div>
-            <h3 className="mt-1 text-lg font-semibold tracking-tight text-foreground">
+            <h3 className="mt-1.5 text-2xl font-semibold tracking-tight text-foreground">
               How competitors respond across the horizon
             </h3>
           </div>
         </div>
-        <div className="hidden items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 md:inline-flex">
+        <div className="hidden items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[13px] font-medium text-emerald-700 md:inline-flex">
           <span className="relative flex h-1.5 w-1.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
@@ -836,17 +836,17 @@ function CompetitorDetailTable({ result }: { result: SimulationResult }) {
   return (
     <TooltipProvider>
       <div className="overflow-x-auto rounded-md border border-border/40 bg-card/40">
-        <table className="w-full table-fixed text-sm">
+        <table className="w-full table-fixed text-base">
           <thead>
             <tr className="border-b border-border/50">
               <th
-                className="px-2 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground"
+                className="px-2.5 py-3 text-left text-base font-semibold text-foreground/80"
                 style={{ width: '14%' }}
               >
                 Player
               </th>
               <th
-                className="px-2 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground"
+                className="px-2.5 py-3 text-left text-base font-semibold text-foreground/80"
                 style={{ width: '14%' }}
               >
                 Strategy
@@ -854,20 +854,20 @@ function CompetitorDetailTable({ result }: { result: SimulationResult }) {
               {years.map((year) => (
                 <th
                   key={year}
-                  className="px-2 py-2.5 text-center text-xs font-medium uppercase tracking-wide text-muted-foreground"
+                  className="px-2 py-3 text-center text-base font-semibold text-foreground/80"
                   style={{ width: '8%' }}
                 >
                   {year}
                 </th>
               ))}
               <th
-                className="px-2 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground"
+                className="px-2.5 py-3 text-left text-base font-semibold text-foreground/80"
                 style={{ width: '10%' }}
               >
                 Action
               </th>
               <th
-                className="px-2 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground"
+                className="px-2.5 py-3 text-left text-base font-semibold text-foreground/80"
                 style={{ width: '22%' }}
               >
                 Rationale
@@ -945,7 +945,7 @@ function CompetitorDetailTable({ result }: { result: SimulationResult }) {
 
               return (
                 <tr key={change.playerId} className="border-b border-border/30 last:border-0">
-                  <td className="px-2 py-2.5">
+                  <td className="px-2.5 py-3">
                     <div className="flex items-center gap-2">
                       <span
                         className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
@@ -956,12 +956,12 @@ function CompetitorDetailTable({ result }: { result: SimulationResult }) {
                       </span>
                     </div>
                   </td>
-                  <td className="px-2 py-2.5">
+                  <td className="px-2.5 py-3">
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <span
                           className={cn(
-                            'inline-flex cursor-help items-center whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium',
+                            'inline-flex cursor-help items-center whitespace-nowrap rounded-full border px-2 py-0.5 text-[13px] font-medium',
                             strategy.color,
                           )}
                         >
@@ -969,7 +969,7 @@ function CompetitorDetailTable({ result }: { result: SimulationResult }) {
                         </span>
                       </TooltipTrigger>
                       <TooltipContent side="top" className="max-w-xs">
-                        <p className="text-xs">{strategy.tooltip}</p>
+                        <p className="text-sm">{strategy.tooltip}</p>
                       </TooltipContent>
                     </Tooltip>
                   </td>
@@ -977,10 +977,10 @@ function CompetitorDetailTable({ result }: { result: SimulationResult }) {
                     const val = yearlyChange[year]
                     const isBase = year === 2026
                     return (
-                      <td key={year} className="px-2 py-2.5 text-center">
+                      <td key={year} className="px-2 py-3 text-center">
                         <span
                           className={cn(
-                            'font-mono text-sm tabular-nums',
+                            'font-mono text-base tabular-nums',
                             isBase
                               ? 'text-muted-foreground'
                               : val > 0
@@ -995,10 +995,10 @@ function CompetitorDetailTable({ result }: { result: SimulationResult }) {
                       </td>
                     )
                   })}
-                  <td className="px-2 py-2.5">
+                  <td className="px-2.5 py-3">
                     <span
                       className={cn(
-                        'rounded px-2 py-0.5 text-xs font-medium whitespace-nowrap',
+                        'rounded px-2 py-0.5 text-[13px] font-medium whitespace-nowrap',
                         change.action === 'add' && 'bg-emerald-50 text-emerald-700',
                         change.action === 'delay' && 'bg-amber-50 text-amber-700',
                         change.action !== 'add' && change.action !== 'delay' && 'bg-slate-100 text-slate-700',
@@ -1011,8 +1011,8 @@ function CompetitorDetailTable({ result }: { result: SimulationResult }) {
                           : 'Maintaining'}
                     </span>
                   </td>
-                  <td className="px-2 py-2.5">
-                    <p className="text-sm leading-snug text-muted-foreground">{rationale}</p>
+                  <td className="px-2.5 py-3">
+                    <p className="text-[15px] leading-snug text-muted-foreground">{rationale}</p>
                   </td>
                 </tr>
               )
@@ -1038,7 +1038,7 @@ export function PulpExportReallocation({ result }: PulpCapacityDetailsProps) {
     >
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-base text-foreground/85">
+          <CardTitle className="flex items-center gap-2 text-lg text-foreground/85">
             <Globe className="h-4 w-4 text-indigo-600" />
             Global Export Reallocation
           </CardTitle>
@@ -1047,22 +1047,22 @@ export function PulpExportReallocation({ result }: PulpCapacityDetailsProps) {
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-lg">
             <thead>
               <tr className="border-b border-border/50">
-                <th className="w-40 px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <th className="w-40 px-3 py-3 text-left text-base font-semibold text-foreground/80">
                   Exporter
                 </th>
-                <th className="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <th className="px-3 py-3 text-center text-base font-semibold text-foreground/80">
                   Total Volume
                 </th>
-                <th className="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <th className="px-3 py-3 text-center text-base font-semibold text-foreground/80">
                   China Share
                 </th>
-                <th className="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <th className="px-3 py-3 text-center text-base font-semibold text-foreground/80">
                   China Volume
                 </th>
-                <th className="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <th className="px-3 py-3 text-center text-base font-semibold text-foreground/80">
                   ROW Volume
                 </th>
               </tr>
@@ -1076,7 +1076,7 @@ export function PulpExportReallocation({ result }: PulpCapacityDetailsProps) {
                     key={allocation.playerId}
                     className="border-b border-border/30 last:border-0"
                   >
-                    <td className="px-3 py-2.5">
+                    <td className="px-3 py-3">
                       <div className="flex items-center gap-2">
                         {player && (
                           <span
@@ -1089,10 +1089,10 @@ export function PulpExportReallocation({ result }: PulpCapacityDetailsProps) {
                         </span>
                       </div>
                     </td>
-                    <td className="px-3 py-2.5 text-center font-mono text-sm tabular-nums">
+                    <td className="px-3 py-3 text-center font-mono tabular-nums">
                       {totalVolume} kt
                     </td>
-                    <td className="px-3 py-2.5 text-center">
+                    <td className="px-3 py-3 text-center">
                       <span
                         className={cn(
                           'font-semibold',
@@ -1102,10 +1102,10 @@ export function PulpExportReallocation({ result }: PulpCapacityDetailsProps) {
                         {Math.round(allocation.chinaShare * 100)}%
                       </span>
                     </td>
-                    <td className="px-3 py-2.5 text-center font-mono text-sm tabular-nums text-blue-600">
+                    <td className="px-3 py-3 text-center font-mono tabular-nums text-blue-600">
                       {allocation.chinaVolume} kt
                     </td>
-                    <td className="px-3 py-2.5 text-center font-mono text-sm tabular-nums text-muted-foreground">
+                    <td className="px-3 py-3 text-center font-mono tabular-nums text-muted-foreground">
                       {allocation.otherRegionsVolume} kt
                     </td>
                   </tr>
@@ -1148,15 +1148,15 @@ function PositionMetric({
   }[tone]
 
   return (
-    <div className="relative overflow-hidden rounded-lg border border-border/50 bg-card/60 p-4">
+    <div className="relative overflow-hidden rounded-lg border border-border/50 bg-card/60 p-5">
       <span className={cn('absolute left-0 top-0 h-full w-0.5', accentBar)} />
-      <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+      <div className="text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
         {label}
       </div>
-      <div className={cn('mt-2 text-xl font-semibold tracking-tight', toneClass)}>
+      <div className={cn('mt-2.5 text-2xl font-semibold tracking-tight', toneClass)}>
         {value}
       </div>
-      <p className="mt-1.5 text-xs leading-snug text-muted-foreground">{helper}</p>
+      <p className="mt-2 text-sm leading-snug text-muted-foreground">{helper}</p>
     </div>
   )
 }
@@ -1179,24 +1179,24 @@ function StanceCard({
   }[tone]
 
   return (
-    <div className="relative overflow-hidden rounded-lg border border-border/50 bg-card/60 p-4">
+    <div className="relative overflow-hidden rounded-lg border border-border/50 bg-card/60 p-5">
       <span className={cn('absolute left-0 top-0 h-full w-0.5', toneMap.accent)} />
-      <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+      <div className="flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
         <span
           className="inline-block h-1.5 w-1.5 rounded-full"
           style={{ backgroundColor: toneMap.dot }}
         />
         {label}
       </div>
-      <div className="mt-2 flex items-baseline gap-1.5">
-        <span className={cn('font-mono text-2xl font-semibold leading-none tabular-nums', toneMap.value)}>
+      <div className="mt-2.5 flex items-baseline gap-1.5">
+        <span className={cn('font-mono text-3xl font-semibold leading-none tabular-nums', toneMap.value)}>
           {count}
         </span>
-        <span className="text-xs text-muted-foreground">
+        <span className="text-sm text-muted-foreground">
           {count === 1 ? 'player' : 'players'}
         </span>
       </div>
-      <p className="mt-1.5 text-xs leading-snug text-muted-foreground">{subtitle}</p>
+      <p className="mt-2 text-sm leading-snug text-muted-foreground">{subtitle}</p>
     </div>
   )
 }
@@ -1222,11 +1222,11 @@ function Disclosure({
         className="group flex w-full items-center gap-2 border-t border-border/40 pt-3 text-left transition-colors hover:text-foreground"
         aria-expanded={open}
       >
-        <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground transition-colors group-hover:text-foreground">
+        <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-muted-foreground transition-colors group-hover:text-foreground">
           {label}
         </span>
         {helper && (
-          <span className="text-xs text-muted-foreground/80">· {helper}</span>
+          <span className="text-[13px] text-muted-foreground/80">· {helper}</span>
         )}
         <ChevronDown
           className={cn(

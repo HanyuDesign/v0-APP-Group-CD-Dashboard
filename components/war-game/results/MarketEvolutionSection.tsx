@@ -134,14 +134,14 @@ function buildMarketShareData(capacityData: ReturnType<typeof buildCapacityData>
 // Visual primitives
 // ---------------------------------------------------------------------------
 
-const AXIS_STYLE = { fontSize: 11, fill: '#64748b' }
+const AXIS_STYLE = { fontSize: 12, fill: '#64748b' }
 const GRID_STROKE = '#e2e8f0'
 
 function CustomTooltip({ active, payload, label, unit }: any) {
   if (!active || !payload?.length) return null
   return (
     <div className="rounded-md border border-border/60 bg-white/95 px-3 py-2 shadow-sm backdrop-blur">
-      <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      <p className="mb-1 text-[13px] font-semibold uppercase tracking-wide text-muted-foreground">
         {label}
       </p>
       <div className="space-y-0.5">
@@ -154,7 +154,7 @@ function CustomTooltip({ active, payload, label, unit }: any) {
             <span className="text-muted-foreground">{p.name}</span>
             <span className="ml-auto font-mono font-semibold tabular-nums text-foreground">
               {typeof p.value === 'number' ? p.value.toLocaleString() : p.value}
-              {unit && <span className="ml-0.5 text-xs text-muted-foreground">{unit}</span>}
+              {unit && <span className="ml-0.5 text-sm text-muted-foreground">{unit}</span>}
             </span>
           </div>
         ))}
@@ -173,7 +173,7 @@ function LegendDot({
   dashed?: boolean
 }) {
   return (
-    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+    <span className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground">
       {dashed ? (
         <span
           className="inline-block h-0 w-4 border-t-2"
@@ -261,22 +261,22 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
           </div>
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-indigo-600">
+              <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-indigo-600">
                 Executive Market Outcome
               </span>
               <AIBadge size="sm" />
-              <span className="rounded-full border border-border/60 bg-card/60 px-2 py-0.5 text-xs font-medium text-muted-foreground">
+              <span className="rounded-full border border-border/60 bg-card/60 px-2 py-0.5 text-[13px] font-medium text-muted-foreground">
                 2026 — 2031
               </span>
             </div>
-            <h3 className="mt-1 text-xl font-semibold tracking-tight text-foreground">
+            <h3 className="mt-1.5 text-2xl font-semibold tracking-tight text-foreground">
               AI Strategic Summary
             </h3>
           </div>
         </header>
 
         {/* Narrative paragraph — full width, single calm column */}
-        <p className="w-full border-l-2 border-indigo-300 pl-5 pr-2 text-[15px] leading-relaxed text-foreground/85 text-pretty">
+        <p className="w-full border-l-2 border-indigo-300 pl-5 pr-2 text-lg leading-relaxed text-foreground/85 text-pretty">
           {narrative}
         </p>
 
@@ -323,15 +323,15 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
           <div>
             <div className="flex items-center gap-2">
               <Activity className="h-4 w-4 text-foreground/60" />
-              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-foreground/60">
+              <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-foreground/60">
                 Market Evolution
               </span>
             </div>
-            <h4 className="mt-1 text-lg font-semibold tracking-tight text-foreground">
+            <h4 className="mt-1.5 text-2xl font-semibold tracking-tight text-foreground">
               How pricing evolves under this scenario
             </h4>
           </div>
-          <div className="hidden items-center gap-3 text-xs md:flex">
+          <div className="hidden items-center gap-3 md:flex">
             <LegendDot color="#cc0000" label="APP" />
             <LegendDot color="#1d4e89" label="Competitor avg." />
             <LegendDot color="#64748b" label="Market avg." dashed />
@@ -342,16 +342,18 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
         <div className="space-y-3">
           <div className="flex items-baseline justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2">
-                <TrendingDown className="h-4 w-4 text-red-600" />
-                <h5 className="text-base font-semibold tracking-tight text-foreground">
-                  Price Evolution
-                </h5>
-                <span className="text-xs text-muted-foreground">
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <div className="flex items-center gap-2">
+                  <TrendingDown className="h-4 w-4 text-red-600" />
+                  <h5 className="text-lg font-semibold tracking-tight text-foreground">
+                    Price Evolution
+                  </h5>
+                </div>
+                <span className="text-sm text-muted-foreground">
                   Bleached hardwood pulp · CFR China · USD / tonne
                 </span>
               </div>
-              <p className="mt-0.5 text-xs text-muted-foreground">
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                 Primary evidence for the recommendation — projected pricing trajectory.
               </p>
             </div>
@@ -395,7 +397,7 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
                     value: 'Capacity wave',
                     position: 'insideTopRight',
                     fill: '#b45309',
-                    fontSize: 10,
+                    fontSize: 12,
                     fontWeight: 600,
                   }}
                 />
@@ -432,8 +434,8 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
 
           {/* Compact AI annotation, no extra borders */}
           <div className="flex items-start gap-2 pt-1">
-            <Sparkles className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-amber-600" />
-            <p className="text-sm leading-relaxed text-muted-foreground">
+            <Sparkles className="mt-1 h-4 w-4 flex-shrink-0 text-amber-600" />
+            <p className="text-base leading-relaxed text-muted-foreground">
               <span className="font-semibold text-foreground">AI Insight · </span>
               {priceDelta < -30
                 ? `Capacity additions of ~${totalNetAdd.toLocaleString()} kt by 2031 erode pulp pricing by ~${Math.abs(priceDelta)} $/t after 2028. APP's first-mover premium narrows; sustained margin defence depends on integrated downstream pull.`
@@ -489,10 +491,10 @@ function SupportingEvidence({
         className="group flex w-full items-center gap-2 border-t border-border/40 pt-3 text-left transition-colors hover:text-foreground"
         aria-expanded={open}
       >
-        <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground transition-colors group-hover:text-foreground">
+        <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-muted-foreground transition-colors group-hover:text-foreground">
           Supporting evidence
         </span>
-        <span className="text-xs text-muted-foreground/80">
+        <span className="text-[13px] text-muted-foreground/80">
           · Capacity expansion · Market share evolution
         </span>
         <ChevronDown
@@ -546,12 +548,12 @@ function SupportingEvidence({
                 <CartesianGrid strokeDasharray="2 4" stroke={GRID_STROKE} vertical={false} />
                 <XAxis
                   dataKey="year"
-                  tick={{ ...AXIS_STYLE, fontSize: 10 }}
+                  tick={{ ...AXIS_STYLE, fontSize: 11 }}
                   axisLine={{ stroke: GRID_STROKE }}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ ...AXIS_STYLE, fontSize: 10 }}
+                  tick={{ ...AXIS_STYLE, fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                   width={38}
@@ -628,12 +630,12 @@ function SupportingEvidence({
                 <CartesianGrid strokeDasharray="2 4" stroke={GRID_STROKE} vertical={false} />
                 <XAxis
                   dataKey="year"
-                  tick={{ ...AXIS_STYLE, fontSize: 10 }}
+                  tick={{ ...AXIS_STYLE, fontSize: 11 }}
                   axisLine={{ stroke: GRID_STROKE }}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ ...AXIS_STYLE, fontSize: 10 }}
+                  tick={{ ...AXIS_STYLE, fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                   width={38}
@@ -644,7 +646,7 @@ function SupportingEvidence({
                     if (!active || !payload?.length) return null
                     return (
                       <div className="rounded-md border border-border/60 bg-white/95 px-3 py-2 shadow-sm backdrop-blur">
-                        <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        <p className="mb-1 text-[13px] font-semibold uppercase tracking-wide text-muted-foreground">
                           {label}
                         </p>
                         <div className="space-y-0.5">
@@ -657,7 +659,7 @@ function SupportingEvidence({
                               <span className="text-muted-foreground">{p.name}</span>
                               <span className="ml-auto font-mono font-semibold tabular-nums text-foreground">
                                 {typeof p.value === 'number' ? p.value.toFixed(1) : p.value}
-                                <span className="ml-0.5 text-xs text-muted-foreground">%</span>
+                                <span className="ml-0.5 text-sm text-muted-foreground">%</span>
                               </span>
                             </div>
                           ))}
@@ -729,10 +731,10 @@ function SupportingTab({
           : 'border-transparent text-muted-foreground hover:text-foreground/90',
       )}
     >
-      <span className="text-[13px] font-semibold tracking-tight">{label}</span>
+      <span className="text-[15px] font-semibold tracking-tight">{label}</span>
       <span
         className={cn(
-          'text-[11px] transition-colors',
+          'text-[13px] transition-colors',
           active ? 'text-muted-foreground' : 'text-muted-foreground/70',
         )}
       >
@@ -776,23 +778,23 @@ function KpiCard({
   }[tone]
 
   return (
-    <div className="relative overflow-hidden rounded-lg border border-border/50 bg-card/60 p-4">
+    <div className="relative overflow-hidden rounded-lg border border-border/50 bg-card/60 p-5">
       <span className={cn('absolute left-0 top-0 h-full w-0.5', accentBar)} />
-      <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+      <div className="text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
         {label}
       </div>
-      <div className="mt-2 flex items-baseline gap-1.5">
-        {direction === 'down' && <ArrowDownRight className={cn('h-4 w-4', toneClass)} />}
-        {direction === 'up' && <ArrowUpRight className={cn('h-4 w-4', toneClass)} />}
-        <span className={cn('font-mono text-2xl font-semibold leading-none tabular-nums', toneClass)}>
+      <div className="mt-2.5 flex items-baseline gap-1.5">
+        {direction === 'down' && <ArrowDownRight className={cn('h-5 w-5', toneClass)} />}
+        {direction === 'up' && <ArrowUpRight className={cn('h-5 w-5', toneClass)} />}
+        <span className={cn('font-mono text-3xl font-semibold leading-none tabular-nums', toneClass)}>
           {value}
         </span>
         {unit && (
-          <span className="text-sm font-medium text-muted-foreground">{unit}</span>
+          <span className="text-base font-medium text-muted-foreground">{unit}</span>
         )}
       </div>
       {helper && (
-        <div className="mt-2 truncate text-xs leading-snug text-muted-foreground">{helper}</div>
+        <div className="mt-2.5 truncate text-sm leading-snug text-muted-foreground">{helper}</div>
       )}
     </div>
   )
@@ -811,12 +813,12 @@ function SupportingChart({
 }) {
   return (
     <div className="flex flex-col">
-      <div className="mb-2">
-        <h5 className="text-sm font-semibold tracking-tight text-foreground">{title}</h5>
-        <p className="text-xs text-muted-foreground">{subtitle}</p>
+      <div className="mb-3">
+        <h5 className="text-lg font-semibold tracking-tight text-foreground">{title}</h5>
+        <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>
       </div>
-      <div className="h-[180px] w-full">{children}</div>
-      <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{footnote}</p>
+      <div className="h-[200px] w-full">{children}</div>
+      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{footnote}</p>
     </div>
   )
 }
