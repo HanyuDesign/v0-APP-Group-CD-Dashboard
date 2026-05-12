@@ -1171,7 +1171,7 @@ function PositionMetric({
       <div className={cn('mt-2.5 text-2xl font-semibold tracking-tight', toneClass)}>
         {value}
       </div>
-      <p className="mt-2 text-sm leading-snug text-muted-foreground">{helper}</p>
+      <p className="mt-2.5 text-base leading-relaxed text-muted-foreground">{helper}</p>
     </div>
   )
 }
@@ -1211,7 +1211,7 @@ function StanceCard({
           {count === 1 ? 'player' : 'players'}
         </span>
       </div>
-      <p className="mt-2 text-sm leading-snug text-muted-foreground">{subtitle}</p>
+      <p className="mt-2.5 text-base leading-relaxed text-muted-foreground">{subtitle}</p>
     </div>
   )
 }
