@@ -22,7 +22,7 @@ const YEARS = [2026, 2027, 2028, 2029, 2030, 2031] as const
 
 
 // ---------------------------------------------------------------------------
-// MAIN — APP Strategic Position + Competitor Dynamics
+// MAIN — APP Capacity Outcome + Competitor's Reaction
 // (replaces the old Market Impact / APP Capacity / Competitor Response trio)
 // ---------------------------------------------------------------------------
 
@@ -107,7 +107,7 @@ function APPStrategicPosition({
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-red-700">
-                APP Strategic Position
+                APP Capacity Outcome
               </span>
               <AIBadge size="sm" />
             </div>
@@ -294,7 +294,7 @@ function CompetitorDynamics({
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-blue-700">
-                Competitor Dynamics
+                Competitor&apos;s Reaction
               </span>
               <AIBadge size="sm" />
             </div>
@@ -533,7 +533,7 @@ export function PulpExportReallocation({ result }: PulpCapacityDetailsProps) {
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg text-foreground/85">
             <Globe className="h-4 w-4 text-indigo-600" />
-            Global Export Reallocation
+            Global Reallocation
           </CardTitle>
           <AIBadge size="sm" />
         </div>

@@ -28,6 +28,15 @@ import {
 
 interface MarketEvolutionSectionProps {
   result: SimulationResult
+  /**
+   * Which sub-section to render. The component is composed of two logically
+   * distinct sections (Executive Outcome + Market Evolution) that the parent
+   * page now orders independently around other modules:
+   *  - 'executive' → render only the Executive Outcome briefing
+   *  - 'evolution' → render only the Market Evolution chart block
+   *  - 'all'       → render both (legacy default)
+   */
+  section?: 'executive' | 'evolution' | 'all'
 }
 
 const YEARS = [2026, 2027, 2028, 2029, 2030, 2031] as const
@@ -190,7 +199,13 @@ function LegendDot({
 // Main section — narrative-driven executive briefing
 // ---------------------------------------------------------------------------
 
-export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) {
+export function MarketEvolutionSection({
+  result,
+  section = 'all',
+}: MarketEvolutionSectionProps) {
+  const showExecutive = section === 'all' || section === 'executive'
+  const showEvolution = section === 'all' || section === 'evolution'
+
   const priceData = buildPriceData(result)
   const capacityData = buildCapacityData(result)
   const shareData = buildMarketShareData(capacityData)
@@ -253,6 +268,7 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
           SECTION 1 · EXECUTIVE MARKET OUTCOME
           Narrative-first. What happened, why APP benefits, in one read.
           =================================================================== */}
+      {showExecutive && (
       <section id="executive-outcome" className="scroll-mt-96 space-y-5">
         <header className="flex items-start gap-3">
           <div className="rounded-md bg-indigo-50 p-1.5 ring-1 ring-indigo-100">
@@ -312,11 +328,13 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
           />
         </div>
       </section>
+      )}
 
       {/* ===================================================================
           SECTION 2 · MARKET EVOLUTION
           Single hero chart (Price). Supporting charts collapsible below.
           =================================================================== */}
+      {showEvolution && (
       <section id="market-evolution" className="scroll-mt-96 space-y-4">
         <header className="flex items-end justify-between gap-4 border-b border-border/40 pb-3">
           <div>
@@ -446,6 +464,7 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
           appShareDelta={appShareDelta}
         />
       </section>
+      )}
     </div>
   )
 }

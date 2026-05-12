@@ -54,9 +54,10 @@ const NAV_ITEMS: Record<ValueChainStage, { id: string; label: string }[]> = {
   ],
   pulp: [
     { id: 'executive-outcome', label: 'Executive Outcome' },
+    { id: 'pulp-app-position', label: 'APP Capacity Outcome' },
+    { id: 'pulp-competitor-dynamics', label: "Competitor's Reaction" },
+    { id: 'pulp-export-reallocation', label: 'Global Reallocation' },
     { id: 'market-evolution', label: 'Market Evolution' },
-    { id: 'pulp-app-position', label: 'APP Strategic Position' },
-    { id: 'pulp-competitor-dynamics', label: 'Competitor Dynamics' },
     { id: 'detailed-tables', label: 'Detailed Tables' },
   ],
   downstream: [
@@ -162,7 +163,6 @@ function DetailedTablesAppendix({
 
       <div className="space-y-6">
         <MarketDataTabs result={result} status={status} id="market-data" />
-        <PulpExportReallocation result={result} />
       </div>
     </section>
   )
@@ -321,11 +321,15 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
 
           {activeStage === 'pulp' && (
             <>
-              {/* 1. Executive Market Outcome + 2. Market Evolution */}
-              <MarketEvolutionSection result={result} />
-              {/* 3. APP Strategic Position + 4. Competitor Dynamics */}
+              {/* 1. Executive Outcome (narrative briefing + KPI cards) */}
+              <MarketEvolutionSection result={result} section="executive" />
+              {/* 2. APP Capacity Outcome + 3. Competitor's Reaction */}
               <PulpCapacityDetails result={result} />
-              {/* 5. Detailed Market Tables (lower-priority appendix, collapsed by default) */}
+              {/* 4. Global Reallocation (export reallocation table) */}
+              <PulpExportReallocation result={result} />
+              {/* 5. Market Evolution (price chart + supporting evidence) */}
+              <MarketEvolutionSection result={result} section="evolution" />
+              {/* 6. Detailed Market Tables (lower-priority appendix) */}
               <DetailedTablesAppendix result={result} status={status} />
             </>
           )}
