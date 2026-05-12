@@ -98,31 +98,28 @@ function APPStrategicPosition({
         : `Measured APP expansion (+${appPulpAdd} kt) holds the line on market position. Premium pricing remains defendable; further moves should hinge on demand validation in the 2027–2028 window.`
 
   return (
-    <section id="pulp-app-position" className="scroll-mt-96 space-y-5">
-      <header className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-3">
-          <div className="rounded-md bg-red-50 p-1.5 ring-1 ring-red-100">
-            <Building2 className="h-4 w-4 text-red-600" />
-          </div>
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-2xl font-semibold tracking-tight text-red-700">
-                APP Capacity Outcome
-              </h3>
-              <AIBadge size="sm" />
-            </div>
-          </div>
+    <Card
+      id="pulp-app-position"
+      className="border-border/40 bg-card/40 scroll-mt-96"
+    >
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between gap-4">
+          <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-red-700">
+            <Building2 className="h-5 w-5 text-red-600" />
+            APP Capacity Outcome
+            <AIBadge size="sm" />
+          </CardTitle>
+          <span
+            className={cn(
+              'inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold',
+              stance.tone,
+            )}
+          >
+            {stance.label} stance
+          </span>
         </div>
-        <span
-          className={cn(
-            'inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold',
-            stance.tone,
-          )}
-        >
-          {stance.label} stance
-        </span>
-      </header>
-
+      </CardHeader>
+      <CardContent className="space-y-5">
       {/* Strategic takeaway — full width, single calm column */}
       <p className="w-full border-l-2 border-red-300 pl-5 pr-2 text-lg leading-relaxed text-foreground/85 text-pretty">
         {takeaway}
@@ -267,7 +264,8 @@ function APPStrategicPosition({
         </div>
 
       </div>
-    </section>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -282,33 +280,31 @@ function CompetitorDynamics({
   result: SimulationResult
 }) {
   return (
-    <section id="pulp-competitor-dynamics" className="scroll-mt-96 space-y-5">
-      <header className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-3">
-          <div className="rounded-md bg-blue-50 p-1.5 ring-1 ring-blue-100">
-            <Users className="h-4 w-4 text-blue-600" />
-          </div>
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-2xl font-semibold tracking-tight text-blue-700">
-                Competitor&apos;s Reaction
-              </h3>
-              <AIBadge size="sm" />
-            </div>
+    <Card
+      id="pulp-competitor-dynamics"
+      className="border-border/40 bg-card/40 scroll-mt-96"
+    >
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between gap-4">
+          <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-blue-700">
+            <Users className="h-5 w-5 text-blue-600" />
+            Competitor&apos;s Reaction
+            <AIBadge size="sm" />
+          </CardTitle>
+          <div className="hidden items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[13px] font-medium text-emerald-700 md:inline-flex">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            </span>
+            Live feed
           </div>
         </div>
-        <div className="hidden items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[13px] font-medium text-emerald-700 md:inline-flex">
-          <span className="relative flex h-1.5 w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
-          </span>
-          Live feed
-        </div>
-      </header>
-
-      {/* Yearly competitor reactions table — the only content in this section */}
-      <CompetitorDetailTable result={result} />
-    </section>
+      </CardHeader>
+      <CardContent>
+        {/* Yearly competitor reactions table — the only content in this section */}
+        <CompetitorDetailTable result={result} />
+      </CardContent>
+    </Card>
   )
 }
 

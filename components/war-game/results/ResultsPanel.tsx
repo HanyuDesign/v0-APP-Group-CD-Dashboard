@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Clock, Trees, Factory, Package, FileText } from 'lucide-react'
 import { ValueChainInsights } from './ValueChainInsights'
 import { ForestryDetails } from './ForestryDetails'
@@ -153,18 +153,22 @@ function DetailedTablesAppendix({
   status: SimulationStatus
 }) {
   return (
-    <section id="detailed-tables" className="scroll-mt-96 space-y-5 pt-2">
-      <div className="flex items-center gap-2 border-t border-border/40 pt-4">
-        <FileText className="h-5 w-5 text-indigo-600" />
-        <h3 className="text-2xl font-semibold tracking-tight text-indigo-600">
+    <Card
+      id="detailed-tables"
+      className="border-border/40 bg-card/40 scroll-mt-96"
+    >
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-indigo-600">
+          <FileText className="h-5 w-5 text-indigo-600" />
           Detailed Market Tables
-        </h3>
-      </div>
-
-      <div className="space-y-6">
-        <MarketDataTabs result={result} status={status} id="market-data" />
-      </div>
-    </section>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <MarketDataTabs result={result} status={status} id="market-data" />
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 

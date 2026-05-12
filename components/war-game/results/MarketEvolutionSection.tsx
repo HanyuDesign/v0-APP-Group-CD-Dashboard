@@ -10,6 +10,7 @@ import {
   ArrowUpRight,
 } from 'lucide-react'
 import { AIBadge } from '../shared/AIBadge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { SimulationResult } from '@/lib/types/war-game'
 import { PLAYERS } from '@/lib/data/initial-data'
 import {
@@ -269,62 +270,62 @@ export function MarketEvolutionSection({
           Narrative-first. What happened, why APP benefits, in one read.
           =================================================================== */}
       {showExecutive && (
-      <section id="executive-outcome" className="scroll-mt-96 space-y-5">
-        <header className="flex items-start gap-3">
-          <div className="rounded-md bg-indigo-50 p-1.5 ring-1 ring-indigo-100">
-            <Sparkles className="h-4 w-4 text-indigo-600" />
-          </div>
-          <div className="flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-2xl font-semibold tracking-tight text-indigo-600">
-                Executive Outcome
-              </h3>
+      <Card
+        id="executive-outcome"
+        className="border-border/40 bg-card/40 scroll-mt-96"
+      >
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between gap-4">
+            <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-indigo-600">
+              <Sparkles className="h-5 w-5 text-indigo-600" />
+              Executive Outcome
               <AIBadge size="sm" />
-              <span className="rounded-full border border-border/60 bg-card/60 px-2 py-0.5 text-[13px] font-medium text-muted-foreground">
-                2026 — 2031
-              </span>
-            </div>
+            </CardTitle>
+            <span className="rounded-full border border-border/60 bg-card/60 px-2.5 py-1 text-[13px] font-medium text-muted-foreground">
+              2026 — 2031
+            </span>
           </div>
-        </header>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          {/* Narrative paragraph — full width, single calm column */}
+          <p className="w-full border-l-2 border-indigo-300 pl-5 pr-2 text-lg leading-relaxed text-foreground/85 text-pretty">
+            {narrative}
+          </p>
 
-        {/* Narrative paragraph — full width, single calm column */}
-        <p className="w-full border-l-2 border-indigo-300 pl-5 pr-2 text-lg leading-relaxed text-foreground/85 text-pretty">
-          {narrative}
-        </p>
-
-        {/* Key Strategic Metrics — 4 KPI cards, the only "boxed" element here */}
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
-          <KpiCard
-            label="Net Supply Increase"
-            value={`+${totalNetAdd.toLocaleString()}`}
-            unit="kt"
-            tone="neutral"
-            helper={`APP +${appAdd}  ·  Comp ${competitorAdd >= 0 ? '+' : ''}${competitorAdd}`}
-          />
-          <KpiCard
-            label="Pricing Trajectory"
-            value={`${priceDelta > 0 ? '+' : ''}${priceDelta}`}
-            unit="$/t"
-            tone={priceDelta < -30 ? 'negative' : priceDelta < 0 ? 'warn' : 'positive'}
-            direction={priceDelta < 0 ? 'down' : 'up'}
-            helper={`${priceDelta < 0 ? '' : '+'}${priceDeltaPct}% vs 2026`}
-          />
-          <KpiCard
-            label="APP Share Gain"
-            value={`${appShareDelta > 0 ? '+' : ''}${appShareDelta}`}
-            unit="pp"
-            tone={appShareDelta > 0 ? 'positive' : 'warn'}
-            direction={appShareDelta > 0 ? 'up' : 'down'}
-            helper={`${appShareStart?.toFixed(1)}% → ${appShareEnd?.toFixed(1)}%`}
-          />
-          <KpiCard
-            label="Competitive Pressure"
-            value={retaliation.label}
-            tone={retaliation.tone}
-            helper={retaliation.helper}
-          />
-        </div>
-      </section>
+          {/* Key Strategic Metrics — 4 KPI cards, the only "boxed" element here */}
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+            <KpiCard
+              label="Net Supply Increase"
+              value={`+${totalNetAdd.toLocaleString()}`}
+              unit="kt"
+              tone="neutral"
+              helper={`APP +${appAdd}  ·  Comp ${competitorAdd >= 0 ? '+' : ''}${competitorAdd}`}
+            />
+            <KpiCard
+              label="Pricing Trajectory"
+              value={`${priceDelta > 0 ? '+' : ''}${priceDelta}`}
+              unit="$/t"
+              tone={priceDelta < -30 ? 'negative' : priceDelta < 0 ? 'warn' : 'positive'}
+              direction={priceDelta < 0 ? 'down' : 'up'}
+              helper={`${priceDelta < 0 ? '' : '+'}${priceDeltaPct}% vs 2026`}
+            />
+            <KpiCard
+              label="APP Share Gain"
+              value={`${appShareDelta > 0 ? '+' : ''}${appShareDelta}`}
+              unit="pp"
+              tone={appShareDelta > 0 ? 'positive' : 'warn'}
+              direction={appShareDelta > 0 ? 'up' : 'down'}
+              helper={`${appShareStart?.toFixed(1)}% → ${appShareEnd?.toFixed(1)}%`}
+            />
+            <KpiCard
+              label="Competitive Pressure"
+              value={retaliation.label}
+              tone={retaliation.tone}
+              helper={retaliation.helper}
+            />
+          </div>
+        </CardContent>
+      </Card>
       )}
 
       {/* ===================================================================
@@ -332,23 +333,24 @@ export function MarketEvolutionSection({
           Single hero chart (Price). Supporting charts collapsible below.
           =================================================================== */}
       {showEvolution && (
-      <section id="market-evolution" className="scroll-mt-96 space-y-4">
-        <header className="flex items-end justify-between gap-4 border-b border-border/40 pb-3">
-          <div>
-            <div className="flex items-center gap-2">
+      <Card
+        id="market-evolution"
+        className="border-border/40 bg-card/40 scroll-mt-96"
+      >
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between gap-4">
+            <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-indigo-600">
               <Activity className="h-5 w-5 text-indigo-600" />
-              <h3 className="text-2xl font-semibold tracking-tight text-indigo-600">
-                Market Evolution
-              </h3>
+              Market Evolution
+            </CardTitle>
+            <div className="hidden items-center gap-3 md:flex">
+              <LegendDot color="#cc0000" label="APP" />
+              <LegendDot color="#1d4e89" label="Competitor avg." />
+              <LegendDot color="#64748b" label="Market avg." dashed />
             </div>
           </div>
-          <div className="hidden items-center gap-3 md:flex">
-            <LegendDot color="#cc0000" label="APP" />
-            <LegendDot color="#1d4e89" label="Competitor avg." />
-            <LegendDot color="#64748b" label="Market avg." dashed />
-          </div>
-        </header>
-
+        </CardHeader>
+        <CardContent className="space-y-4">
         {/* Hero chart — Price Evolution */}
         <div className="space-y-3">
           <div className="flex items-baseline justify-between gap-4">
@@ -457,7 +459,8 @@ export function MarketEvolutionSection({
           appShareEnd={appShareEnd}
           appShareDelta={appShareDelta}
         />
-      </section>
+        </CardContent>
+      </Card>
       )}
     </div>
   )
