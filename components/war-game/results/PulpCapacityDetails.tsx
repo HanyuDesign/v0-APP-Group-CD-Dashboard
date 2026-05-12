@@ -750,12 +750,6 @@ function APPStrategicPosition({
           </table>
         </div>
 
-        {/* Three summary cards at the bottom */}
-        <div className="grid grid-cols-1 gap-3 border-t border-red-100/80 bg-card/60 p-3 md:grid-cols-3">
-          <CapacitySummary label="Total Pulp Added" value={`+${appPulpAdd} kt`} />
-          <CapacitySummary label="Board Capacity" value={`+${appBoardAdd} kt`} />
-          <CapacitySummary label="Tissue Capacity" value={`+${appTissueAdd} kt`} />
-        </div>
       </div>
     </section>
   )
@@ -1143,15 +1137,6 @@ export function PulpExportReallocation({ result }: PulpCapacityDetailsProps) {
 // ===========================================================================
 // Shared sub-components
 // ===========================================================================
-
-function CapacitySummary({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-md border border-border/50 bg-card px-4 py-3 text-center">
-      <div className="text-sm text-muted-foreground">{label}</div>
-      <div className="mt-1 font-mono text-xl font-bold tabular-nums text-red-600">{value}</div>
-    </div>
-  )
-}
 
 function PositionMetric({
   label,
