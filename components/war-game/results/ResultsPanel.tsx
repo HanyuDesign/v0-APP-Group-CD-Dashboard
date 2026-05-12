@@ -9,6 +9,7 @@ import { PulpCapacityDetails, PulpExportReallocation } from './PulpCapacityDetai
 import { DownstreamDetails } from './DownstreamDetails'
 import { MarketResults } from './MarketResults'
 import { FinancialResults } from './FinancialResults'
+import { MarketEvolutionSection } from './MarketEvolutionSection'
 import type { SimulationResult, SimulationStatus } from '@/lib/types/war-game'
 import { cn } from '@/lib/utils'
 import { Spinner } from '@/components/ui/spinner'
@@ -52,6 +53,7 @@ const NAV_ITEMS: Record<ValueChainStage, { id: string; label: string }[]> = {
     { id: 'forestry-supply-demand', label: 'Supply-Demand Balance' },
   ],
   pulp: [
+    { id: 'market-evolution', label: 'Market Evolution' },
     { id: 'pulp-market-impact', label: 'Market Impact Summary' },
     { id: 'pulp-app-capacity', label: 'APP Capacity Outcome' },
     { id: 'pulp-competitor-response', label: 'Competitor Response' },
@@ -292,6 +294,8 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
 
           {activeStage === 'pulp' && (
             <>
+              {/* Expected Market Evolution — AI-projected competitive trajectory */}
+              <MarketEvolutionSection result={result} />
               {/* Market Impact Summary → APP Capacity Outcome → Competitor Response */}
               <PulpCapacityDetails result={result} />
               {/* Market Data (shared) */}
