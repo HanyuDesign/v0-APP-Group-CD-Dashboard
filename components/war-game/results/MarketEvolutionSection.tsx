@@ -349,6 +349,17 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
             </div>
           </div>
 
+          {/* AI Insight — sits directly under the title, matches supporting-chart footnote scale */}
+          <div className="flex items-start gap-2">
+            <Sparkles className="mt-1 h-4 w-4 flex-shrink-0 text-amber-600" />
+            <p className="text-lg leading-relaxed text-foreground/80">
+              <span className="font-semibold text-foreground">AI Insight · </span>
+              {priceDelta < -30
+                ? `Capacity additions of ~${totalNetAdd.toLocaleString()} kt by 2031 erode pulp pricing by ~${Math.abs(priceDelta)} $/t after 2028. APP's first-mover premium narrows; sustained margin defence depends on integrated downstream pull.`
+                : `Net additions (~${totalNetAdd.toLocaleString()} kt) keep pricing structurally intact. APP retains a defendable premium versus the competitor average through 2031.`}
+            </p>
+          </div>
+
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={priceData} margin={{ top: 16, right: 24, left: 8, bottom: 4 }}>
@@ -423,16 +434,6 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
             </ResponsiveContainer>
           </div>
 
-          {/* Compact AI annotation, no extra borders */}
-          <div className="flex items-start gap-2 pt-1">
-            <Sparkles className="mt-1 h-4 w-4 flex-shrink-0 text-amber-600" />
-            <p className="text-base leading-relaxed text-muted-foreground">
-              <span className="font-semibold text-foreground">AI Insight · </span>
-              {priceDelta < -30
-                ? `Capacity additions of ~${totalNetAdd.toLocaleString()} kt by 2031 erode pulp pricing by ~${Math.abs(priceDelta)} $/t after 2028. APP's first-mover premium narrows; sustained margin defence depends on integrated downstream pull.`
-                : `Net additions (~${totalNetAdd.toLocaleString()} kt) keep pricing structurally intact. APP retains a defendable premium versus the competitor average through 2031.`}
-            </p>
-          </div>
         </div>
 
         {/* Supporting evidence — collapsible, low visual weight */}
