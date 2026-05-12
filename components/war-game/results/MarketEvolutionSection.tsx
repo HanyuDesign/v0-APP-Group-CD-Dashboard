@@ -628,7 +628,7 @@ export function MarketEvolutionSection({
 }
 
 // ---------------------------------------------------------------------------
-// KPI card — Executive Outcome metrics. Calm, single style.
+// KPI card — Executive Summary metrics. Calm, single style.
 // ---------------------------------------------------------------------------
 
 function KpiCard({
