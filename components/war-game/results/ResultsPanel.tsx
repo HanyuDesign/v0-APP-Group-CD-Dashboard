@@ -158,9 +158,6 @@ function DetailedTablesAppendix({
         <span className="text-base font-semibold text-foreground">
           Detailed Market Tables
         </span>
-        <span className="text-[13px] text-muted-foreground/80">
-          · Appendix · Player market data, financial IRR, and global export reallocation
-        </span>
       </div>
 
       <div className="space-y-6">

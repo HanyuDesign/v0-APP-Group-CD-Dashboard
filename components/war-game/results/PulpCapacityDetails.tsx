@@ -389,9 +389,6 @@ function PhaseStepper({ phases }: { phases: MarketPhase[] }) {
           <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             Market Evolution Phases
           </span>
-          <span className="text-[13px] text-muted-foreground/80">
-            · 2026 — 2031 trajectory
-          </span>
         </div>
       </div>
 
@@ -740,9 +737,6 @@ function CompetitorDynamics({
         <div className="flex items-baseline gap-2">
           <span className="text-base font-semibold text-foreground">
             Detailed yearly competitor reactions
-          </span>
-          <span className="text-[13px] text-muted-foreground/80">
-            Per-player capacity changes, strategy and rationale
           </span>
         </div>
         <CompetitorDetailTable result={result} />
