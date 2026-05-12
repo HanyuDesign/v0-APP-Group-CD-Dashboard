@@ -1207,7 +1207,7 @@ function StanceCard({
         <span className={cn('font-mono text-3xl font-semibold leading-none tabular-nums', toneMap.value)}>
           {count}
         </span>
-        <span className="text-sm text-muted-foreground">
+        <span className="text-base font-medium text-muted-foreground">
           {count === 1 ? 'player' : 'players'}
         </span>
       </div>
