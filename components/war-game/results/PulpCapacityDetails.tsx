@@ -4,10 +4,6 @@ import {
   Users,
   Globe,
   Building2,
-  Gauge,
-  Scale,
-  Target,
-  TrendingUp,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { AIBadge } from '../shared/AIBadge'
@@ -22,385 +18,8 @@ interface PulpCapacityDetailsProps {
 
 const YEARS = [2026, 2027, 2028, 2029, 2030, 2031] as const
 
-// ---------------------------------------------------------------------------
-// Market Evolution Phases — state-driven model across 3 strategic phases.
-// Focuses on how conditions transition (pressure, balance, posture), NOT on
-// chronological event logging.
-// ---------------------------------------------------------------------------
 
-type MarketBalance = 'tight' | 'balanced' | 'oversupplied'
-type CompetitorPostureTone = 'cautious' | 'mixed' | 'reactive' | 'disciplined'
 
-interface MarketPhase {
-  key: 'opening' | 'wave' | 'rebalancing'
-  index: number
-  label: string
-  window: string
-  tagline: string
-  pressure: number // 0–100
-  pressureLabel: 'Low' | 'Moderate' | 'High' | 'Peak'
-  balance: MarketBalance
-  appPosture: string
-  competitorPosture: { label: string; tone: CompetitorPostureTone }
-  isStrategicWindow: boolean
-  state: {
-    market: string
-    app: string
-    competitors: string
-    pricing: string
-  }
-  accent: 'indigo' | 'amber' | 'emerald'
-}
-
-function buildMarketPhases(result: SimulationResult): MarketPhase[] {
-  const { competitorChanges, input } = result
-  const appAdd =
-    input.appCapacity.guangxi.pulpCapacity + input.appCapacity.jiangsuFujian.pulpCapacity
-  const expanders = competitorChanges.filter((c) => c.action === 'add').length
-  const delayers = competitorChanges.filter((c) => c.action === 'delay').length
-
-  // ── Phase 1 · Opening Window ──────────────────────────────────────────────
-  const p1Pressure = delayers > expanders ? 28 : expanders > delayers ? 48 : 36
-  const p1Balance: MarketBalance = delayers > expanders ? 'tight' : 'balanced'
-  const isStrategicWindow = delayers >= expanders && appAdd > 0
-
-  const phase1: MarketPhase = {
-    key: 'opening',
-    index: 1,
-    label: 'Opening Window',
-    window: '2026 — 2027',
-    tagline: isStrategicWindow
-      ? 'APP commits early while peers hold back — a clean lane for share capture opens.'
-      : 'APP moves first; a subset of peers signals matching intent — the window narrows quickly.',
-    pressure: p1Pressure,
-    pressureLabel: p1Pressure < 35 ? 'Low' : 'Moderate',
-    balance: p1Balance,
-    appPosture: 'First-mover',
-    competitorPosture: {
-      label: delayers > expanders ? 'Cautious' : delayers === expanders ? 'Mixed' : 'Signaling',
-      tone: delayers > expanders ? 'cautious' : delayers === expanders ? 'mixed' : 'reactive',
-    },
-    isStrategicWindow,
-    state: {
-      market:
-        delayers > expanders
-          ? `Supply tightens — ${delayers} peer${delayers === 1 ? '' : 's'} delay${delayers === 1 ? 's' : ''} expansion`
-          : 'Demand absorbs early additions; supply still constructive',
-      app: `Commits +${appAdd} kt pulp; secures first-mover capture`,
-      competitors:
-        delayers > expanders
-          ? 'Defensive utilisation; no matching CapEx'
-          : `${expanders} peer${expanders === 1 ? '' : 's'} signal${expanders === 1 ? 's' : ''} defensive matching`,
-      pricing: 'Premium intact — modest upward bias through 2027',
-    },
-    accent: 'indigo',
-  }
-
-  // ── Phase 2 · Capacity Wave ───────────────────────────────────────────────
-  const p2Pressure = appAdd > 250 && expanders >= 2 ? 86 : expanders >= 2 ? 72 : 50
-  const p2Balance: MarketBalance = expanders >= 2 ? 'oversupplied' : 'balanced'
-
-  const phase2: MarketPhase = {
-    key: 'wave',
-    index: 2,
-    label: 'Capacity Wave',
-    window: '2028 — 2029',
-    tagline:
-      expanders >= 2
-        ? `${expanders} peers match with defensive capacity — supply compounds and pressure peaks.`
-        : "APP's incremental capacity lands with limited competitor follow-through.",
-    pressure: p2Pressure,
-    pressureLabel: p2Pressure >= 80 ? 'Peak' : p2Pressure >= 60 ? 'High' : 'Moderate',
-    balance: p2Balance,
-    appPosture: appAdd > 250 ? 'Capacity push' : 'Selective build',
-    competitorPosture: {
-      label: expanders >= 2 ? 'Reactive' : 'Disciplined',
-      tone: expanders >= 2 ? 'reactive' : 'disciplined',
-    },
-    isStrategicWindow: false,
-    state: {
-      market:
-        expanders >= 2
-          ? 'Compounding supply — oversupply risk crystallises'
-          : 'Supply absorbed at moderated pace',
-      app:
-        appAdd > 250
-          ? 'Heavy build crests; utilisation slips'
-          : 'Holds premium positioning; downstream pull stabilises absorption',
-      competitors:
-        expanders >= 2
-          ? `${expanders} peers commit defensive capacity to protect share`
-          : 'Peers prioritise margin over share defense',
-      pricing:
-        expanders >= 2
-          ? 'Spot rolls over; premium narrows 4–7%'
-          : 'Premium softens marginally; market holds',
-    },
-    accent: 'amber',
-  }
-
-  // ── Phase 3 · Market Rebalancing ──────────────────────────────────────────
-  const p3Pressure = appAdd > 250 ? 58 : 38
-  const p3Balance: MarketBalance =
-    appAdd > 250 && expanders >= 2 ? 'oversupplied' : 'balanced'
-
-  const phase3: MarketPhase = {
-    key: 'rebalancing',
-    index: 3,
-    label: 'Market Rebalancing',
-    window: '2030 — 2031',
-    tagline:
-      appAdd > 250
-        ? 'Downstream integration hedges spot weakness — peers with weaker downstream squeeze.'
-        : 'Market normalises into a moderated supply environment with defendable premiums.',
-    pressure: p3Pressure,
-    pressureLabel: p3Pressure < 45 ? 'Low' : 'Moderate',
-    balance: p3Balance,
-    appPosture: appAdd > 250 ? 'Downstream hedge' : 'Margin defense',
-    competitorPosture: { label: 'Disciplined', tone: 'disciplined' },
-    isStrategicWindow: false,
-    state: {
-      market:
-        p3Balance === 'oversupplied'
-          ? 'Spot pulp soft; integrated players capture value off-curve'
-          : 'Utilisation recovers across the industry',
-      app:
-        appAdd > 250
-          ? 'Board / tissue / export pull cushions Chinese pricing'
-          : 'Holds defendable premium vs competitor avg',
-      competitors: 'Margin defense; selective debottlenecking only',
-      pricing:
-        appAdd > 250
-          ? 'Spot recovers slowly — premium reconsolidates by 2031'
-          : 'Premium stabilises through cycle',
-    },
-    accent: 'emerald',
-  }
-
-  return [phase1, phase2, phase3]
-}
-
-// ── Visual indicator helpers ───────────────────────────────────────────────
-
-function pressureBarTone(pressure: number) {
-  if (pressure < 35) return 'bg-emerald-500'
-  if (pressure < 60) return 'bg-amber-500'
-  if (pressure < 80) return 'bg-orange-500'
-  return 'bg-rose-500'
-}
-
-function pressureTextTone(pressure: number) {
-  if (pressure < 35) return 'text-emerald-700'
-  if (pressure < 60) return 'text-amber-700'
-  if (pressure < 80) return 'text-orange-700'
-  return 'text-rose-700'
-}
-
-function BalancePill({ balance }: { balance: MarketBalance }) {
-  const map = {
-    tight: { label: 'Tight supply', cls: 'bg-emerald-50 text-emerald-700 ring-emerald-200' },
-    balanced: { label: 'Balanced', cls: 'bg-slate-50 text-slate-700 ring-slate-200' },
-    oversupplied: { label: 'Oversupplied', cls: 'bg-rose-50 text-rose-700 ring-rose-200' },
-  }[balance]
-  return (
-    <span
-      className={cn(
-        'inline-flex items-center rounded-full px-2.5 py-0.5 text-[11.5px] font-semibold uppercase tracking-wider ring-1',
-        map.cls,
-      )}
-    >
-      {map.label}
-    </span>
-  )
-}
-
-// Posture insight strip — a single calm box presenting APP and Competitor
-// postures side-by-side with tone-coloured values. Replaces the previous
-// separate pill chips for a more "insight box" feel.
-function PostureInsight({
-  appPosture,
-  competitorPosture,
-}: {
-  appPosture: string
-  competitorPosture: { label: string; tone: CompetitorPostureTone }
-}) {
-  const competitorToneText = {
-    cautious: 'text-blue-700',
-    mixed: 'text-slate-700',
-    reactive: 'text-amber-700',
-    disciplined: 'text-emerald-700',
-  }[competitorPosture.tone]
-
-  return (
-    <div className="mt-1 flex items-stretch divide-x divide-border/50 overflow-hidden rounded-md border border-border/40 bg-muted/30">
-      <div className="flex flex-1 flex-col gap-0.5 px-3 py-2">
-        <span className="text-[11.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-          APP
-        </span>
-        <span className="text-base font-semibold text-red-700">{appPosture}</span>
-      </div>
-      <div className="flex flex-1 flex-col gap-0.5 px-3 py-2">
-        <span className="text-[11.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-          Competitors
-        </span>
-        <span className={cn('text-base font-semibold', competitorToneText)}>
-          {competitorPosture.label}
-        </span>
-      </div>
-    </div>
-  )
-}
-
-function StateRow({
-  label,
-  value,
-  accent,
-}: {
-  label: string
-  value: string
-  accent?: boolean
-}) {
-  return (
-    <div className="grid grid-cols-[6.5rem_1fr] items-baseline gap-3">
-      <dt className="text-[12px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-        {label}
-      </dt>
-      <dd
-        className={cn(
-          'text-[15px] leading-snug',
-          accent ? 'font-medium text-foreground' : 'text-foreground/85',
-        )}
-      >
-        {value}
-      </dd>
-    </div>
-  )
-}
-
-function PhaseCard({ phase }: { phase: MarketPhase }) {
-  const accentBorder = {
-    indigo: 'border-l-indigo-500',
-    amber: 'border-l-amber-500',
-    emerald: 'border-l-emerald-500',
-  }[phase.accent]
-  const accentText = {
-    indigo: 'text-indigo-700',
-    amber: 'text-amber-700',
-    emerald: 'text-emerald-700',
-  }[phase.accent]
-
-  return (
-    <article
-      className={cn(
-        'group relative flex flex-col gap-4 rounded-lg border border-border/50 border-l-4 bg-card/40 p-5 transition-colors hover:bg-card/60',
-        accentBorder,
-      )}
-    >
-      {/* Phase header */}
-      <header className="space-y-2.5">
-        <div className="flex items-center justify-between gap-2">
-          <span className="font-mono text-[15px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-            Phase {phase.index} of 3 · {phase.window}
-          </span>
-          {phase.isStrategicWindow && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-[11.5px] font-semibold uppercase tracking-wider text-amber-700 ring-1 ring-amber-200">
-              <Target className="h-3 w-3" />
-              Strategic window
-            </span>
-          )}
-        </div>
-        <h4 className={cn('text-xl font-semibold tracking-tight', accentText)}>
-          {phase.label}
-        </h4>
-        <p className="text-base leading-relaxed text-muted-foreground">{phase.tagline}</p>
-        {/* Posture insight box — APP vs Competitors side-by-side */}
-        <PostureInsight
-          appPosture={phase.appPosture}
-          competitorPosture={phase.competitorPosture}
-        />
-      </header>
-
-      {/* Visual indicators */}
-      <div className="space-y-3.5 rounded-md border border-border/40 bg-muted/30 p-4">
-        {/* Pricing pressure meter */}
-        <div>
-          <div className="flex items-baseline justify-between">
-            <span className="flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-              <Gauge className="h-3.5 w-3.5" />
-              Pricing pressure
-            </span>
-            <span
-              className={cn(
-                'font-mono text-sm font-semibold tabular-nums',
-                pressureTextTone(phase.pressure),
-              )}
-            >
-              {phase.pressureLabel}
-            </span>
-          </div>
-          <div
-            className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-border/60"
-            role="progressbar"
-            aria-valuenow={phase.pressure}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label={`Pricing pressure ${phase.pressureLabel}`}
-          >
-            <div
-              className={cn('h-full rounded-full transition-all', pressureBarTone(phase.pressure))}
-              style={{ width: `${phase.pressure}%` }}
-            />
-          </div>
-        </div>
-        {/* Market balance */}
-        <div className="flex items-center justify-between">
-          <span className="flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-            <Scale className="h-3.5 w-3.5" />
-            Market balance
-          </span>
-          <BalancePill balance={phase.balance} />
-        </div>
-      </div>
-
-      {/* State transition lines */}
-      <dl className="space-y-2.5">
-        <StateRow label="Market" value={phase.state.market} />
-        <StateRow label="APP" value={phase.state.app} accent />
-        <StateRow label="Competitors" value={phase.state.competitors} />
-        <StateRow label="Pricing" value={phase.state.pricing} />
-      </dl>
-
-    </article>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// PhaseStepper — static 3-column horizontal layout. All phases are visible at
-// once so the full 2026 — 2031 trajectory reads left-to-right at a glance.
-// ---------------------------------------------------------------------------
-
-function PhaseStepper({ phases }: { phases: MarketPhase[] }) {
-  return (
-    <div className="space-y-5 pt-2">
-      {/* Header */}
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <TrendingUp className="h-[18px] w-[18px] text-indigo-600" />
-          <span className="text-[15px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            Market Evolution Phases
-          </span>
-        </div>
-      </div>
-
-      {/* Three phases — horizontal grid, equal columns, equal heights */}
-      <div className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-3 md:gap-5">
-        {phases.map((phase) => (
-          <PhaseCard key={phase.key} phase={phase} />
-        ))}
-      </div>
-    </div>
-  )
-}
 
 // ---------------------------------------------------------------------------
 // MAIN — APP Strategic Position + Competitor Dynamics
@@ -420,10 +39,9 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
     (input.appCapacity.guangxi.includeTissue ? input.appCapacity.guangxi.tissueCapacity : 0) +
     (input.appCapacity.jiangsuFujian.includeTissue ? input.appCapacity.jiangsuFujian.tissueCapacity : 0)
 
-  // Competitor summary
+  // Competitor summary — used only for APP strategic position context
   const expanders = competitorChanges.filter((c) => c.action === 'add')
   const delayers = competitorChanges.filter((c) => c.action === 'delay')
-  const holders = competitorChanges.filter((c) => c.action !== 'add' && c.action !== 'delay')
 
   return (
     <div className="space-y-10">
@@ -436,12 +54,7 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
         expanders={expanders.length}
       />
 
-      <CompetitorDynamics
-        result={result}
-        expanders={expanders.length}
-        delayers={delayers.length}
-        holders={holders.length}
-      />
+      <CompetitorDynamics result={result} />
     </div>
   )
 }
@@ -668,17 +281,9 @@ function APPStrategicPosition({
 
 function CompetitorDynamics({
   result,
-  expanders,
-  delayers,
-  holders,
 }: {
   result: SimulationResult
-  expanders: number
-  delayers: number
-  holders: number
 }) {
-  const phases = buildMarketPhases(result)
-
   return (
     <section id="pulp-competitor-dynamics" className="scroll-mt-96 space-y-5">
       <header className="flex items-start justify-between gap-4">
@@ -694,7 +299,7 @@ function CompetitorDynamics({
               <AIBadge size="sm" />
             </div>
             <h3 className="mt-1.5 text-2xl font-semibold tracking-tight text-foreground">
-              How competitors respond across the horizon
+              Detailed yearly competitor reactions
             </h3>
           </div>
         </div>
@@ -707,40 +312,8 @@ function CompetitorDynamics({
         </div>
       </header>
 
-      {/* Stance summary — 3 chips, no boxed cards */}
-      <div className="grid grid-cols-3 gap-3 md:gap-4">
-        <StanceCard
-          label="Expanding"
-          count={expanders}
-          subtitle="Match APP with defensive capacity"
-          tone="expand"
-        />
-        <StanceCard
-          label="Delaying"
-          count={delayers}
-          subtitle="Prioritise utilisation, hold off CapEx"
-          tone="delay"
-        />
-        <StanceCard
-          label="Maintaining"
-          count={holders}
-          subtitle="Hold footprint, focus on margin"
-          tone="hold"
-        />
-      </div>
-
-      {/* Market Evolution Phases — horizontal stepper · one phase at a time */}
-      <PhaseStepper phases={phases} />
-
-      {/* Detailed yearly competitor reactions — always visible */}
-      <div className="space-y-3 border-t border-border/40 pt-4">
-        <div className="flex items-baseline gap-2">
-          <span className="text-base font-semibold text-foreground">
-            Detailed yearly competitor reactions
-          </span>
-        </div>
-        <CompetitorDetailTable result={result} />
-      </div>
+      {/* Yearly competitor reactions table — the only content in this section */}
+      <CompetitorDetailTable result={result} />
     </section>
   )
 }
@@ -1077,46 +650,6 @@ function PositionMetric({
         {value}
       </div>
       <p className="mt-2.5 text-base leading-relaxed text-muted-foreground">{helper}</p>
-    </div>
-  )
-}
-
-function StanceCard({
-  label,
-  count,
-  subtitle,
-  tone,
-}: {
-  label: string
-  count: number
-  subtitle: string
-  tone: 'expand' | 'delay' | 'hold'
-}) {
-  const toneMap = {
-    expand: { value: 'text-emerald-600', accent: 'bg-emerald-500', dot: '#10b981' },
-    delay: { value: 'text-amber-600', accent: 'bg-amber-500', dot: '#f59e0b' },
-    hold: { value: 'text-slate-600', accent: 'bg-slate-400', dot: '#64748b' },
-  }[tone]
-
-  return (
-    <div className="relative overflow-hidden rounded-lg border border-border/50 bg-card/60 p-5">
-      <span className={cn('absolute left-0 top-0 h-full w-0.5', toneMap.accent)} />
-      <div className="flex items-center gap-1.5 text-[15px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-        <span
-          className="inline-block h-1.5 w-1.5 rounded-full"
-          style={{ backgroundColor: toneMap.dot }}
-        />
-        {label}
-      </div>
-      <div className="mt-2.5 flex items-baseline gap-1.5">
-        <span className={cn('font-mono text-3xl font-semibold leading-none tabular-nums', toneMap.value)}>
-          {count}
-        </span>
-        <span className="text-base font-medium text-muted-foreground">
-          {count === 1 ? 'player' : 'players'}
-        </span>
-      </div>
-      <p className="mt-2.5 text-base leading-relaxed text-muted-foreground">{subtitle}</p>
     </div>
   )
 }
