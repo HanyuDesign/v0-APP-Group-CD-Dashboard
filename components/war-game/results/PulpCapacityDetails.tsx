@@ -373,14 +373,11 @@ function PhaseCard({ phase }: { phase: MarketPhase }) {
 }
 
 // ---------------------------------------------------------------------------
-// PhaseStepper — horizontal progressive disclosure. One phase visible at a
-// time; the stepper itself doubles as the pressure trajectory rail.
+// PhaseStepper — static 3-column horizontal layout. All phases are visible at
+// once so the full 2026 — 2031 trajectory reads left-to-right at a glance.
 // ---------------------------------------------------------------------------
 
 function PhaseStepper({ phases }: { phases: MarketPhase[] }) {
-  const [active, setActive] = useState(0)
-  const phase = phases[active]
-
   return (
     <div className="space-y-5 pt-2">
       {/* Header */}
@@ -391,106 +388,16 @@ function PhaseStepper({ phases }: { phases: MarketPhase[] }) {
             Market Evolution Phases
           </span>
           <span className="text-[13px] text-muted-foreground/80">
-            · Step through 2026 — 2031
+            · 2026 — 2031 trajectory
           </span>
         </div>
-        <span className="flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-[0.12em] text-muted-foreground/80">
-          <Gauge className="h-3.5 w-3.5" />
-          Pricing pressure trajectory
-        </span>
       </div>
 
-      {/* Stepper — clickable phases, with connecting pressure-coloured rail */}
-      <nav aria-label="Market evolution phases" className="px-1">
-        <ol className="relative grid grid-cols-3">
-          {/* connecting line behind dots */}
-          <span
-            aria-hidden
-            className="pointer-events-none absolute left-[16.66%] right-[16.66%] top-4 h-px bg-gradient-to-r from-indigo-300 via-amber-400 to-emerald-400 opacity-60"
-          />
-          {phases.map((p, idx) => {
-            const isActive = idx === active
-            const isPast = idx < active
-            return (
-              <li key={p.key} className="relative flex flex-col items-center">
-                <button
-                  type="button"
-                  onClick={() => setActive(idx)}
-                  aria-current={isActive ? 'step' : undefined}
-                  className="group flex flex-col items-center gap-2 focus:outline-none"
-                >
-                  <span
-                    className={cn(
-                      'relative flex h-9 w-9 items-center justify-center rounded-full transition-all ring-background',
-                      isActive
-                        ? cn(
-                            'ring-[3px] shadow-sm',
-                            pressureBarTone(p.pressure),
-                          )
-                        : cn(
-                            'ring-2',
-                            isPast ? pressureBarTone(p.pressure) : 'bg-border',
-                          ),
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        'font-mono text-sm font-semibold tabular-nums',
-                        isActive || isPast ? 'text-white' : 'text-muted-foreground',
-                      )}
-                    >
-                      {idx + 1}
-                    </span>
-                  </span>
-                  <span className="flex flex-col items-center gap-0.5">
-                    <span
-                      className={cn(
-                        'text-[13px] font-semibold uppercase tracking-[0.12em] transition-colors',
-                        isActive ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground/80',
-                      )}
-                    >
-                      {p.label}
-                    </span>
-                    <span
-                      className={cn(
-                        'font-mono text-[12px] tabular-nums',
-                        isActive ? 'text-muted-foreground' : 'text-muted-foreground/60',
-                      )}
-                    >
-                      {p.window}
-                    </span>
-                  </span>
-                </button>
-              </li>
-            )
-          })}
-        </ol>
-      </nav>
-
-      {/* Active phase detail — single, calm, full-width */}
-      <PhaseCard key={phase.key} phase={phase} />
-
-      {/* Step hint — calm scroll cue */}
-      <div className="flex items-center justify-between px-1 text-[13px] text-muted-foreground/70">
-        <button
-          type="button"
-          onClick={() => setActive((i) => Math.max(0, i - 1))}
-          disabled={active === 0}
-          className="inline-flex items-center gap-1 transition-colors hover:text-foreground disabled:opacity-30 disabled:hover:text-muted-foreground/70"
-        >
-          ← Previous phase
-        </button>
-        <span className="font-mono uppercase tracking-[0.14em]">
-          {active + 1} of {phases.length}
-        </span>
-        <button
-          type="button"
-          onClick={() => setActive((i) => Math.min(phases.length - 1, i + 1))}
-          disabled={active === phases.length - 1}
-          className="inline-flex items-center gap-1 transition-colors hover:text-foreground disabled:opacity-30 disabled:hover:text-muted-foreground/70"
-        >
-          Next phase →
-        </button>
+      {/* Three phases — horizontal grid, equal columns, equal heights */}
+      <div className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-3 md:gap-5">
+        {phases.map((phase) => (
+          <PhaseCard key={phase.key} phase={phase} />
+        ))}
       </div>
     </div>
   )
