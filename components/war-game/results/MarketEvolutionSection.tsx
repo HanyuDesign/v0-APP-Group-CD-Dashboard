@@ -275,8 +275,8 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
           </div>
         </header>
 
-        {/* Narrative paragraph — single, calm, no boxed chrome */}
-        <p className="max-w-4xl border-l-2 border-indigo-300 pl-5 text-base leading-relaxed text-foreground/85">
+        {/* Narrative paragraph — full width, single calm column */}
+        <p className="w-full border-l-2 border-indigo-300 pl-5 pr-2 text-[15px] leading-relaxed text-foreground/85 text-pretty">
           {narrative}
         </p>
 

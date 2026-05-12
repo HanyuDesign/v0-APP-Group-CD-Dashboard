@@ -484,8 +484,8 @@ function APPStrategicPosition({
         </span>
       </header>
 
-      {/* Strategic takeaway — calm, narrative, no boxed chrome */}
-      <p className="max-w-4xl border-l-2 border-red-300 pl-5 text-base leading-relaxed text-foreground/85">
+      {/* Strategic takeaway — full width, single calm column */}
+      <p className="w-full border-l-2 border-red-300 pl-5 pr-2 text-[15px] leading-relaxed text-foreground/85 text-pretty">
         {takeaway}
       </p>
 
