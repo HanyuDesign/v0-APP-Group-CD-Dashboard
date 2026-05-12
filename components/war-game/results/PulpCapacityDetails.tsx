@@ -214,32 +214,40 @@ function BalancePill({ balance }: { balance: MarketBalance }) {
   )
 }
 
-function PostureTag({
-  prefix,
-  label,
-  tone,
+// Posture insight strip — a single calm box presenting APP and Competitor
+// postures side-by-side with tone-coloured values. Replaces the previous
+// separate pill chips for a more "insight box" feel.
+function PostureInsight({
+  appPosture,
+  competitorPosture,
 }: {
-  prefix: string
-  label: string
-  tone: 'app' | CompetitorPostureTone
+  appPosture: string
+  competitorPosture: { label: string; tone: CompetitorPostureTone }
 }) {
-  const toneCls = {
-    app: 'bg-red-50 text-red-700 ring-red-200',
-    cautious: 'bg-blue-50 text-blue-700 ring-blue-200',
-    mixed: 'bg-slate-50 text-slate-700 ring-slate-200',
-    reactive: 'bg-amber-50 text-amber-700 ring-amber-200',
-    disciplined: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
-  }[tone]
+  const competitorToneText = {
+    cautious: 'text-blue-700',
+    mixed: 'text-slate-700',
+    reactive: 'text-amber-700',
+    disciplined: 'text-emerald-700',
+  }[competitorPosture.tone]
+
   return (
-    <span
-      className={cn(
-        'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-base font-medium ring-1',
-        toneCls,
-      )}
-    >
-      <span className="text-muted-foreground/80">{prefix}</span>
-      <span className="font-semibold">{label}</span>
-    </span>
+    <div className="mt-1 flex items-stretch divide-x divide-border/50 overflow-hidden rounded-md border border-border/40 bg-muted/30">
+      <div className="flex flex-1 flex-col gap-0.5 px-3 py-2">
+        <span className="text-[11.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          APP
+        </span>
+        <span className="text-base font-semibold text-red-700">{appPosture}</span>
+      </div>
+      <div className="flex flex-1 flex-col gap-0.5 px-3 py-2">
+        <span className="text-[11.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          Competitors
+        </span>
+        <span className={cn('text-base font-semibold', competitorToneText)}>
+          {competitorPosture.label}
+        </span>
+      </div>
+    </div>
   )
 }
 
@@ -289,9 +297,9 @@ function PhaseCard({ phase }: { phase: MarketPhase }) {
       )}
     >
       {/* Phase header */}
-      <header className="space-y-2">
+      <header className="space-y-2.5">
         <div className="flex items-center justify-between gap-2">
-          <span className="font-mono text-[12px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+          <span className="font-mono text-[15px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
             Phase {phase.index} of 3 · {phase.window}
           </span>
           {phase.isStrategicWindow && (
@@ -301,21 +309,15 @@ function PhaseCard({ phase }: { phase: MarketPhase }) {
             </span>
           )}
         </div>
-        {/* Title + posture chips on the same row */}
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <h4 className={cn('text-xl font-semibold tracking-tight', accentText)}>
-            {phase.label}
-          </h4>
-          <div className="flex flex-wrap items-center gap-2">
-            <PostureTag prefix="APP" label={phase.appPosture} tone="app" />
-            <PostureTag
-              prefix="Competitors"
-              label={phase.competitorPosture.label}
-              tone={phase.competitorPosture.tone}
-            />
-          </div>
-        </div>
+        <h4 className={cn('text-xl font-semibold tracking-tight', accentText)}>
+          {phase.label}
+        </h4>
         <p className="text-base leading-relaxed text-muted-foreground">{phase.tagline}</p>
+        {/* Posture insight box — APP vs Competitors side-by-side */}
+        <PostureInsight
+          appPosture={phase.appPosture}
+          competitorPosture={phase.competitorPosture}
+        />
       </header>
 
       {/* Visual indicators */}
