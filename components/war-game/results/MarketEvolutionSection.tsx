@@ -358,6 +358,7 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
                   tick={{ ...AXIS_STYLE, fontSize: 16 }}
                   axisLine={{ stroke: GRID_STROKE }}
                   tickLine={false}
+                  padding={{ left: 24, right: 12 }}
                 />
                 <YAxis
                   tick={{ ...AXIS_STYLE, fontSize: 16 }}
