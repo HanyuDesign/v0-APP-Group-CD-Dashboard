@@ -794,7 +794,7 @@ function KpiCard({
         )}
       </div>
       {helper && (
-        <div className="mt-3 text-[15px] leading-relaxed text-muted-foreground">{helper}</div>
+        <div className="mt-3 text-base font-medium leading-relaxed text-foreground/75">{helper}</div>
       )}
     </div>
   )
