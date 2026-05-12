@@ -385,8 +385,8 @@ function PhaseStepper({ phases }: { phases: MarketPhase[] }) {
       {/* Header */}
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <div className="flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-indigo-600" />
-          <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <TrendingUp className="h-[18px] w-[18px] text-indigo-600" />
+          <span className="text-[15px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             Market Evolution Phases
           </span>
         </div>
