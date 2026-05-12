@@ -780,7 +780,7 @@ function KpiCard({
   return (
     <div className="relative overflow-hidden rounded-lg border border-border/50 bg-card/60 p-5">
       <span className={cn('absolute left-0 top-0 h-full w-0.5', accentBar)} />
-      <div className="text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+      <div className="text-[15px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
         {label}
       </div>
       <div className="mt-2.5 flex items-baseline gap-1.5">
@@ -794,7 +794,7 @@ function KpiCard({
         )}
       </div>
       {helper && (
-        <div className="mt-2.5 truncate text-sm leading-snug text-muted-foreground">{helper}</div>
+        <div className="mt-3 text-[15px] leading-relaxed text-muted-foreground">{helper}</div>
       )}
     </div>
   )
