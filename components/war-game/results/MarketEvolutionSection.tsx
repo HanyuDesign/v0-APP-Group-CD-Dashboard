@@ -350,316 +350,279 @@ export function MarketEvolutionSection({
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-        {/* Hero chart — Price Evolution */}
-        <div className="space-y-3">
-          <div className="flex items-baseline justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <TrendingDown className="h-4 w-4 text-red-600" />
-              <h5 className="text-lg font-semibold tracking-tight text-foreground">
+          {/* Chart 1 · Price Evolution */}
+          <Card className="border-border/40 bg-background">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-lg font-semibold tracking-tight text-foreground">
+                <TrendingDown className="h-4 w-4 text-red-600" />
                 Price Evolution
-              </h5>
-            </div>
-          </div>
+                <span className="ml-1 text-sm font-normal text-muted-foreground">
+                  $/t
+                </span>
+              </CardTitle>
+              <div className="flex items-start gap-2 pt-1">
+                <Sparkles className="mt-1 h-4 w-4 flex-shrink-0 text-amber-600" />
+                <p className="text-base leading-relaxed text-foreground/80">
+                  <span className="font-semibold text-foreground">AI Insight · </span>
+                  {priceDelta < -30
+                    ? `Capacity additions of ~${totalNetAdd.toLocaleString()} kt by 2031 erode pulp pricing by ~${Math.abs(priceDelta)} $/t after 2028. APP's first-mover premium narrows; sustained margin defence depends on integrated downstream pull.`
+                    : `Net additions (~${totalNetAdd.toLocaleString()} kt) keep pricing structurally intact. APP retains a defendable premium versus the competitor average through 2031.`}
+                </p>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={priceData} margin={{ top: 16, right: 24, left: 8, bottom: 4 }}>
+                    <CartesianGrid strokeDasharray="2 4" stroke={GRID_STROKE} vertical={false} />
+                    <XAxis
+                      dataKey="year"
+                      tick={{ ...AXIS_STYLE, fontSize: 16 }}
+                      axisLine={{ stroke: GRID_STROKE }}
+                      tickLine={false}
+                      padding={{ left: 24, right: 12 }}
+                    />
+                    <YAxis
+                      tick={{ ...AXIS_STYLE, fontSize: 16 }}
+                      axisLine={false}
+                      tickLine={false}
+                      domain={['auto', 'auto']}
+                      width={64}
+                    />
+                    <Tooltip
+                      content={<CustomTooltip unit=" $/t" />}
+                      cursor={{ stroke: '#94a3b8', strokeDasharray: '3 3' }}
+                    />
+                    <ReferenceArea
+                      x1="2028"
+                      x2="2031"
+                      fill="#fef3c7"
+                      fillOpacity={0.35}
+                      ifOverflow="extendDomain"
+                    />
+                    <ReferenceLine
+                      x="2028"
+                      stroke="#d97706"
+                      strokeDasharray="3 3"
+                      strokeWidth={1}
+                      label={{
+                        value: 'Capacity wave',
+                        position: 'insideTopRight',
+                        fill: '#b45309',
+                        fontSize: 16,
+                        fontWeight: 600,
+                      }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="app"
+                      name="APP"
+                      stroke="#cc0000"
+                      strokeWidth={2.5}
+                      dot={{ r: 3, strokeWidth: 0, fill: '#cc0000' }}
+                      activeDot={{ r: 5 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="competitor"
+                      name="Competitor avg."
+                      stroke="#1d4e89"
+                      strokeWidth={2}
+                      dot={{ r: 2.5, strokeWidth: 0, fill: '#1d4e89' }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="market"
+                      name="Market avg."
+                      stroke="#64748b"
+                      strokeWidth={1.5}
+                      strokeDasharray="5 4"
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
 
-          {/* AI Insight — sits directly under the title, matches supporting-chart footnote scale */}
-          <div className="flex items-start gap-2">
-            <Sparkles className="mt-1 h-4 w-4 flex-shrink-0 text-amber-600" />
-            <p className="text-lg leading-relaxed text-foreground/80">
-              <span className="font-semibold text-foreground">AI Insight · </span>
-              {priceDelta < -30
-                ? `Capacity additions of ~${totalNetAdd.toLocaleString()} kt by 2031 erode pulp pricing by ~${Math.abs(priceDelta)} $/t after 2028. APP's first-mover premium narrows; sustained margin defence depends on integrated downstream pull.`
-                : `Net additions (~${totalNetAdd.toLocaleString()} kt) keep pricing structurally intact. APP retains a defendable premium versus the competitor average through 2031.`}
-            </p>
-          </div>
+          {/* Chart 2 · Capacity Expansion */}
+          <Card className="border-border/40 bg-background">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-lg font-semibold tracking-tight text-foreground">
+                Capacity Expansion
+                <span className="ml-1 text-sm font-normal text-muted-foreground">
+                  Cumulative pulp capacity · kt
+                </span>
+              </CardTitle>
+              <p className="pt-1 text-base leading-relaxed text-foreground/80">
+                <span className="font-medium text-foreground">APP leads the wave;</span>{' '}
+                competitors follow more cautiously, reinforcing oversupply risk into 2030.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[260px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={capacityData} margin={{ top: 4, right: 12, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="2 4" stroke={GRID_STROKE} vertical={false} />
+                    <XAxis
+                      dataKey="year"
+                      tick={{ ...AXIS_STYLE, fontSize: 16 }}
+                      axisLine={{ stroke: GRID_STROKE }}
+                      tickLine={false}
+                      padding={{ left: 24, right: 12 }}
+                    />
+                    <YAxis
+                      tick={{ ...AXIS_STYLE, fontSize: 16 }}
+                      axisLine={false}
+                      tickLine={false}
+                      width={60}
+                    />
+                    <Tooltip
+                      content={<CustomTooltip unit=" kt" />}
+                      cursor={{ stroke: '#94a3b8', strokeDasharray: '3 3' }}
+                    />
+                    {competitorKeys.map((id) => {
+                      const meta = seriesMeta[id]
+                      return (
+                        <Area
+                          key={id}
+                          type="monotone"
+                          dataKey={id}
+                          name={meta.name}
+                          stackId="cap"
+                          stroke={meta.color}
+                          fill={meta.color}
+                          fillOpacity={0.16}
+                          strokeWidth={1}
+                        />
+                      )
+                    })}
+                    <Area
+                      type="monotone"
+                      dataKey="app"
+                      name="APP China"
+                      stackId="cap"
+                      stroke="#cc0000"
+                      fill="#cc0000"
+                      fillOpacity={0.3}
+                      strokeWidth={1.5}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
 
-          <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={priceData} margin={{ top: 16, right: 24, left: 8, bottom: 4 }}>
-                <CartesianGrid strokeDasharray="2 4" stroke={GRID_STROKE} vertical={false} />
-                <XAxis
-                  dataKey="year"
-                  tick={{ ...AXIS_STYLE, fontSize: 16 }}
-                  axisLine={{ stroke: GRID_STROKE }}
-                  tickLine={false}
-                  padding={{ left: 24, right: 12 }}
-                />
-                <YAxis
-                  tick={{ ...AXIS_STYLE, fontSize: 16 }}
-                  axisLine={false}
-                  tickLine={false}
-                  domain={['auto', 'auto']}
-                  width={64}
-                />
-                <Tooltip
-                  content={<CustomTooltip unit=" $/t" />}
-                  cursor={{ stroke: '#94a3b8', strokeDasharray: '3 3' }}
-                />
-
-                <ReferenceArea
-                  x1="2028"
-                  x2="2031"
-                  fill="#fef3c7"
-                  fillOpacity={0.35}
-                  ifOverflow="extendDomain"
-                />
-                <ReferenceLine
-                  x="2028"
-                  stroke="#d97706"
-                  strokeDasharray="3 3"
-                  strokeWidth={1}
-                  label={{
-                    value: 'Capacity wave',
-                    position: 'insideTopRight',
-                    fill: '#b45309',
-                    fontSize: 16,
-                    fontWeight: 600,
-                  }}
-                />
-
-                <Line
-                  type="monotone"
-                  dataKey="app"
-                  name="APP"
-                  stroke="#cc0000"
-                  strokeWidth={2.5}
-                  dot={{ r: 3, strokeWidth: 0, fill: '#cc0000' }}
-                  activeDot={{ r: 5 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="competitor"
-                  name="Competitor avg."
-                  stroke="#1d4e89"
-                  strokeWidth={2}
-                  dot={{ r: 2.5, strokeWidth: 0, fill: '#1d4e89' }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="market"
-                  name="Market avg."
-                  stroke="#64748b"
-                  strokeWidth={1.5}
-                  strokeDasharray="5 4"
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-
-        </div>
-
-        {/* Supporting evidence — collapsible, low visual weight */}
-        <SupportingEvidence
-          capacityData={capacityData}
-          shareData={shareData}
-          competitorKeys={competitorKeys}
-          seriesMeta={seriesMeta}
-          appShareStart={appShareStart}
-          appShareEnd={appShareEnd}
-          appShareDelta={appShareDelta}
-        />
+          {/* Chart 3 · Market Share Evolution */}
+          <Card className="border-border/40 bg-background">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-lg font-semibold tracking-tight text-foreground">
+                Market Share Evolution
+                <span className="ml-1 text-sm font-normal text-muted-foreground">
+                  % of regional pulp capacity
+                </span>
+              </CardTitle>
+              <p className="inline-flex items-center gap-1.5 pt-1 text-base leading-relaxed text-foreground/80">
+                {appShareDelta > 0 ? (
+                  <ArrowUpRight className="h-4 w-4 text-emerald-600" />
+                ) : (
+                  <ArrowDownRight className="h-4 w-4 text-amber-600" />
+                )}
+                <span>
+                  APP{' '}
+                  <span className="font-medium text-foreground">
+                    {appShareStart?.toFixed(1)}% → {appShareEnd?.toFixed(1)}%
+                  </span>{' '}
+                  ({appShareDelta > 0 ? '+' : ''}
+                  {appShareDelta} pp)
+                </span>
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[260px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={shareData}
+                    stackOffset="expand"
+                    margin={{ top: 4, right: 12, left: 0, bottom: 0 }}
+                  >
+                    <CartesianGrid strokeDasharray="2 4" stroke={GRID_STROKE} vertical={false} />
+                    <XAxis
+                      dataKey="year"
+                      tick={{ ...AXIS_STYLE, fontSize: 16 }}
+                      axisLine={{ stroke: GRID_STROKE }}
+                      tickLine={false}
+                      padding={{ left: 24, right: 12 }}
+                    />
+                    <YAxis
+                      tick={{ ...AXIS_STYLE, fontSize: 16 }}
+                      axisLine={false}
+                      tickLine={false}
+                      width={56}
+                      tickFormatter={(v) => `${Math.round(v * 100)}%`}
+                    />
+                    <Tooltip
+                      content={({ active, payload, label }) => {
+                        if (!active || !payload?.length) return null
+                        return (
+                          <div className="rounded-md border border-border/60 bg-white/95 px-3 py-2 shadow-sm backdrop-blur">
+                            <p className="mb-1 text-[13px] font-semibold uppercase tracking-wide text-muted-foreground">
+                              {label}
+                            </p>
+                            <div className="space-y-0.5">
+                              {payload.map((p: any) => (
+                                <div key={p.dataKey} className="flex items-center gap-2 text-sm">
+                                  <span
+                                    className="h-2 w-2 rounded-full"
+                                    style={{ backgroundColor: p.color || p.fill }}
+                                  />
+                                  <span className="text-muted-foreground">{p.name}</span>
+                                  <span className="ml-auto font-mono font-semibold tabular-nums text-foreground">
+                                    {typeof p.value === 'number' ? p.value.toFixed(1) : p.value}
+                                    <span className="ml-0.5 text-sm text-muted-foreground">%</span>
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      }}
+                      cursor={{ stroke: '#94a3b8', strokeDasharray: '3 3' }}
+                    />
+                    {competitorKeys.map((id) => {
+                      const meta = seriesMeta[id]
+                      return (
+                        <Area
+                          key={id}
+                          type="monotone"
+                          dataKey={id}
+                          name={meta.name}
+                          stackId="share"
+                          stroke={meta.color}
+                          fill={meta.color}
+                          fillOpacity={0.2}
+                          strokeWidth={1}
+                        />
+                      )
+                    })}
+                    <Area
+                      type="monotone"
+                      dataKey="app"
+                      name="APP China"
+                      stackId="share"
+                      stroke="#cc0000"
+                      fill="#cc0000"
+                      fillOpacity={0.36}
+                      strokeWidth={1.5}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
         </CardContent>
       </Card>
       )}
-    </div>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// Supporting Evidence — collapsible, calm, secondary
-// ---------------------------------------------------------------------------
-
-function SupportingEvidence({
-  capacityData,
-  shareData,
-  competitorKeys,
-  seriesMeta,
-  appShareStart,
-  appShareEnd,
-  appShareDelta,
-}: {
-  capacityData: ReturnType<typeof buildCapacityData>
-  shareData: ReturnType<typeof buildMarketShareData>
-  competitorKeys: string[]
-  seriesMeta: Record<string, { name: string; color: string }>
-  appShareStart: number
-  appShareEnd: number
-  appShareDelta: number
-}) {
-  return (
-    <div className="space-y-6 pt-2">
-      {/* Section label — replaces the previous tab strip */}
-      <div className="border-t border-border/40 pt-3">
-        <span className="text-base font-semibold text-foreground">
-          Supporting Evidence
-        </span>
-      </div>
-
-      {/* Chart 1 · Capacity Expansion */}
-      <div aria-label="Capacity Expansion">
-        <SupportingChart
-          title="Capacity Expansion"
-          subtitle="Cumulative pulp capacity · kt"
-          footnote={
-            <>
-              <span className="font-medium text-foreground">APP leads the wave;</span>{' '}
-              competitors follow more cautiously, reinforcing oversupply risk into 2030.
-            </>
-          }
-        >
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={capacityData} margin={{ top: 4, right: 12, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="2 4" stroke={GRID_STROKE} vertical={false} />
-                <XAxis
-                  dataKey="year"
-                  tick={{ ...AXIS_STYLE, fontSize: 16 }}
-                  axisLine={{ stroke: GRID_STROKE }}
-                  tickLine={false}
-                  padding={{ left: 24, right: 12 }}
-                />
-                <YAxis
-                  tick={{ ...AXIS_STYLE, fontSize: 16 }}
-                  axisLine={false}
-                  tickLine={false}
-                  width={60}
-                />
-                <Tooltip
-                  content={<CustomTooltip unit=" kt" />}
-                  cursor={{ stroke: '#94a3b8', strokeDasharray: '3 3' }}
-                />
-                {competitorKeys.map((id) => {
-                  const meta = seriesMeta[id]
-                  return (
-                    <Area
-                      key={id}
-                      type="monotone"
-                      dataKey={id}
-                      name={meta.name}
-                      stackId="cap"
-                      stroke={meta.color}
-                      fill={meta.color}
-                      fillOpacity={0.16}
-                      strokeWidth={1}
-                    />
-                  )
-                })}
-                <Area
-                  type="monotone"
-                  dataKey="app"
-                  name="APP China"
-                  stackId="cap"
-                  stroke="#cc0000"
-                  fill="#cc0000"
-                  fillOpacity={0.3}
-                  strokeWidth={1.5}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-        </SupportingChart>
-      </div>
-
-      {/* Chart 2 · Market Share Evolution */}
-      <div aria-label="Market Share Evolution">
-        <SupportingChart
-          title="Market Share Evolution"
-          subtitle="% of regional pulp capacity"
-          footnote={
-            <span className="inline-flex items-center gap-1.5">
-              {appShareDelta > 0 ? (
-                <ArrowUpRight className="h-3 w-3 text-emerald-600" />
-              ) : (
-                <ArrowDownRight className="h-3 w-3 text-amber-600" />
-              )}
-              <span>
-                APP{' '}
-                      <span className="font-medium text-foreground">
-                        {appShareStart?.toFixed(1)}% → {appShareEnd?.toFixed(1)}%
-                      </span>{' '}
-                      ({appShareDelta > 0 ? '+' : ''}
-                      {appShareDelta} pp)
-                    </span>
-                  </span>
-                }
-              >
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={shareData}
-                stackOffset="expand"
-                margin={{ top: 4, right: 12, left: 0, bottom: 0 }}
-              >
-                <CartesianGrid strokeDasharray="2 4" stroke={GRID_STROKE} vertical={false} />
-                <XAxis
-                  dataKey="year"
-                  tick={{ ...AXIS_STYLE, fontSize: 16 }}
-                  axisLine={{ stroke: GRID_STROKE }}
-                  tickLine={false}
-                  padding={{ left: 24, right: 12 }}
-                />
-                <YAxis
-                  tick={{ ...AXIS_STYLE, fontSize: 16 }}
-                  axisLine={false}
-                  tickLine={false}
-                  width={56}
-                  tickFormatter={(v) => `${Math.round(v * 100)}%`}
-                />
-                <Tooltip
-                  content={({ active, payload, label }) => {
-                    if (!active || !payload?.length) return null
-                    return (
-                      <div className="rounded-md border border-border/60 bg-white/95 px-3 py-2 shadow-sm backdrop-blur">
-                        <p className="mb-1 text-[13px] font-semibold uppercase tracking-wide text-muted-foreground">
-                          {label}
-                        </p>
-                        <div className="space-y-0.5">
-                          {payload.map((p: any) => (
-                            <div key={p.dataKey} className="flex items-center gap-2 text-sm">
-                              <span
-                                className="h-2 w-2 rounded-full"
-                                style={{ backgroundColor: p.color || p.fill }}
-                              />
-                              <span className="text-muted-foreground">{p.name}</span>
-                              <span className="ml-auto font-mono font-semibold tabular-nums text-foreground">
-                                {typeof p.value === 'number' ? p.value.toFixed(1) : p.value}
-                                <span className="ml-0.5 text-sm text-muted-foreground">%</span>
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )
-                  }}
-                  cursor={{ stroke: '#94a3b8', strokeDasharray: '3 3' }}
-                />
-                {competitorKeys.map((id) => {
-                  const meta = seriesMeta[id]
-                  return (
-                    <Area
-                      key={id}
-                      type="monotone"
-                      dataKey={id}
-                      name={meta.name}
-                      stackId="share"
-                      stroke={meta.color}
-                      fill={meta.color}
-                      fillOpacity={0.2}
-                      strokeWidth={1}
-                    />
-                  )
-                })}
-                <Area
-                  type="monotone"
-                  dataKey="app"
-                  name="APP China"
-                  stackId="share"
-                  stroke="#cc0000"
-                  fill="#cc0000"
-                  fillOpacity={0.36}
-                  strokeWidth={1.5}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-        </SupportingChart>
-      </div>
     </div>
   )
 }
@@ -720,27 +683,4 @@ function KpiCard({
   )
 }
 
-function SupportingChart({
-  title,
-  subtitle,
-  footnote,
-  children,
-}: {
-  title: string
-  subtitle: string
-  footnote: React.ReactNode
-  children: React.ReactNode
-}) {
-  return (
-    <div className="flex flex-col">
-      <div className="mb-4">
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h5 className="text-lg font-semibold tracking-tight text-foreground">{title}</h5>
-          <span className="text-sm text-muted-foreground">{subtitle}</span>
-        </div>
-        <p className="mt-2.5 text-lg leading-relaxed text-foreground/80">{footnote}</p>
-      </div>
-      <div className="h-[220px] w-full">{children}</div>
-    </div>
-  )
-}
+
