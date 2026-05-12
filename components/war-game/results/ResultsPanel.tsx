@@ -204,28 +204,55 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
     }
   }, [activeStage])
   
-  // Track if nav is sticky and update active section on scroll
+  // Track if nav is sticky and update the active section as the user scrolls.
+  // The handler is stage-agnostic — it re-reads NAV_ITEMS[activeStage] each
+  // tick, so the same logic keeps the jump-nav in sync for Forestry, Pulp,
+  // and Downstream stages.
   useEffect(() => {
     const handleScroll = () => {
-      // Check if sticky container is active (scrolled past its original position)
       const scrollY = window.scrollY
-      // Sticky activates when content scrolls past ~200px
+      // Sticky activates once the user scrolls past the page header area.
       setIsNavSticky(scrollY > 100)
-      
-      // Update active section based on scroll position
+
       const navItems = NAV_ITEMS[activeStage]
-      // Total sticky height: header (64) + step nav (44) + strategic insights (~200) + jump nav (~52) + buffer
-      const scrollPosition = scrollY + 400
-      
-      for (let i = navItems.length - 1; i >= 0; i--) {
-        const element = document.getElementById(navItems[i].id)
-        if (element && element.offsetTop <= scrollPosition) {
-          setActiveSection(navItems[i].id)
+      if (navItems.length === 0) return
+
+      // 1) Bottom-of-page guard. When the user reaches the bottom of the
+      //    document, force-activate the LAST nav item. This fixes the case
+      //    where the final section (e.g. "Detailed Tables", "Tissue",
+      //    "Import Dependency Trend") is shorter than the viewport and its
+      //    top never crosses the activation threshold below.
+      const viewportBottom = scrollY + window.innerHeight
+      const documentHeight = document.documentElement.scrollHeight
+      if (viewportBottom >= documentHeight - 80) {
+        setActiveSection(navItems[navItems.length - 1].id)
+        return
+      }
+
+      // 2) Threshold matches the click-to-scroll offset (380) plus a small
+      //    buffer, so the section the user just landed on is the one
+      //    highlighted. Use getBoundingClientRect (page-relative) instead of
+      //    offsetTop, which is relative to the offset parent and can be wrong
+      //    when sections sit inside positioned Cards/wrappers. Iterate forward
+      //    and keep the last item whose top edge is above the threshold.
+      const threshold = scrollY + 400
+      let current = navItems[0].id
+      for (const item of navItems) {
+        const element = document.getElementById(item.id)
+        if (!element) continue
+        const pageTop = element.getBoundingClientRect().top + window.scrollY
+        if (pageTop <= threshold) {
+          current = item.id
+        } else {
           break
         }
       }
+      setActiveSection(current)
     }
-    
+
+    // Run once on mount / when the active stage changes so the correct tab
+    // lights up immediately without waiting for a scroll event.
+    handleScroll()
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [activeStage])
