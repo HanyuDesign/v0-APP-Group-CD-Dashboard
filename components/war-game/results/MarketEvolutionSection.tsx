@@ -173,7 +173,7 @@ function LegendDot({
   dashed?: boolean
 }) {
   return (
-    <span className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground">
+    <span className="inline-flex items-center gap-2 text-base text-muted-foreground">
       {dashed ? (
         <span
           className="inline-block h-0 w-4 border-t-2"
@@ -399,7 +399,7 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
                     value: 'Capacity wave',
                     position: 'insideTopRight',
                     fill: '#b45309',
-                    fontSize: 12,
+                    fontSize: 16,
                     fontWeight: 600,
                   }}
                 />
