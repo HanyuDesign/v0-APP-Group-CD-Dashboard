@@ -4,16 +4,26 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { ResultsPanel } from '@/components/war-game/results/ResultsPanel'
 import { OverviewPanel } from '@/components/war-game/OverviewPanel'
-import { Zap, ArrowLeft, History, Download, Share2, ClipboardList, ChevronDown, ChevronUp, ChevronRight, Bug, Check } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Zap, History, Download, Share2, ClipboardList, ChevronDown, ChevronUp, ChevronRight, Bug, Check, RotateCcw } from 'lucide-react'
 import { useSimulation } from '@/lib/context/SimulationContext'
 import { computeAllFromInput } from '@/lib/simulation/computations'
 
 export default function ResultsPage() {
   const router = useRouter()
-  const { input, result, status, history } = useSimulation()
+  const { input, result, status, history, reset } = useSimulation()
   const [showOverview, setShowOverview] = useState(false)
   const [showDebug, setShowDebug] = useState(false)
 
@@ -24,7 +34,11 @@ export default function ResultsPage() {
     }
   }, [result, status, router])
 
-  const handleBackToInput = () => {
+  // Reset the entire simulation and send the user back to step 1. This is the
+  // *only* sanctioned way to leave the results page and return to inputs, so
+  // the step tabs themselves are intentionally non-interactive below.
+  const handleResetSimulation = () => {
+    reset()
     router.push('/')
   }
 
@@ -135,6 +149,40 @@ export default function ResultsPage() {
                   Share Report
                 </Button>
                 <div className="h-6 w-px bg-border" />
+                {/* Reset simulation — returns user to step 1 with fresh inputs */}
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={status === 'running'}
+                      className="border-amber-200 text-amber-700 hover:bg-amber-50 hover:text-amber-800"
+                    >
+                      <RotateCcw className="mr-1.5 h-4 w-4" />
+                      Reset Simulation
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Reset simulation?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will clear the current results and return you to step 1 (Market
+                        Input) with all configuration reset to defaults. This action cannot be
+                        undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleResetSimulation}
+                        className="bg-amber-600 hover:bg-amber-700"
+                      >
+                        Yes, reset
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                <div className="h-6 w-px bg-border" />
                 <Button
                   variant={showDebug ? "default" : "ghost"}
                   size="sm"
@@ -150,60 +198,63 @@ export default function ResultsPage() {
         </header>
 
         {/* Navigation tabs - 4 steps */}
-        <nav className="border-b border-border/50 bg-background px-6">
+        <nav className="border-b border-border/50 bg-background px-6" aria-label="Simulation steps">
         <div className="flex items-center gap-1">
+          {/* Step indicators are non-interactive on the Results page. Users must
+              use the "Reset Simulation" button in the header to start over. */}
           {/* Step 1: Market Input */}
           <div className="flex items-center">
-            <button
-              onClick={handleBackToInput}
-              className="px-4 py-3 text-base font-medium border-b-2 border-transparent text-emerald-600 hover:text-emerald-700 flex items-center gap-2"
+            <div
+              aria-disabled="true"
+              className="px-4 py-3 text-base font-medium border-b-2 border-transparent text-emerald-600 flex items-center gap-2 cursor-default select-none"
             >
               <span className="flex h-6 w-6 items-center justify-center rounded-full text-sm font-semibold bg-emerald-100 text-emerald-600">
                 <Check className="h-3.5 w-3.5" />
               </span>
               Market Input
-            </button>
+            </div>
             <ChevronRight className="h-4 w-4 text-muted-foreground/50 mx-1" />
           </div>
-          
+
           {/* Step 2: Competitor Configure */}
           <div className="flex items-center">
-            <button
-              onClick={handleBackToInput}
-              className="px-4 py-3 text-base font-medium border-b-2 border-transparent text-emerald-600 hover:text-emerald-700 flex items-center gap-2"
+            <div
+              aria-disabled="true"
+              className="px-4 py-3 text-base font-medium border-b-2 border-transparent text-emerald-600 flex items-center gap-2 cursor-default select-none"
             >
               <span className="flex h-6 w-6 items-center justify-center rounded-full text-sm font-semibold bg-emerald-100 text-emerald-600">
                 <Check className="h-3.5 w-3.5" />
               </span>
               Competitor Configure
-            </button>
+            </div>
             <ChevronRight className="h-4 w-4 text-muted-foreground/50 mx-1" />
           </div>
-          
+
           {/* Step 3: Reaction */}
           <div className="flex items-center">
-            <button
-              onClick={handleBackToInput}
-              className="px-4 py-3 text-base font-medium border-b-2 border-transparent text-emerald-600 hover:text-emerald-700 flex items-center gap-2"
+            <div
+              aria-disabled="true"
+              className="px-4 py-3 text-base font-medium border-b-2 border-transparent text-emerald-600 flex items-center gap-2 cursor-default select-none"
             >
               <span className="flex h-6 w-6 items-center justify-center rounded-full text-sm font-semibold bg-emerald-100 text-emerald-600">
                 <Check className="h-3.5 w-3.5" />
               </span>
               Reaction
-            </button>
+            </div>
             <ChevronRight className="h-4 w-4 text-muted-foreground/50 mx-1" />
           </div>
-          
-          {/* Step 4: Simulation Results - Active */}
-          <button
-            className="px-4 py-3 text-base font-medium border-b-2 border-primary text-primary flex items-center gap-2"
+
+          {/* Step 4: Simulation Results - Active (also non-interactive) */}
+          <div
+            aria-current="step"
+            className="px-4 py-3 text-base font-medium border-b-2 border-primary text-primary flex items-center gap-2 cursor-default select-none"
           >
             <span className="flex h-6 w-6 items-center justify-center rounded-full text-sm font-semibold bg-primary text-primary-foreground">
               4
             </span>
             Simulation Results
-          </button>
-          
+          </div>
+
           {/* Progress indicator */}
           <div className="ml-auto flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <span>Step <span className="text-foreground">4</span> of 4</span>
