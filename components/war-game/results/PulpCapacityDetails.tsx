@@ -1,7 +1,18 @@
 'use client'
 
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Users, Globe, ArrowRight, TrendingUp, TrendingDown, Building2, BarChart3 } from 'lucide-react'
+import {
+  Users,
+  Globe,
+  ArrowRight,
+  TrendingUp,
+  TrendingDown,
+  Building2,
+  BarChart3,
+  ChevronDown,
+  Table as TableIcon,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { AIBadge } from '../shared/AIBadge'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -22,6 +33,7 @@ const YEARS = [2026, 2027, 2028, 2029, 2030, 2031] as const
 export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
   const { competitorChanges, input } = result
   const years = YEARS
+  const [tablesOpen, setTablesOpen] = useState(true)
 
   // APP capacity calculations
   const appChinaPulpAdd = input.appCapacity.guangxi.pulpCapacity + input.appCapacity.jiangsuFujian.pulpCapacity
@@ -39,10 +51,43 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
 
   return (
     <div className="space-y-4">
+      {/* Disclosure header — frames the tables as secondary, supporting evidence */}
+      <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center gap-2">
+          <TableIcon className="h-3.5 w-3.5 text-muted-foreground" />
+          <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Detailed Data Tables
+          </span>
+          <span className="text-xs text-muted-foreground/80">
+            · Full per-year breakdown supporting the briefing above
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={() => setTablesOpen((o) => !o)}
+          className="inline-flex items-center gap-1.5 rounded-md border border-border/50 bg-card/60 px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-card hover:text-foreground"
+          aria-expanded={tablesOpen}
+        >
+          {tablesOpen ? 'Hide tables' : 'Show tables'}
+          <ChevronDown
+            className={cn(
+              'h-3.5 w-3.5 transition-transform duration-200',
+              tablesOpen ? 'rotate-180' : 'rotate-0',
+            )}
+          />
+        </button>
+      </div>
+
       {/* Section 1: Market Impact Summary */}
-      <Card id="pulp-market-impact" className="border-border/50 bg-blue-50/30 scroll-mt-96">
+      <Card
+        id="pulp-market-impact"
+        className={cn(
+          'border-border/40 bg-card/40 scroll-mt-96 transition-opacity',
+          !tablesOpen && 'hidden',
+        )}
+      >
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg flex items-center gap-2 text-blue-700">
+          <CardTitle className="text-base flex items-center gap-2 text-foreground/85">
             <BarChart3 className="h-4 w-4 text-blue-600" />
             Market Impact Summary
           </CardTitle>
@@ -190,10 +235,16 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
       </Card>
 
       {/* Section 2: APP Capacity Outcome */}
-      <Card id="pulp-app-capacity" className="border-2 border-red-200 bg-red-50/30 scroll-mt-96">
+      <Card
+        id="pulp-app-capacity"
+        className={cn(
+          'border-border/40 bg-card/40 scroll-mt-96',
+          !tablesOpen && 'hidden',
+        )}
+      >
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg flex items-center gap-2">
+            <CardTitle className="text-base flex items-center gap-2 text-foreground/85">
               <Building2 className="h-4 w-4 text-red-600" />
               APP Capacity Outcome
             </CardTitle>
@@ -277,10 +328,16 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
       </Card>
 
       {/* Section 3: Competitor Response */}
-      <Card id="pulp-competitor-response" className="border-border/50 bg-card/80 scroll-mt-96">
+      <Card
+        id="pulp-competitor-response"
+        className={cn(
+          'border-border/40 bg-card/40 scroll-mt-96',
+          !tablesOpen && 'hidden',
+        )}
+      >
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg flex items-center gap-2">
+            <CardTitle className="text-base flex items-center gap-2 text-foreground/85">
               <Users className="h-4 w-4 text-blue-600" />
               Competitor Response
             </CardTitle>
