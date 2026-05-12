@@ -1165,7 +1165,7 @@ function PositionMetric({
   return (
     <div className="relative overflow-hidden rounded-lg border border-border/50 bg-card/60 p-5">
       <span className={cn('absolute left-0 top-0 h-full w-0.5', accentBar)} />
-      <div className="text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+      <div className="text-[15px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
         {label}
       </div>
       <div className={cn('mt-2.5 text-2xl font-semibold tracking-tight', toneClass)}>
@@ -1196,7 +1196,7 @@ function StanceCard({
   return (
     <div className="relative overflow-hidden rounded-lg border border-border/50 bg-card/60 p-5">
       <span className={cn('absolute left-0 top-0 h-full w-0.5', toneMap.accent)} />
-      <div className="flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+      <div className="flex items-center gap-1.5 text-[15px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
         <span
           className="inline-block h-1.5 w-1.5 rounded-full"
           style={{ backgroundColor: toneMap.dot }}
