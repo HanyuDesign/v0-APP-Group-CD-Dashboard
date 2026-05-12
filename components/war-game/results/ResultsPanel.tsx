@@ -53,7 +53,7 @@ const NAV_ITEMS: Record<ValueChainStage, { id: string; label: string }[]> = {
     { id: 'forestry-supply-demand', label: 'Supply-Demand Balance' },
   ],
   pulp: [
-    { id: 'executive-outcome', label: 'Executive Outcome' },
+    { id: 'executive-summary', label: 'Executive Summary' },
     { id: 'pulp-app-position', label: 'APP Capacity Outcome' },
     { id: 'pulp-competitor-dynamics', label: "Competitor's Reaction" },
     { id: 'pulp-export-reallocation', label: 'Global Reallocation' },
@@ -352,7 +352,7 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
 
           {activeStage === 'pulp' && (
             <>
-              {/* 1. Executive Outcome (narrative briefing + KPI cards) */}
+              {/* 1. Executive Summary (narrative briefing + KPI cards) */}
               <MarketEvolutionSection result={result} section="executive" />
               {/* 2. APP Capacity Outcome + 3. Competitor's Reaction */}
               <PulpCapacityDetails result={result} />

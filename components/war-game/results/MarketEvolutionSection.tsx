@@ -30,9 +30,9 @@ interface MarketEvolutionSectionProps {
   result: SimulationResult
   /**
    * Which sub-section to render. The component is composed of two logically
-   * distinct sections (Executive Outcome + Market Evolution) that the parent
+   * distinct sections (Executive Summary + Market Evolution) that the parent
    * page now orders independently around other modules:
-   *  - 'executive' → render only the Executive Outcome briefing
+   *  - 'executive' → render only the Executive Summary briefing
    *  - 'evolution' → render only the Market Evolution chart block
    *  - 'all'       → render both (legacy default)
    */
@@ -265,19 +265,19 @@ export function MarketEvolutionSection({
   return (
     <div className="space-y-10">
       {/* ===================================================================
-          SECTION 1 · EXECUTIVE MARKET OUTCOME
+          SECTION 1 · EXECUTIVE SUMMARY
           Narrative-first. What happened, why APP benefits, in one read.
           =================================================================== */}
       {showExecutive && (
       <Card
-        id="executive-outcome"
+        id="executive-summary"
         className="border-border/40 bg-card/40 scroll-mt-96"
       >
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between gap-4">
             <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-indigo-600">
               <Sparkles className="h-5 w-5 text-indigo-600" />
-              Executive Outcome
+              Executive Summary
               <AIBadge size="sm" />
             </CardTitle>
             <span className="rounded-full border border-border/60 bg-card/60 px-2.5 py-1 text-[13px] font-medium text-muted-foreground">
