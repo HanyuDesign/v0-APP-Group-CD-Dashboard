@@ -6,10 +6,10 @@ import {
   Globe,
   Building2,
   ChevronDown,
-  ArrowUpRight,
-  ArrowDownRight,
-  Minus,
-  Radio,
+  Gauge,
+  Scale,
+  Target,
+  TrendingUp,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { AIBadge } from '../shared/AIBadge'
@@ -25,144 +25,351 @@ interface PulpCapacityDetailsProps {
 const YEARS = [2026, 2027, 2028, 2029, 2030, 2031] as const
 
 // ---------------------------------------------------------------------------
-// Phased competitor intelligence — derived narrative across 3 strategic phases
+// Market Evolution Phases — state-driven model across 3 strategic phases.
+// Focuses on how conditions transition (pressure, balance, posture), NOT on
+// chronological event logging.
 // ---------------------------------------------------------------------------
 
-interface PhaseEvent {
-  actor: string
-  color: string
-  headline: string
-  sentiment: 'app' | 'expand' | 'delay' | 'neutral'
+type MarketBalance = 'tight' | 'balanced' | 'oversupplied'
+type CompetitorPostureTone = 'cautious' | 'mixed' | 'reactive' | 'disciplined'
+
+interface MarketPhase {
+  key: 'opening' | 'wave' | 'rebalancing'
+  index: number
+  label: string
+  window: string
+  tagline: string
+  pressure: number // 0–100
+  pressureLabel: 'Low' | 'Moderate' | 'High' | 'Peak'
+  balance: MarketBalance
+  appPosture: string
+  competitorPosture: { label: string; tone: CompetitorPostureTone }
+  isStrategicWindow: boolean
+  state: {
+    market: string
+    app: string
+    competitors: string
+    pricing: string
+  }
+  accent: 'indigo' | 'amber' | 'emerald'
 }
 
-function buildPhasedIntelligence(result: SimulationResult) {
+function buildMarketPhases(result: SimulationResult): MarketPhase[] {
   const { competitorChanges, input } = result
   const appAdd =
     input.appCapacity.guangxi.pulpCapacity + input.appCapacity.jiangsuFujian.pulpCapacity
+  const expanders = competitorChanges.filter((c) => c.action === 'add').length
+  const delayers = competitorChanges.filter((c) => c.action === 'delay').length
 
-  const expanders = competitorChanges.filter((c) => c.action === 'add')
-  const delayers = competitorChanges.filter((c) => c.action === 'delay')
-  const holders = competitorChanges.filter((c) => c.action !== 'add' && c.action !== 'delay')
+  // ── Phase 1 · Opening Window ──────────────────────────────────────────────
+  const p1Pressure = delayers > expanders ? 28 : expanders > delayers ? 48 : 36
+  const p1Balance: MarketBalance = delayers > expanders ? 'tight' : 'balanced'
+  const isStrategicWindow = delayers >= expanders && appAdd > 0
 
-  const playerOf = (id: string) => PLAYERS.find((p) => p.id === id)
-
-  // ---- Phase 1: Opening Move (APP first-mover wave)
-  const opening: PhaseEvent[] = []
-  if (input.appCapacity.guangxi.pulpCapacity > 0) {
-    opening.push({
-      actor: 'APP China',
-      color: '#cc0000',
-      headline: `Guangxi pulp line commissioned (+${input.appCapacity.guangxi.pulpCapacity} kt)`,
-      sentiment: 'app',
-    })
-  }
-  delayers.slice(0, 2).forEach((c) => {
-    const p = playerOf(c.playerId)
-    if (!p) return
-    opening.push({
-      actor: p.name,
-      color: p.color,
-      headline: `${p.name} delays expansion, prioritises utilisation`,
-      sentiment: 'delay',
-    })
-  })
-
-  // ---- Phase 2: Capacity Wave (competitors react)
-  const wave: PhaseEvent[] = []
-  if (input.appCapacity.jiangsuFujian.pulpCapacity > 0) {
-    wave.push({
-      actor: 'APP China',
-      color: '#cc0000',
-      headline: `Jiangsu / Fujian expansion comes online (+${input.appCapacity.jiangsuFujian.pulpCapacity} kt)`,
-      sentiment: 'app',
-    })
-  }
-  expanders.slice(0, 2).forEach((c) => {
-    const p = playerOf(c.playerId)
-    if (!p) return
-    wave.push({
-      actor: p.name,
-      color: p.color,
-      headline: `${p.name} matches with defensive +${c.pulpChange} kt expansion`,
-      sentiment: 'expand',
-    })
-  })
-
-  // ---- Phase 3: Equilibrium (oversupply hedging, downstream pivot)
-  const equilibrium: PhaseEvent[] = []
-  if (appAdd > 250) {
-    equilibrium.push({
-      actor: 'APP Indonesia',
-      color: '#e63946',
-      headline: 'Scales board capacity for export pivot — hedges Chinese oversupply',
-      sentiment: 'app',
-    })
-  }
-  holders.slice(0, 1).forEach((c) => {
-    const p = playerOf(c.playerId)
-    if (!p) return
-    equilibrium.push({
-      actor: p.name,
-      color: p.color,
-      headline: `${p.name} holds footprint, focuses on margin recovery`,
-      sentiment: 'neutral',
-    })
-  })
-  if (equilibrium.length === 0) {
-    equilibrium.push({
-      actor: 'Market',
-      color: '#64748b',
-      headline: 'Pricing stabilises as utilisation recovers across the industry',
-      sentiment: 'neutral',
-    })
-  }
-
-  return [
-    {
-      label: 'Opening Move',
-      window: '2026 — 2027',
-      narrative:
-        delayers.length >= expanders.length
-          ? 'APP moves first while competitors hold back, prioritising utilisation over expansion. The window for share capture opens early.'
-          : 'APP commits to its first-mover wave; a subset of competitors signals matching intent — early signalling shapes the race.',
-      events: opening,
+  const phase1: MarketPhase = {
+    key: 'opening',
+    index: 1,
+    label: 'Opening Window',
+    window: '2026 — 2027',
+    tagline: isStrategicWindow
+      ? 'APP commits early while peers hold back — a clean lane for share capture opens.'
+      : 'APP moves first; a subset of peers signals matching intent — the window narrows quickly.',
+    pressure: p1Pressure,
+    pressureLabel: p1Pressure < 35 ? 'Low' : 'Moderate',
+    balance: p1Balance,
+    appPosture: 'First-mover',
+    competitorPosture: {
+      label: delayers > expanders ? 'Cautious' : delayers === expanders ? 'Mixed' : 'Signaling',
+      tone: delayers > expanders ? 'cautious' : delayers === expanders ? 'mixed' : 'reactive',
     },
-    {
-      label: 'Capacity Wave',
-      window: '2028 — 2029',
-      narrative:
-        expanders.length > 0
-          ? `${expanders.length} competitor${expanders.length > 1 ? 's' : ''} respond with defensive expansions. Supply additions compound and pricing pressure intensifies through the period.`
-          : "Competitors hesitate to follow. APP's incremental capacity comes online into a relatively un-contested supply slot.",
-      events: wave,
+    isStrategicWindow,
+    state: {
+      market:
+        delayers > expanders
+          ? `Supply tightens — ${delayers} peer${delayers === 1 ? '' : 's'} delay${delayers === 1 ? 's' : ''} expansion`
+          : 'Demand absorbs early additions; supply still constructive',
+      app: `Commits +${appAdd} kt pulp; secures first-mover capture`,
+      competitors:
+        delayers > expanders
+          ? 'Defensive utilisation; no matching CapEx'
+          : `${expanders} peer${expanders === 1 ? '' : 's'} signal${expanders === 1 ? 's' : ''} defensive matching`,
+      pricing: 'Premium intact — modest upward bias through 2027',
     },
-    {
-      label: 'Equilibrium',
-      window: '2030 — 2031',
-      narrative:
+    accent: 'indigo',
+  }
+
+  // ── Phase 2 · Capacity Wave ───────────────────────────────────────────────
+  const p2Pressure = appAdd > 250 && expanders >= 2 ? 86 : expanders >= 2 ? 72 : 50
+  const p2Balance: MarketBalance = expanders >= 2 ? 'oversupplied' : 'balanced'
+
+  const phase2: MarketPhase = {
+    key: 'wave',
+    index: 2,
+    label: 'Capacity Wave',
+    window: '2028 — 2029',
+    tagline:
+      expanders >= 2
+        ? `${expanders} peers match with defensive capacity — supply compounds and pressure peaks.`
+        : "APP's incremental capacity lands with limited competitor follow-through.",
+    pressure: p2Pressure,
+    pressureLabel: p2Pressure >= 80 ? 'Peak' : p2Pressure >= 60 ? 'High' : 'Moderate',
+    balance: p2Balance,
+    appPosture: appAdd > 250 ? 'Capacity push' : 'Selective build',
+    competitorPosture: {
+      label: expanders >= 2 ? 'Reactive' : 'Disciplined',
+      tone: expanders >= 2 ? 'reactive' : 'disciplined',
+    },
+    isStrategicWindow: false,
+    state: {
+      market:
+        expanders >= 2
+          ? 'Compounding supply — oversupply risk crystallises'
+          : 'Supply absorbed at moderated pace',
+      app:
         appAdd > 250
-          ? "Oversupply weighs on the spot market. APP's integrated downstream pull (board, tissue, export) hedges Chinese pricing weakness — competitors with weaker downstream are squeezed."
-          : 'Market normalises into a moderated supply environment. APP retains a defendable premium versus the competitor average.',
-      events: equilibrium,
+          ? 'Heavy build crests; utilisation slips'
+          : 'Holds premium positioning; downstream pull stabilises absorption',
+      competitors:
+        expanders >= 2
+          ? `${expanders} peers commit defensive capacity to protect share`
+          : 'Peers prioritise margin over share defense',
+      pricing:
+        expanders >= 2
+          ? 'Spot rolls over; premium narrows 4–7%'
+          : 'Premium softens marginally; market holds',
     },
-  ]
+    accent: 'amber',
+  }
+
+  // ── Phase 3 · Market Rebalancing ──────────────────────────────────────────
+  const p3Pressure = appAdd > 250 ? 58 : 38
+  const p3Balance: MarketBalance =
+    appAdd > 250 && expanders >= 2 ? 'oversupplied' : 'balanced'
+
+  const phase3: MarketPhase = {
+    key: 'rebalancing',
+    index: 3,
+    label: 'Market Rebalancing',
+    window: '2030 — 2031',
+    tagline:
+      appAdd > 250
+        ? 'Downstream integration hedges spot weakness — peers with weaker downstream squeeze.'
+        : 'Market normalises into a moderated supply environment with defendable premiums.',
+    pressure: p3Pressure,
+    pressureLabel: p3Pressure < 45 ? 'Low' : 'Moderate',
+    balance: p3Balance,
+    appPosture: appAdd > 250 ? 'Downstream hedge' : 'Margin defense',
+    competitorPosture: { label: 'Disciplined', tone: 'disciplined' },
+    isStrategicWindow: false,
+    state: {
+      market:
+        p3Balance === 'oversupplied'
+          ? 'Spot pulp soft; integrated players capture value off-curve'
+          : 'Utilisation recovers across the industry',
+      app:
+        appAdd > 250
+          ? 'Board / tissue / export pull cushions Chinese pricing'
+          : 'Holds defendable premium vs competitor avg',
+      competitors: 'Margin defense; selective debottlenecking only',
+      pricing:
+        appAdd > 250
+          ? 'Spot recovers slowly — premium reconsolidates by 2031'
+          : 'Premium stabilises through cycle',
+    },
+    accent: 'emerald',
+  }
+
+  return [phase1, phase2, phase3]
 }
 
-function SentimentIcon({
-  sentiment,
-  className,
-}: {
-  sentiment: 'app' | 'expand' | 'delay' | 'neutral'
-  className?: string
-}) {
+// ── Visual indicator helpers ───────────────────────────────────────────────
+
+function pressureBarTone(pressure: number) {
+  if (pressure < 35) return 'bg-emerald-500'
+  if (pressure < 60) return 'bg-amber-500'
+  if (pressure < 80) return 'bg-orange-500'
+  return 'bg-rose-500'
+}
+
+function pressureTextTone(pressure: number) {
+  if (pressure < 35) return 'text-emerald-700'
+  if (pressure < 60) return 'text-amber-700'
+  if (pressure < 80) return 'text-orange-700'
+  return 'text-rose-700'
+}
+
+function BalancePill({ balance }: { balance: MarketBalance }) {
   const map = {
-    app: { Icon: ArrowUpRight, color: 'text-red-600' },
-    expand: { Icon: ArrowUpRight, color: 'text-blue-600' },
-    delay: { Icon: ArrowDownRight, color: 'text-amber-600' },
-    neutral: { Icon: Minus, color: 'text-slate-500' },
-  }[sentiment]
-  const I = map.Icon
-  return <I className={cn('h-3 w-3', map.color, className)} />
+    tight: { label: 'Tight supply', cls: 'bg-emerald-50 text-emerald-700 ring-emerald-200' },
+    balanced: { label: 'Balanced', cls: 'bg-slate-50 text-slate-700 ring-slate-200' },
+    oversupplied: { label: 'Oversupplied', cls: 'bg-rose-50 text-rose-700 ring-rose-200' },
+  }[balance]
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ring-1',
+        map.cls,
+      )}
+    >
+      {map.label}
+    </span>
+  )
+}
+
+function PostureTag({
+  prefix,
+  label,
+  tone,
+}: {
+  prefix: string
+  label: string
+  tone: 'app' | CompetitorPostureTone
+}) {
+  const toneCls = {
+    app: 'bg-red-50 text-red-700 ring-red-200',
+    cautious: 'bg-blue-50 text-blue-700 ring-blue-200',
+    mixed: 'bg-slate-50 text-slate-700 ring-slate-200',
+    reactive: 'bg-amber-50 text-amber-700 ring-amber-200',
+    disciplined: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+  }[tone]
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ring-1',
+        toneCls,
+      )}
+    >
+      <span className="text-muted-foreground/80">{prefix}</span>
+      <span className="font-semibold">{label}</span>
+    </span>
+  )
+}
+
+function StateRow({
+  label,
+  value,
+  accent,
+}: {
+  label: string
+  value: string
+  accent?: boolean
+}) {
+  return (
+    <div className="grid grid-cols-[5.5rem_1fr] items-baseline gap-2">
+      <dt className="text-[10.5px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+        {label}
+      </dt>
+      <dd
+        className={cn(
+          'text-[13px] leading-snug',
+          accent ? 'font-medium text-foreground' : 'text-foreground/85',
+        )}
+      >
+        {value}
+      </dd>
+    </div>
+  )
+}
+
+function PhaseCard({ phase }: { phase: MarketPhase }) {
+  const accentBorder = {
+    indigo: 'border-l-indigo-500',
+    amber: 'border-l-amber-500',
+    emerald: 'border-l-emerald-500',
+  }[phase.accent]
+  const accentText = {
+    indigo: 'text-indigo-700',
+    amber: 'text-amber-700',
+    emerald: 'text-emerald-700',
+  }[phase.accent]
+
+  return (
+    <article
+      className={cn(
+        'group relative flex flex-col gap-4 rounded-lg border border-border/50 border-l-4 bg-card/40 p-5 transition-colors hover:bg-card/60',
+        accentBorder,
+      )}
+    >
+      {/* Phase header */}
+      <header className="space-y-1.5">
+        <div className="flex items-center justify-between gap-2">
+          <span className="font-mono text-[10.5px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+            Phase {phase.index} of 3 · {phase.window}
+          </span>
+          {phase.isStrategicWindow && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-700 ring-1 ring-amber-200">
+              <Target className="h-2.5 w-2.5" />
+              Strategic window
+            </span>
+          )}
+        </div>
+        <h4 className={cn('text-base font-semibold tracking-tight', accentText)}>
+          {phase.label}
+        </h4>
+        <p className="text-[13px] leading-relaxed text-muted-foreground">{phase.tagline}</p>
+      </header>
+
+      {/* Visual indicators */}
+      <div className="space-y-3 rounded-md border border-border/40 bg-muted/30 p-3">
+        {/* Pricing pressure meter */}
+        <div>
+          <div className="flex items-baseline justify-between">
+            <span className="flex items-center gap-1.5 text-[10.5px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+              <Gauge className="h-3 w-3" />
+              Pricing pressure
+            </span>
+            <span
+              className={cn(
+                'font-mono text-[11px] font-semibold tabular-nums',
+                pressureTextTone(phase.pressure),
+              )}
+            >
+              {phase.pressureLabel}
+            </span>
+          </div>
+          <div
+            className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-border/60"
+            role="progressbar"
+            aria-valuenow={phase.pressure}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={`Pricing pressure ${phase.pressureLabel}`}
+          >
+            <div
+              className={cn('h-full rounded-full transition-all', pressureBarTone(phase.pressure))}
+              style={{ width: `${phase.pressure}%` }}
+            />
+          </div>
+        </div>
+        {/* Market balance */}
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-1.5 text-[10.5px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+            <Scale className="h-3 w-3" />
+            Market balance
+          </span>
+          <BalancePill balance={phase.balance} />
+        </div>
+      </div>
+
+      {/* State transition lines */}
+      <dl className="space-y-2">
+        <StateRow label="Market" value={phase.state.market} />
+        <StateRow label="APP" value={phase.state.app} accent />
+        <StateRow label="Competitors" value={phase.state.competitors} />
+        <StateRow label="Pricing" value={phase.state.pricing} />
+      </dl>
+
+      {/* Posture tags */}
+      <footer className="mt-auto flex flex-wrap items-center gap-1.5 border-t border-border/40 pt-3">
+        <PostureTag prefix="APP" label={phase.appPosture} tone="app" />
+        <PostureTag
+          prefix="Competitors"
+          label={phase.competitorPosture.label}
+          tone={phase.competitorPosture.tone}
+        />
+      </footer>
+    </article>
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -426,7 +633,7 @@ function CompetitorDynamics({
   holders: number
 }) {
   const [detailsOpen, setDetailsOpen] = useState(false)
-  const phases = buildPhasedIntelligence(result)
+  const phases = buildMarketPhases(result)
 
   return (
     <section id="pulp-competitor-dynamics" className="scroll-mt-96 space-y-5">
@@ -478,76 +685,78 @@ function CompetitorDynamics({
         />
       </div>
 
-      {/* Phased narrative — the heart of the section */}
-      <div className="relative pt-2">
-        <div className="mb-3 flex items-center gap-2">
-          <Radio className="h-3.5 w-3.5 text-indigo-600" />
-          <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            Strategic Timeline
-          </span>
-          <span className="text-xs text-muted-foreground/80">
-            · Grouped competitor reactions by phase
+      {/* Market Evolution Phases — state-driven, not event-logged */}
+      <div className="space-y-4 pt-2">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="h-3.5 w-3.5 text-indigo-600" />
+            <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              Market Evolution Phases
+            </span>
+            <span className="text-xs text-muted-foreground/80">
+              · State transitions across 2026–2031
+            </span>
+          </div>
+          <span className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-muted-foreground/70">
+            Opening → Capacity Wave → Rebalancing
           </span>
         </div>
 
-        <div className="relative">
-          {/* vertical rail */}
-          <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gradient-to-b from-indigo-200 via-border to-transparent" />
-
-          <ol className="space-y-6">
-            {phases.map((phase, idx) => (
-              <li key={phase.label} className="relative pl-7">
+        {/* Pressure trajectory rail — quick visual scan of how pressure evolves */}
+        <div className="rounded-md border border-border/40 bg-muted/20 px-4 py-3">
+          <div className="mb-2 flex items-center justify-between text-[10.5px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <Gauge className="h-3 w-3" />
+              Pricing pressure trajectory
+            </span>
+            <span className="text-muted-foreground/70">Higher = more downward price risk</span>
+          </div>
+          <div className="relative h-1 w-full rounded-full bg-border/60">
+            {/* gradient fill from indigo → amber → emerald representing phase progression */}
+            <div className="absolute inset-y-0 left-0 right-0 rounded-full bg-gradient-to-r from-indigo-300 via-amber-400 to-emerald-400 opacity-60" />
+            {phases.map((phase, idx) => {
+              const left = idx === 0 ? '8%' : idx === 1 ? '50%' : '92%'
+              return (
                 <span
-                  className={cn(
-                    'absolute left-0 top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full ring-4 ring-background',
-                    idx === 0
-                      ? 'bg-indigo-500'
-                      : idx === 1
-                        ? 'bg-amber-500'
-                        : 'bg-emerald-500',
-                  )}
+                  key={phase.key}
+                  className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
+                  style={{ left }}
                 >
-                  <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                  <span
+                    className={cn(
+                      'flex h-3 w-3 items-center justify-center rounded-full ring-4 ring-background',
+                      pressureBarTone(phase.pressure),
+                    )}
+                  >
+                    <span className="h-1 w-1 rounded-full bg-white/90" />
+                  </span>
                 </span>
-
-                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <span className="font-mono text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                    {phase.window}
-                  </span>
-                  <span className="text-base font-semibold tracking-tight text-foreground">
-                    {phase.label}
-                  </span>
-                </div>
-
-                <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-                  {phase.narrative}
-                </p>
-
-                {phase.events.length > 0 && (
-                  <ul className="mt-3 space-y-1.5">
-                    {phase.events.map((event, eIdx) => (
-                      <li
-                        key={eIdx}
-                        className="flex items-start gap-2.5 text-sm leading-snug"
-                      >
-                        <span
-                          className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full"
-                          style={{ backgroundColor: event.color }}
-                        />
-                        <span className="font-medium text-foreground">{event.actor}</span>
-                        <span className="text-muted-foreground">·</span>
-                        <span className="text-muted-foreground">{event.headline}</span>
-                        <SentimentIcon
-                          sentiment={event.sentiment}
-                          className="ml-auto mt-0.5 flex-shrink-0"
-                        />
-                      </li>
-                    ))}
-                  </ul>
+              )
+            })}
+          </div>
+          <div className="mt-2 grid grid-cols-3 text-[10.5px] font-medium tabular-nums text-muted-foreground">
+            {phases.map((phase, idx) => (
+              <div
+                key={phase.key}
+                className={cn(
+                  'flex items-baseline gap-1.5',
+                  idx === 0 ? 'justify-start' : idx === 1 ? 'justify-center' : 'justify-end',
                 )}
-              </li>
+              >
+                <span className="uppercase tracking-wider">{phase.label}</span>
+                <span className={cn('font-semibold', pressureTextTone(phase.pressure))}>
+                  {phase.pressureLabel}
+                </span>
+              </div>
             ))}
-          </ol>
+          </div>
+        </div>
+
+        {/* Phase cards — equal weight, state-driven */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {phases.map((phase) => (
+            <PhaseCard key={phase.key} phase={phase} />
+          ))}
         </div>
       </div>
 
