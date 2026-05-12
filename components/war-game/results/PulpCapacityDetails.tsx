@@ -4,7 +4,6 @@ import { useState } from 'react'
 import {
   Users,
   Globe,
-  Building2,
   ChevronDown,
   Gauge,
   Scale,
@@ -560,6 +559,7 @@ function APPStrategicPosition({
   delayers: number
   expanders: number
 }) {
+  const [scheduleOpen, setScheduleOpen] = useState(false)
   const { input } = result
 
   // Strategy stance derived from APP additions
@@ -578,61 +578,127 @@ function APPStrategicPosition({
         ? `APP's expansion (+${appPulpAdd} kt pulp) faces ${expanders} matching response${expanders === 1 ? '' : 's'}. Share gains are diluted, but downstream integration (board +${appBoardAdd} kt, tissue +${appTissueAdd} kt) shifts the value capture battle off the spot pulp curve.`
         : `Measured APP expansion (+${appPulpAdd} kt) holds the line on market position. Premium pricing remains defendable; further moves should hinge on demand validation in the 2027–2028 window.`
 
+  // ---- Strategic outcome verdict (hero) -------------------------------------
+  // Primary visual metric is market share position — the most direct answer
+  // to "did APP's strategy work?".
+  type Verdict = {
+    headline: string
+    sub: string
+    tone: 'positive' | 'neutral' | 'warn'
+  }
+  const verdict: Verdict =
+    delayers > expanders
+      ? {
+          headline: 'Strengthening',
+          sub: `Share window opens — ${delayers} competitor${delayers === 1 ? '' : 's'} delaying expansion`,
+          tone: 'positive',
+        }
+      : delayers === expanders
+        ? {
+            headline: 'Defending',
+            sub: 'Balanced competitor reactions — share holds roughly flat',
+            tone: 'neutral',
+          }
+        : {
+            headline: 'Contested',
+            sub: `${expanders} competitor${expanders === 1 ? '' : 's'} matching — share gain diluted`,
+            tone: 'warn',
+          }
+  const verdictTone =
+    verdict.tone === 'positive'
+      ? 'text-emerald-700'
+      : verdict.tone === 'warn'
+        ? 'text-amber-700'
+        : 'text-foreground'
+  const verdictAccent =
+    verdict.tone === 'positive'
+      ? 'bg-emerald-500'
+      : verdict.tone === 'warn'
+        ? 'bg-amber-500'
+        : 'bg-slate-400'
+
+  // ---- Rollout timing summary ------------------------------------------------
+  const yearlyAdds = YEARS.map((year) => ({
+    year,
+    pulp: input.appCapacity.appChina[year] || 0,
+  }))
+  const firstYearWithAdd = yearlyAdds.find((y) => y.pulp > 0)?.year ?? null
+  const rolloutHint = firstYearWithAdd
+    ? firstYearWithAdd === 2026
+      ? `Front-loaded — ${appPulpAdd} kt online from 2026`
+      : `Phased — first volume online in ${firstYearWithAdd}`
+    : 'No new pulp capacity in horizon'
+
+  // ---- Build-mix bar geometry ------------------------------------------------
+  const totalBuild = Math.max(appPulpAdd + appBoardAdd + appTissueAdd, 1)
+  const pulpPct = (appPulpAdd / totalBuild) * 100
+  const boardPct = (appBoardAdd / totalBuild) * 100
+  const tissuePct = (appTissueAdd / totalBuild) * 100
+
   return (
-    <section id="pulp-app-position" className="scroll-mt-96 space-y-5">
+    <section id="pulp-app-position" className="scroll-mt-96 space-y-6">
+      {/* ----- Eyebrow + title — single calm row ----------------------------- */}
       <header className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-3">
-          <div className="rounded-md bg-red-50 p-1.5 ring-1 ring-red-100">
-            <Building2 className="h-4 w-4 text-red-600" />
+        <div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              APP Strategic Position
+            </span>
+            <AIBadge size="sm" />
           </div>
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-red-700">
-                APP Strategic Position
-              </span>
-              <AIBadge size="sm" />
-            </div>
-            <h3 className="mt-1.5 text-2xl font-semibold tracking-tight text-foreground">
-              Did APP&apos;s strategy work?
-            </h3>
-          </div>
+          <h3 className="mt-1.5 text-2xl font-semibold tracking-tight text-foreground">
+            Did APP&apos;s strategy work?
+          </h3>
         </div>
         <span
           className={cn(
-            'inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold',
+            'inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium',
             stance.tone,
           )}
         >
-          {stance.label} stance
+          <span className="text-muted-foreground/80">Stance ·</span>
+          <span className="font-semibold">{stance.label}</span>
         </span>
       </header>
 
-      {/* Strategic takeaway — full width, single calm column */}
-      <p className="w-full border-l-2 border-red-300 pl-5 pr-2 text-lg leading-relaxed text-foreground/85 text-pretty">
-        {takeaway}
-      </p>
+      {/* ----- Hero outcome panel — the single answer ------------------------ */}
+      <div className="rounded-xl border border-border/50 bg-card/40 p-7">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-[auto_1fr] md:items-start md:gap-10">
+          {/* Left — hero verdict */}
+          <div className="flex items-start gap-4">
+            <span className={cn('mt-2 h-12 w-1 rounded-full', verdictAccent)} />
+            <div>
+              <div className="text-[13px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+                Strategic Outcome
+              </div>
+              <div
+                className={cn(
+                  'mt-1 text-4xl font-semibold tracking-tight leading-none',
+                  verdictTone,
+                )}
+              >
+                {verdict.headline}
+              </div>
+              <div className="mt-2 text-base text-muted-foreground">
+                Market share position
+              </div>
+            </div>
+          </div>
+          {/* Right — narrative & verdict context */}
+          <div className="space-y-3">
+            <p className="text-base font-medium leading-snug text-foreground/90">
+              {verdict.sub}
+            </p>
+            <p className="text-[15px] leading-relaxed text-foreground/75 text-pretty">
+              {takeaway}
+            </p>
+          </div>
+        </div>
+      </div>
 
-      {/* Position metrics — three cards: market share, pricing resilience, capacity */}
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
-        <PositionMetric
-          label="Market Share Position"
-          value={
-            delayers > expanders
-              ? 'Strengthening'
-              : delayers === expanders
-                ? 'Defending'
-                : 'Contested'
-          }
-          helper={
-            delayers > expanders
-              ? `${delayers} competitor${delayers === 1 ? '' : 's'} delaying — share window opens`
-              : delayers === expanders
-                ? 'Balanced reactions — share holds roughly flat'
-                : `${expanders} competitor${expanders === 1 ? '' : 's'} matching — share gain diluted`
-          }
-          tone={delayers > expanders ? 'positive' : delayers === expanders ? 'neutral' : 'warn'}
-        />
-        <PositionMetric
+      {/* ----- Two supporting metrics — calmer, lighter ---------------------- */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <SupportingMetric
           label="Pricing Resilience"
           value={
             appPulpAdd > 250 && expanders >= 2
@@ -646,7 +712,7 @@ function APPStrategicPosition({
               ? 'Oversupply softens APP premium after 2028'
               : expanders >= 2
                 ? 'Modest erosion — premium narrows but holds'
-                : 'Premium vs competitor avg stays intact'
+                : 'Premium vs competitor average stays intact'
           }
           tone={
             appPulpAdd > 250 && expanders >= 2
@@ -656,108 +722,178 @@ function APPStrategicPosition({
                 : 'positive'
           }
         />
-        <PositionMetric
+        <SupportingMetric
           label="Capacity Build"
-          value={`+${appPulpAdd} kt`}
-          helper={`Board +${appBoardAdd} kt  ·  Tissue +${appTissueAdd} kt`}
+          value={`+${appPulpAdd} kt pulp`}
+          helper={`Board +${appBoardAdd} kt  ·  Tissue +${appTissueAdd} kt  ·  ${rolloutHint}`}
           tone="neutral"
         />
       </div>
 
-      {/* APP Capacity Outcome — always-visible build schedule card */}
-      <div className="overflow-hidden rounded-lg border border-red-100 bg-red-50/30">
-        {/* Card header — title + stance badge */}
-        <div className="flex items-center justify-between gap-4 px-5 py-3">
-          <div className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-red-600" />
-            <h4 className="text-base font-semibold tracking-tight text-foreground">
-              APP Capacity Outcome
-            </h4>
+      {/* ----- Build mix visualization — replaces the heavy yearly table ----- */}
+      <div className="space-y-4 rounded-xl border border-border/40 bg-card/30 p-6">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <div className="text-[13px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              Build Mix
+            </div>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              How the {totalBuild} kt of new capacity splits across the value chain
+            </p>
           </div>
-          <span
-            className={cn(
-              'inline-flex items-center rounded-full border px-2.5 py-0.5 text-[13px] font-semibold',
-              stance.tone,
-            )}
-          >
-            {stance.label}
+          <span className="font-mono text-base font-semibold tabular-nums text-foreground">
+            {totalBuild} kt total
           </span>
         </div>
 
-        {/* Year-by-year table */}
-        <div className="overflow-x-auto border-t border-red-100/80">
-          <table className="w-full text-base">
-            <thead>
-              <tr className="border-b border-red-100/80">
-                <th className="w-44 px-5 py-3 text-left text-base font-semibold text-foreground/70">
-                  Metric
-                </th>
-                {YEARS.map((year) => (
-                  <th
-                    key={year}
-                    className="px-3 py-3 text-center text-base font-semibold text-foreground/70"
-                  >
-                    {year}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {/* APP China Capacity row — tinted */}
-              <tr className="bg-red-50/60">
-                <td className="px-5 py-3">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full bg-red-600" />
-                    <span className="font-semibold text-red-700">APP China Capacity</span>
-                  </div>
-                </td>
-                {YEARS.map((year) => {
-                  const value = input.appCapacity.appChina[year]
-                  return (
-                    <td key={year} className="px-3 py-3 text-center">
-                      <span
-                        className={cn(
-                          'font-mono text-base font-bold tabular-nums',
-                          value > 0 ? 'text-red-700' : 'text-muted-foreground/60',
-                        )}
-                      >
-                        {value > 0 ? value : '—'}
-                      </span>
-                    </td>
-                  )
-                })}
-              </tr>
-              {/* Market Release row — muted red */}
-              <tr>
-                <td className="px-5 py-3 text-red-600/80">Market Release (70%)</td>
-                {YEARS.map((year) => {
-                  const value = input.appCapacity.appChina[year]
-                  const release = Math.round(value * 0.7)
-                  return (
-                    <td
-                      key={year}
-                      className={cn(
-                        'px-3 py-3 text-center font-mono text-base tabular-nums',
-                        release > 0 ? 'text-red-600/80' : 'text-muted-foreground/60',
-                      )}
-                    >
-                      {release > 0 ? release : '—'}
-                    </td>
-                  )
-                })}
-              </tr>
-            </tbody>
-          </table>
+        {/* Stacked horizontal bar — pulp / board / tissue */}
+        <div
+          className="flex h-3 w-full overflow-hidden rounded-full bg-border/40"
+          role="img"
+          aria-label={`Build mix: pulp ${appPulpAdd}, board ${appBoardAdd}, tissue ${appTissueAdd} kt`}
+        >
+          {pulpPct > 0 && (
+            <div
+              className="h-full bg-red-500/85 transition-all"
+              style={{ width: `${pulpPct}%` }}
+            />
+          )}
+          {boardPct > 0 && (
+            <div
+              className="h-full bg-red-400/70 transition-all"
+              style={{ width: `${boardPct}%` }}
+            />
+          )}
+          {tissuePct > 0 && (
+            <div
+              className="h-full bg-red-300/60 transition-all"
+              style={{ width: `${tissuePct}%` }}
+            />
+          )}
         </div>
 
-        {/* Three summary cards at the bottom */}
-        <div className="grid grid-cols-1 gap-3 border-t border-red-100/80 bg-card/60 p-3 md:grid-cols-3">
-          <CapacitySummary label="Total Pulp Added" value={`+${appPulpAdd} kt`} />
-          <CapacitySummary label="Board Capacity" value={`+${appBoardAdd} kt`} />
-          <CapacitySummary label="Tissue Capacity" value={`+${appTissueAdd} kt`} />
+        {/* Mix legend — three calm rows */}
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-6">
+          <MixRow color="bg-red-500/85" label="Pulp" value={appPulpAdd} share={pulpPct} />
+          <MixRow color="bg-red-400/70" label="Board" value={appBoardAdd} share={boardPct} />
+          <MixRow color="bg-red-300/60" label="Tissue" value={appTissueAdd} share={tissuePct} />
         </div>
       </div>
+
+      {/* ----- Yearly rollout — collapsed by default ------------------------- */}
+      <div>
+        <button
+          type="button"
+          onClick={() => setScheduleOpen((o) => !o)}
+          aria-expanded={scheduleOpen}
+          className="group flex w-full items-center gap-2 border-t border-border/40 pt-3 text-left transition-colors hover:text-foreground"
+        >
+          <span className="text-base font-semibold text-muted-foreground transition-colors group-hover:text-foreground">
+            Year-by-Year Build Schedule
+          </span>
+          <span className="text-[13px] text-muted-foreground/70">
+            Operational rollout · 2026 — 2031
+          </span>
+          <ChevronDown
+            className={cn(
+              'ml-auto h-4 w-4 text-muted-foreground transition-transform duration-200',
+              scheduleOpen ? 'rotate-180' : 'rotate-0',
+            )}
+          />
+        </button>
+
+        {scheduleOpen && (
+          <div className="mt-4 overflow-x-auto rounded-md border border-border/40 bg-card/40">
+            <table className="w-full text-base">
+              <thead>
+                <tr className="border-b border-border/50">
+                  <th className="w-44 px-4 py-3 text-left text-base font-semibold text-foreground/70">
+                    Metric
+                  </th>
+                  {YEARS.map((year) => (
+                    <th
+                      key={year}
+                      className="px-3 py-3 text-center text-base font-semibold text-foreground/70"
+                    >
+                      {year}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-border/30">
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-red-500" />
+                      <span className="font-medium text-foreground">APP China capacity</span>
+                    </div>
+                  </td>
+                  {YEARS.map((year) => {
+                    const value = input.appCapacity.appChina[year]
+                    return (
+                      <td key={year} className="px-3 py-3 text-center">
+                        <span
+                          className={cn(
+                            'font-mono text-base font-semibold tabular-nums',
+                            value > 0 ? 'text-foreground' : 'text-muted-foreground/50',
+                          )}
+                        >
+                          {value > 0 ? value : '—'}
+                        </span>
+                      </td>
+                    )
+                  })}
+                </tr>
+                <tr>
+                  <td className="px-4 py-3 text-muted-foreground">Market release (70%)</td>
+                  {YEARS.map((year) => {
+                    const value = input.appCapacity.appChina[year]
+                    const release = Math.round(value * 0.7)
+                    return (
+                      <td
+                        key={year}
+                        className={cn(
+                          'px-3 py-3 text-center font-mono text-base tabular-nums',
+                          release > 0 ? 'text-muted-foreground' : 'text-muted-foreground/50',
+                        )}
+                      >
+                        {release > 0 ? release : '—'}
+                      </td>
+                    )
+                  })}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </section>
+  )
+}
+
+// Compact mix legend row — color dot + label + value + share
+function MixRow({
+  color,
+  label,
+  value,
+  share,
+}: {
+  color: string
+  label: string
+  value: number
+  share: number
+}) {
+  return (
+    <div className="flex items-baseline gap-2">
+      <span className={cn('h-2 w-2 flex-shrink-0 translate-y-[-2px] rounded-full', color)} />
+      <span className="text-sm font-medium text-foreground/80">{label}</span>
+      <span className="font-mono text-base font-semibold tabular-nums text-foreground">
+        +{value} kt
+      </span>
+      <span className="ml-auto text-sm text-muted-foreground sm:ml-0">
+        {Math.round(share)}%
+      </span>
+    </div>
   )
 }
 
@@ -1144,16 +1280,9 @@ export function PulpExportReallocation({ result }: PulpCapacityDetailsProps) {
 // Shared sub-components
 // ===========================================================================
 
-function CapacitySummary({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-md border border-border/50 bg-card px-4 py-3 text-center">
-      <div className="text-sm text-muted-foreground">{label}</div>
-      <div className="mt-1 font-mono text-xl font-bold tabular-nums text-red-600">{value}</div>
-    </div>
-  )
-}
-
-function PositionMetric({
+// Supporting (secondary) metric — calmer, lower contrast than the hero verdict.
+// Uses a thin left accent rule instead of a coloured fill to keep red density low.
+function SupportingMetric({
   label,
   value,
   helper,
