@@ -1,14 +1,15 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
-import { Clock, Trees, Factory, Package } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Clock, Trees, Factory, Package, FileText } from 'lucide-react'
 import { ValueChainInsights } from './ValueChainInsights'
 import { ForestryDetails } from './ForestryDetails'
 import { PulpCapacityDetails, PulpExportReallocation } from './PulpCapacityDetails'
 import { DownstreamDetails } from './DownstreamDetails'
 import { MarketResults } from './MarketResults'
 import { FinancialResults } from './FinancialResults'
+import { MarketEvolutionSection } from './MarketEvolutionSection'
 import type { SimulationResult, SimulationStatus } from '@/lib/types/war-game'
 import { cn } from '@/lib/utils'
 import { Spinner } from '@/components/ui/spinner'
@@ -52,11 +53,12 @@ const NAV_ITEMS: Record<ValueChainStage, { id: string; label: string }[]> = {
     { id: 'forestry-supply-demand', label: 'Supply-Demand Balance' },
   ],
   pulp: [
-    { id: 'pulp-market-impact', label: 'Market Impact Summary' },
-    { id: 'pulp-app-capacity', label: 'APP Capacity Outcome' },
-    { id: 'pulp-competitor-response', label: 'Competitor Response' },
-    { id: 'market-data', label: 'Market Data' },
-    { id: 'pulp-export-reallocation', label: 'Global Export Reallocation' },
+    { id: 'executive-summary', label: 'Executive Summary' },
+    { id: 'pulp-app-position', label: 'APP Capacity Outcome' },
+    { id: 'pulp-competitor-dynamics', label: "Competitor's Reaction" },
+    { id: 'pulp-export-reallocation', label: 'Global Reallocation' },
+    { id: 'market-evolution', label: 'Market Evolution' },
+    { id: 'detailed-tables', label: 'Detailed Tables' },
   ],
   downstream: [
     { id: 'downstream-paper', label: 'Paper' },
@@ -139,6 +141,37 @@ function StickyNav({
   )
 }
 
+// Detailed Tables Appendix — collapsible, low-priority section that groups
+// the Market Data tabs and the Global Export Reallocation table beneath the
+// strategic narrative. Defaults to closed; the jump-nav target id is on the
+// disclosure header so the page can scroll to it directly.
+function DetailedTablesAppendix({
+  result,
+  status,
+}: {
+  result: SimulationResult
+  status: SimulationStatus
+}) {
+  return (
+    <Card
+      id="detailed-tables"
+      className="border-border/40 bg-card/40 scroll-mt-96"
+    >
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-slate-700">
+          <FileText className="h-5 w-5 text-slate-700" />
+          Detailed Market Tables
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <MarketDataTabs result={result} status={status} id="market-data" />
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 // Market Data Tabs Component – the tab switcher is rendered inside the
 // "Player Market Data" card header (Market tab) and the "APP Project IRR"
 // card header (Financial tab), keeping the controls in context with the
@@ -171,28 +204,55 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
     }
   }, [activeStage])
   
-  // Track if nav is sticky and update active section on scroll
+  // Track if nav is sticky and update the active section as the user scrolls.
+  // The handler is stage-agnostic — it re-reads NAV_ITEMS[activeStage] each
+  // tick, so the same logic keeps the jump-nav in sync for Forestry, Pulp,
+  // and Downstream stages.
   useEffect(() => {
     const handleScroll = () => {
-      // Check if sticky container is active (scrolled past its original position)
       const scrollY = window.scrollY
-      // Sticky activates when content scrolls past ~200px
+      // Sticky activates once the user scrolls past the page header area.
       setIsNavSticky(scrollY > 100)
-      
-      // Update active section based on scroll position
+
       const navItems = NAV_ITEMS[activeStage]
-      // Total sticky height: header (64) + step nav (44) + strategic insights (~200) + jump nav (~52) + buffer
-      const scrollPosition = scrollY + 400
-      
-      for (let i = navItems.length - 1; i >= 0; i--) {
-        const element = document.getElementById(navItems[i].id)
-        if (element && element.offsetTop <= scrollPosition) {
-          setActiveSection(navItems[i].id)
+      if (navItems.length === 0) return
+
+      // 1) Bottom-of-page guard. When the user reaches the bottom of the
+      //    document, force-activate the LAST nav item. This fixes the case
+      //    where the final section (e.g. "Detailed Tables", "Tissue",
+      //    "Import Dependency Trend") is shorter than the viewport and its
+      //    top never crosses the activation threshold below.
+      const viewportBottom = scrollY + window.innerHeight
+      const documentHeight = document.documentElement.scrollHeight
+      if (viewportBottom >= documentHeight - 80) {
+        setActiveSection(navItems[navItems.length - 1].id)
+        return
+      }
+
+      // 2) Threshold matches the click-to-scroll offset (380) plus a small
+      //    buffer, so the section the user just landed on is the one
+      //    highlighted. Use getBoundingClientRect (page-relative) instead of
+      //    offsetTop, which is relative to the offset parent and can be wrong
+      //    when sections sit inside positioned Cards/wrappers. Iterate forward
+      //    and keep the last item whose top edge is above the threshold.
+      const threshold = scrollY + 400
+      let current = navItems[0].id
+      for (const item of navItems) {
+        const element = document.getElementById(item.id)
+        if (!element) continue
+        const pageTop = element.getBoundingClientRect().top + window.scrollY
+        if (pageTop <= threshold) {
+          current = item.id
+        } else {
           break
         }
       }
+      setActiveSection(current)
     }
-    
+
+    // Run once on mount / when the active stage changes so the correct tab
+    // lights up immediately without waiting for a scroll event.
+    handleScroll()
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [activeStage])
@@ -292,12 +352,16 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
 
           {activeStage === 'pulp' && (
             <>
-              {/* Market Impact Summary → APP Capacity Outcome → Competitor Response */}
+              {/* 1. Executive Summary (narrative briefing + KPI cards) */}
+              <MarketEvolutionSection result={result} section="executive" />
+              {/* 2. APP Capacity Outcome + 3. Competitor's Reaction */}
               <PulpCapacityDetails result={result} />
-              {/* Market Data (shared) */}
-              <MarketDataTabs result={result} status={status} id="market-data" />
-              {/* Global Export Reallocation */}
+              {/* 4. Global Reallocation (export reallocation table) */}
               <PulpExportReallocation result={result} />
+              {/* 5. Market Evolution (price chart + supporting evidence) */}
+              <MarketEvolutionSection result={result} section="evolution" />
+              {/* 6. Detailed Market Tables (lower-priority appendix) */}
+              <DetailedTablesAppendix result={result} status={status} />
             </>
           )}
 

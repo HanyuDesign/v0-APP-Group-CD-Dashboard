@@ -134,6 +134,11 @@ export default function InputPage() {
     router.push('/results')
   }
 
+  // Free navigation between step tabs is only allowed once a simulation has
+  // been run. Until then, users must use the Back / Next buttons in sequence
+  // so they can't accidentally skip required configuration sections.
+  const hasSimulationRun = !!result
+
   const handleStepClick = (step: SimulationStep) => {
     // Allow navigation to any step except results (unless simulation has run)
     if (step === 'results') {
@@ -142,6 +147,9 @@ export default function InputPage() {
       }
       return
     }
+    // Before any simulation has been run, the tab buttons are not
+    // interactive — users must use the Back / Next buttons.
+    if (!hasSimulationRun) return
     setCurrentStep(step)
     markStepVisited(step)
   }
@@ -188,38 +196,61 @@ export default function InputPage() {
             const isActive = currentStep === step.key
             const isPast = index < currentStepIndex
             const isResults = step.key === 'results'
-            const isDisabled = isResults && !result
+            // Until a simulation has been run, only the current tab is
+            // interactive — users must use Back / Next to advance. Once a
+            // simulation result exists, all tabs become freely clickable.
+            const isLockedByNoSim = !hasSimulationRun && !isActive
+            const isDisabled = (isResults && !result) || isLockedByNoSim
             const isLast = index === STEPS.length - 1
-            
+
+            const tabButton = (
+              <button
+                onClick={() => handleStepClick(step.key)}
+                disabled={isDisabled}
+                aria-disabled={isDisabled}
+                className={cn(
+                  'relative px-4 py-3 text-base font-medium border-b-2 transition-all flex items-center gap-2',
+                  isActive
+                    ? 'border-primary text-primary'
+                    : isPast
+                      ? 'border-transparent text-emerald-600 hover:text-emerald-700'
+                      : isDisabled
+                        ? 'border-transparent text-muted-foreground/50 cursor-not-allowed'
+                        : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                )}
+              >
+                {/* Step number / check */}
+                <span className={cn(
+                  'flex h-6 w-6 items-center justify-center rounded-full text-sm font-semibold',
+                  isActive
+                    ? 'bg-primary text-primary-foreground'
+                    : isPast
+                      ? 'bg-emerald-100 text-emerald-600'
+                      : 'bg-muted text-muted-foreground'
+                )}>
+                  {isPast ? <Check className="h-3.5 w-3.5" /> : index + 1}
+                </span>
+                <span>{step.label}</span>
+              </button>
+            )
+
             return (
               <div key={step.key} className="flex items-center">
-                <button
-                  onClick={() => handleStepClick(step.key)}
-                  disabled={isDisabled}
-                  className={cn(
-                    'relative px-4 py-3 text-base font-medium border-b-2 transition-all flex items-center gap-2',
-                    isActive 
-                      ? 'border-primary text-primary' 
-                      : isPast
-                        ? 'border-transparent text-emerald-600 hover:text-emerald-700'
-                        : isDisabled
-                          ? 'border-transparent text-muted-foreground/50 cursor-not-allowed'
-                          : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-                  )}
-                >
-                  {/* Step number / check */}
-                  <span className={cn(
-                    'flex h-6 w-6 items-center justify-center rounded-full text-sm font-semibold',
-                    isActive 
-                      ? 'bg-primary text-primary-foreground' 
-                      : isPast
-                        ? 'bg-emerald-100 text-emerald-600'
-                        : 'bg-muted text-muted-foreground'
-                  )}>
-                    {isPast ? <Check className="h-3.5 w-3.5" /> : index + 1}
-                  </span>
-                  <span>{step.label}</span>
-                </button>
+                {isLockedByNoSim ? (
+                  <TooltipProvider delayDuration={150}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        {/* Wrapper span lets the tooltip show on a disabled button */}
+                        <span tabIndex={0}>{tabButton}</span>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="max-w-xs">
+                        Use Back / Next to move between steps until a simulation has been run.
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ) : (
+                  tabButton
+                )}
                 {/* Arrow between steps */}
                 {!isLast && (
                   <ChevronRight className="h-4 w-4 text-muted-foreground/50 mx-1" />
