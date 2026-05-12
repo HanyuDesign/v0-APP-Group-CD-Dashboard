@@ -8,7 +8,6 @@ import {
   Sparkles,
   ArrowDownRight,
   ArrowUpRight,
-  ChevronDown,
 } from 'lucide-react'
 import { AIBadge } from '../shared/AIBadge'
 import type { SimulationResult } from '@/lib/types/war-game'
@@ -472,64 +471,34 @@ function SupportingEvidence({
   appShareEnd: number
   appShareDelta: number
 }) {
-  const [open, setOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'capacity' | 'share'>('capacity')
 
   return (
     <div className="pt-2">
-      {/* Single header row — title, tabs (when open), and chevron on one line */}
+      {/* Header row — title + tabs always visible on one line */}
       <div className="flex items-center gap-4 border-t border-border/40 pt-3">
-        <button
-          type="button"
-          onClick={() => setOpen((o) => !o)}
-          className="group flex items-center gap-2 text-left transition-colors hover:text-foreground"
-          aria-expanded={open}
+        <span className="text-base font-semibold text-foreground">
+          Supporting Evidence
+        </span>
+        <div
+          role="tablist"
+          aria-label="Supporting evidence charts"
+          className="ml-auto inline-flex gap-1 rounded-lg bg-muted/50 p-1"
         >
-          <span className="text-base font-semibold text-muted-foreground transition-colors group-hover:text-foreground">
-            Supporting Evidence
-          </span>
-        </button>
-
-        {open && (
-          <div
-            role="tablist"
-            aria-label="Supporting evidence charts"
-            className="ml-auto inline-flex gap-1 rounded-lg bg-muted/50 p-1"
-          >
-            <SupportingTab
-              label="Capacity Expansion"
-              active={activeTab === 'capacity'}
-              onClick={() => setActiveTab('capacity')}
-            />
-            <SupportingTab
-              label="Market Share"
-              active={activeTab === 'share'}
-              onClick={() => setActiveTab('share')}
-            />
-          </div>
-        )}
-
-        <button
-          type="button"
-          onClick={() => setOpen((o) => !o)}
-          aria-label={open ? 'Collapse supporting evidence' : 'Expand supporting evidence'}
-          aria-expanded={open}
-          className={cn(
-            'inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground',
-            !open && 'ml-auto',
-          )}
-        >
-          <ChevronDown
-            className={cn(
-              'h-4 w-4 transition-transform duration-200',
-              open ? 'rotate-180' : 'rotate-0',
-            )}
+          <SupportingTab
+            label="Capacity Expansion"
+            active={activeTab === 'capacity'}
+            onClick={() => setActiveTab('capacity')}
           />
-        </button>
+          <SupportingTab
+            label="Market Share"
+            active={activeTab === 'share'}
+            onClick={() => setActiveTab('share')}
+          />
+        </div>
       </div>
 
-      {open && (
-        <div className="mt-5">
+      <div className="mt-5">
           {activeTab === 'capacity' && (
             <div
               role="tabpanel"
@@ -704,7 +673,6 @@ function SupportingEvidence({
             </div>
           )}
         </div>
-      )}
     </div>
   )
 }

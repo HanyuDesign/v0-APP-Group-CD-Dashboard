@@ -1,11 +1,9 @@
 'use client'
 
-import { useState } from 'react'
 import {
   Users,
   Globe,
   Building2,
-  ChevronDown,
   Gauge,
   Scale,
   Target,
@@ -235,7 +233,7 @@ function PostureTag({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11.5px] font-medium ring-1',
+        'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-base font-medium ring-1',
         toneCls,
       )}
     >
@@ -303,9 +301,20 @@ function PhaseCard({ phase }: { phase: MarketPhase }) {
             </span>
           )}
         </div>
-        <h4 className={cn('text-xl font-semibold tracking-tight', accentText)}>
-          {phase.label}
-        </h4>
+        {/* Title + posture chips on the same row */}
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <h4 className={cn('text-xl font-semibold tracking-tight', accentText)}>
+            {phase.label}
+          </h4>
+          <div className="flex flex-wrap items-center gap-2">
+            <PostureTag prefix="APP" label={phase.appPosture} tone="app" />
+            <PostureTag
+              prefix="Competitors"
+              label={phase.competitorPosture.label}
+              tone={phase.competitorPosture.tone}
+            />
+          </div>
+        </div>
         <p className="text-base leading-relaxed text-muted-foreground">{phase.tagline}</p>
       </header>
 
@@ -359,15 +368,6 @@ function PhaseCard({ phase }: { phase: MarketPhase }) {
         <StateRow label="Pricing" value={phase.state.pricing} />
       </dl>
 
-      {/* Posture tags */}
-      <footer className="mt-auto flex flex-wrap items-center gap-1.5 border-t border-border/40 pt-3">
-        <PostureTag prefix="APP" label={phase.appPosture} tone="app" />
-        <PostureTag
-          prefix="Competitors"
-          label={phase.competitorPosture.label}
-          tone={phase.competitorPosture.tone}
-        />
-      </footer>
     </article>
   )
 }
@@ -678,7 +678,6 @@ function CompetitorDynamics({
   delayers: number
   holders: number
 }) {
-  const [detailsOpen, setDetailsOpen] = useState(false)
   const phases = buildMarketPhases(result)
 
   return (
@@ -734,15 +733,18 @@ function CompetitorDynamics({
       {/* Market Evolution Phases — horizontal stepper · one phase at a time */}
       <PhaseStepper phases={phases} />
 
-      {/* Detailed yearly competitor reactions — expandable appendix */}
-      <Disclosure
-        open={detailsOpen}
-        onToggle={() => setDetailsOpen((o) => !o)}
-        label="Detailed yearly competitor reactions"
-        helper="Per-player capacity changes, strategy and rationale"
-      >
+      {/* Detailed yearly competitor reactions — always visible */}
+      <div className="space-y-3 border-t border-border/40 pt-4">
+        <div className="flex items-baseline gap-2">
+          <span className="text-base font-semibold text-foreground">
+            Detailed yearly competitor reactions
+          </span>
+          <span className="text-[13px] text-muted-foreground/80">
+            Per-player capacity changes, strategy and rationale
+          </span>
+        </div>
         <CompetitorDetailTable result={result} />
-      </Disclosure>
+      </div>
     </section>
   )
 }
@@ -1119,45 +1121,6 @@ function StanceCard({
         </span>
       </div>
       <p className="mt-2.5 text-base leading-relaxed text-muted-foreground">{subtitle}</p>
-    </div>
-  )
-}
-
-function Disclosure({
-  open,
-  onToggle,
-  label,
-  helper,
-  children,
-}: {
-  open: boolean
-  onToggle: () => void
-  label: string
-  helper?: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className="pt-2">
-      <button
-        type="button"
-        onClick={onToggle}
-        className="group flex w-full items-center gap-2 border-t border-border/40 pt-3 text-left transition-colors hover:text-foreground"
-        aria-expanded={open}
-      >
-        <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-muted-foreground transition-colors group-hover:text-foreground">
-          {label}
-        </span>
-        {helper && (
-          <span className="text-[13px] text-muted-foreground/80">· {helper}</span>
-        )}
-        <ChevronDown
-          className={cn(
-            'ml-auto h-3.5 w-3.5 text-muted-foreground transition-transform duration-200',
-            open ? 'rotate-180' : 'rotate-0',
-          )}
-        />
-      </button>
-      {open && <div className="mt-4">{children}</div>}
     </div>
   )
 }

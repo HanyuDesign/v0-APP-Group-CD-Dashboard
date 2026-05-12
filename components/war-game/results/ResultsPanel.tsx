@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { Clock, Trees, Factory, Package, ChevronDown, FileText } from 'lucide-react'
+import { Clock, Trees, Factory, Package, FileText } from 'lucide-react'
 import { ValueChainInsights } from './ValueChainInsights'
 import { ForestryDetails } from './ForestryDetails'
 import { PulpCapacityDetails, PulpExportReallocation } from './PulpCapacityDetails'
@@ -151,37 +151,22 @@ function DetailedTablesAppendix({
   result: SimulationResult
   status: SimulationStatus
 }) {
-  const [open, setOpen] = useState(false)
-
   return (
-    <section id="detailed-tables" className="scroll-mt-96 pt-2">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="group flex w-full items-center gap-2 border-t border-border/40 pt-4 text-left transition-colors hover:text-foreground"
-        aria-expanded={open}
-      >
-        <FileText className="h-3.5 w-3.5 text-muted-foreground" />
-        <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground transition-colors group-hover:text-foreground">
+    <section id="detailed-tables" className="scroll-mt-96 space-y-5 pt-2">
+      <div className="flex items-center gap-2 border-t border-border/40 pt-4">
+        <FileText className="h-4 w-4 text-muted-foreground" />
+        <span className="text-base font-semibold text-foreground">
           Detailed Market Tables
         </span>
-        <span className="text-xs text-muted-foreground/80">
+        <span className="text-[13px] text-muted-foreground/80">
           · Appendix · Player market data, financial IRR, and global export reallocation
         </span>
-        <ChevronDown
-          className={cn(
-            'ml-auto h-3.5 w-3.5 text-muted-foreground transition-transform duration-200',
-            open ? 'rotate-180' : 'rotate-0',
-          )}
-        />
-      </button>
+      </div>
 
-      {open && (
-        <div className="mt-5 space-y-6">
-          <MarketDataTabs result={result} status={status} id="market-data" />
-          <PulpExportReallocation result={result} />
-        </div>
-      )}
+      <div className="space-y-6">
+        <MarketDataTabs result={result} status={status} id="market-data" />
+        <PulpExportReallocation result={result} />
+      </div>
     </section>
   )
 }
