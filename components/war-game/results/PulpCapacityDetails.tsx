@@ -27,7 +27,7 @@ const YEARS = [2026, 2027, 2028, 2029, 2030, 2031] as const
 // ---------------------------------------------------------------------------
 
 export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
-  const { competitorChanges, input } = result
+  const { input } = result
 
   // APP capacity calculations
   const appChinaPulpAdd =
@@ -39,10 +39,6 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
     (input.appCapacity.guangxi.includeTissue ? input.appCapacity.guangxi.tissueCapacity : 0) +
     (input.appCapacity.jiangsuFujian.includeTissue ? input.appCapacity.jiangsuFujian.tissueCapacity : 0)
 
-  // Competitor summary — used only for APP strategic position context
-  const expanders = competitorChanges.filter((c) => c.action === 'add')
-  const delayers = competitorChanges.filter((c) => c.action === 'delay')
-
   return (
     <div className="space-y-10">
       <APPStrategicPosition
@@ -50,8 +46,6 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
         appPulpAdd={appChinaPulpAdd}
         appBoardAdd={appChinaBoardAdd}
         appTissueAdd={appChinaTissueAdd}
-        delayers={delayers.length}
-        expanders={expanders.length}
       />
 
       <CompetitorDynamics result={result} />
@@ -69,15 +63,11 @@ function APPStrategicPosition({
   appPulpAdd,
   appBoardAdd,
   appTissueAdd,
-  delayers,
-  expanders,
 }: {
   result: SimulationResult
   appPulpAdd: number
   appBoardAdd: number
   appTissueAdd: number
-  delayers: number
-  expanders: number
 }) {
   const { input } = result
 
@@ -88,14 +78,6 @@ function APPStrategicPosition({
       : appPulpAdd > 100
         ? { label: 'Balanced', tone: 'bg-amber-50 text-amber-700 border-amber-200' }
         : { label: 'Defensive', tone: 'bg-blue-50 text-blue-700 border-blue-200' }
-
-  // Strategic takeaway sentence — AI-style
-  const takeaway =
-    delayers > expanders
-      ? `APP's first-mover wave (+${appPulpAdd} kt pulp, +${appBoardAdd} kt board, +${appTissueAdd} kt tissue) lands into a market where ${delayers} competitor${delayers === 1 ? '' : 's'} explicitly delay${delayers === 1 ? 's' : ''} expansion. The strategy preserves pricing resilience and positions APP to capture share at premium economics.`
-      : expanders >= delayers && appPulpAdd > 100
-        ? `APP's expansion (+${appPulpAdd} kt pulp) faces ${expanders} matching response${expanders === 1 ? '' : 's'}. Share gains are diluted, but downstream integration (board +${appBoardAdd} kt, tissue +${appTissueAdd} kt) shifts the value capture battle off the spot pulp curve.`
-        : `Measured APP expansion (+${appPulpAdd} kt) holds the line on market position. Premium pricing remains defendable; further moves should hinge on demand validation in the 2027–2028 window.`
 
   return (
     <Card
@@ -120,63 +102,6 @@ function APPStrategicPosition({
         </div>
       </CardHeader>
       <CardContent className="space-y-5">
-      {/* Strategic takeaway — full width, single calm column */}
-      <p className="w-full border-l-2 border-red-300 pl-5 pr-2 text-lg leading-relaxed text-foreground/85 text-pretty">
-        {takeaway}
-      </p>
-
-      {/* Position metrics — three cards: market share, pricing resilience, capacity */}
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
-        <PositionMetric
-          label="Market Share Position"
-          value={
-            delayers > expanders
-              ? 'Strengthening'
-              : delayers === expanders
-                ? 'Defending'
-                : 'Contested'
-          }
-          helper={
-            delayers > expanders
-              ? `${delayers} competitor${delayers === 1 ? '' : 's'} delaying — share window opens`
-              : delayers === expanders
-                ? 'Balanced reactions — share holds roughly flat'
-                : `${expanders} competitor${expanders === 1 ? '' : 's'} matching — share gain diluted`
-          }
-          tone={delayers > expanders ? 'positive' : delayers === expanders ? 'neutral' : 'warn'}
-        />
-        <PositionMetric
-          label="Pricing Resilience"
-          value={
-            appPulpAdd > 250 && expanders >= 2
-              ? 'Under Pressure'
-              : expanders >= 2
-                ? 'Moderate'
-                : 'Defended'
-          }
-          helper={
-            appPulpAdd > 250 && expanders >= 2
-              ? 'Oversupply softens APP premium after 2028'
-              : expanders >= 2
-                ? 'Modest erosion — premium narrows but holds'
-                : 'Premium vs competitor avg stays intact'
-          }
-          tone={
-            appPulpAdd > 250 && expanders >= 2
-              ? 'negative'
-              : expanders >= 2
-                ? 'warn'
-                : 'positive'
-          }
-        />
-        <PositionMetric
-          label="Capacity Build"
-          value={`+${appPulpAdd} kt`}
-          helper={`Board +${appBoardAdd} kt  ·  Tissue +${appTissueAdd} kt`}
-          tone="neutral"
-        />
-      </div>
-
       {/* APP Capacity Outcome — always-visible build schedule card */}
       <div className="overflow-hidden rounded-lg border border-red-100 bg-red-50/30">
         {/* Card header — title + stance badge */}
@@ -263,6 +188,28 @@ function APPStrategicPosition({
           </table>
         </div>
 
+      </div>
+
+      {/* Capacity totals — three summary cards directly below the build table */}
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
+        <PositionMetric
+          label="Total Capacity"
+          value={`+${appPulpAdd} kt`}
+          helper="Pulp added across Guangxi + Jiangsu / Fujian"
+          tone="negative"
+        />
+        <PositionMetric
+          label="Packaging / Cupboard"
+          value={`+${appBoardAdd} kt`}
+          helper="Board capacity (integrated downstream)"
+          tone="neutral"
+        />
+        <PositionMetric
+          label="Tissue"
+          value={`+${appTissueAdd} kt`}
+          helper="Tissue capacity (integrated downstream)"
+          tone="neutral"
+        />
       </div>
       </CardContent>
     </Card>
