@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import {
   Activity,
@@ -487,49 +486,27 @@ function SupportingEvidence({
   appShareEnd: number
   appShareDelta: number
 }) {
-  const [activeTab, setActiveTab] = useState<'capacity' | 'share'>('capacity')
-
   return (
-    <div className="pt-2">
-      {/* Header row — title + tabs always visible on one line */}
-      <div className="flex items-center gap-4 border-t border-border/40 pt-3">
+    <div className="space-y-6 pt-2">
+      {/* Section label — replaces the previous tab strip */}
+      <div className="border-t border-border/40 pt-3">
         <span className="text-base font-semibold text-foreground">
           Supporting Evidence
         </span>
-        <div
-          role="tablist"
-          aria-label="Supporting evidence charts"
-          className="ml-auto inline-flex gap-1 rounded-lg bg-muted/50 p-1"
-        >
-          <SupportingTab
-            label="Capacity Expansion"
-            active={activeTab === 'capacity'}
-            onClick={() => setActiveTab('capacity')}
-          />
-          <SupportingTab
-            label="Market Share"
-            active={activeTab === 'share'}
-            onClick={() => setActiveTab('share')}
-          />
-        </div>
       </div>
 
-      <div className="mt-5">
-          {activeTab === 'capacity' && (
-            <div
-              role="tabpanel"
-              aria-label="Capacity Expansion"
-            >
-              <SupportingChart
-                title="Capacity Expansion"
-                subtitle="Cumulative pulp capacity · kt"
-                footnote={
-                  <>
-                    <span className="font-medium text-foreground">APP leads the wave;</span>{' '}
-                    competitors follow more cautiously, reinforcing oversupply risk into 2030.
-                  </>
-                }
-              >
+      {/* Chart 1 · Capacity Expansion */}
+      <div aria-label="Capacity Expansion">
+        <SupportingChart
+          title="Capacity Expansion"
+          subtitle="Cumulative pulp capacity · kt"
+          footnote={
+            <>
+              <span className="font-medium text-foreground">APP leads the wave;</span>{' '}
+              competitors follow more cautiously, reinforcing oversupply risk into 2030.
+            </>
+          }
+        >
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={capacityData} margin={{ top: 4, right: 12, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="2 4" stroke={GRID_STROKE} vertical={false} />
@@ -578,27 +555,23 @@ function SupportingEvidence({
                 />
               </AreaChart>
             </ResponsiveContainer>
-              </SupportingChart>
-            </div>
-          )}
+        </SupportingChart>
+      </div>
 
-          {activeTab === 'share' && (
-            <div
-              role="tabpanel"
-              aria-label="Market Share Evolution"
-            >
-              <SupportingChart
-                title="Market Share Evolution"
-                subtitle="% of regional pulp capacity"
-                footnote={
-                  <span className="inline-flex items-center gap-1.5">
-                    {appShareDelta > 0 ? (
-                      <ArrowUpRight className="h-3 w-3 text-emerald-600" />
-                    ) : (
-                      <ArrowDownRight className="h-3 w-3 text-amber-600" />
-                    )}
-                    <span>
-                      APP{' '}
+      {/* Chart 2 · Market Share Evolution */}
+      <div aria-label="Market Share Evolution">
+        <SupportingChart
+          title="Market Share Evolution"
+          subtitle="% of regional pulp capacity"
+          footnote={
+            <span className="inline-flex items-center gap-1.5">
+              {appShareDelta > 0 ? (
+                <ArrowUpRight className="h-3 w-3 text-emerald-600" />
+              ) : (
+                <ArrowDownRight className="h-3 w-3 text-amber-600" />
+              )}
+              <span>
+                APP{' '}
                       <span className="font-medium text-foreground">
                         {appShareStart?.toFixed(1)}% → {appShareEnd?.toFixed(1)}%
                       </span>{' '}
@@ -685,40 +658,9 @@ function SupportingEvidence({
                 />
               </AreaChart>
             </ResponsiveContainer>
-              </SupportingChart>
-            </div>
-          )}
-        </div>
+        </SupportingChart>
+      </div>
     </div>
-  )
-}
-
-// Pill tab trigger — visually identical to the Market Performance / Financial
-// Results switcher used inside the Market Data card headers.
-function SupportingTab({
-  label,
-  active,
-  onClick,
-}: {
-  label: string
-  active: boolean
-  onClick: () => void
-}) {
-  return (
-    <button
-      type="button"
-      role="tab"
-      aria-selected={active}
-      onClick={onClick}
-      className={cn(
-        'px-3.5 py-1.5 text-sm font-medium rounded-md transition-all',
-        active
-          ? 'bg-background text-foreground shadow-sm'
-          : 'text-muted-foreground hover:text-foreground',
-      )}
-    >
-      {label}
-    </button>
   )
 }
 
