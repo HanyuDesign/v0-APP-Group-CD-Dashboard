@@ -204,6 +204,16 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
     }
   }, [activeStage])
   
+  // Measure the live bottom edge of the sticky nav stack (Strategic Insights
+  // + JumpNav). The active-tab threshold and click-to-scroll offset are both
+  // anchored to this value so the tab flips precisely when a module title
+  // slides under the nav — and click scrolling lands the title just under the
+  // nav too, keeping the two flows in sync.
+  const getStickyBottom = useCallback(() => {
+    if (!navRef.current) return 260 // safe fallback before mount
+    return navRef.current.getBoundingClientRect().bottom
+  }, [])
+
   // Track if nav is sticky and update the active section as the user scrolls.
   // The handler is stage-agnostic — it re-reads NAV_ITEMS[activeStage] each
   // tick, so the same logic keeps the jump-nav in sync for Forestry, Pulp,
@@ -229,13 +239,13 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
         return
       }
 
-      // 2) Threshold matches the click-to-scroll offset (380) plus a small
-      //    buffer, so the section the user just landed on is the one
-      //    highlighted. Use getBoundingClientRect (page-relative) instead of
-      //    offsetTop, which is relative to the offset parent and can be wrong
-      //    when sections sit inside positioned Cards/wrappers. Iterate forward
-      //    and keep the last item whose top edge is above the threshold.
-      const threshold = scrollY + 400
+      // 2) Activate the section whose title has just crossed under the
+      //    sticky nav. Threshold = page-y of the nav's bottom edge + small
+      //    buffer so the new tab lights up the instant the title visually
+      //    tucks under the nav. Iterate forward and keep the last item whose
+      //    top is at/above that line.
+      const stickyBottom = getStickyBottom()
+      const threshold = scrollY + stickyBottom + 16
       let current = navItems[0].id
       for (const item of navItems) {
         const element = document.getElementById(item.id)
@@ -255,14 +265,16 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
     handleScroll()
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [activeStage])
-  
+  }, [activeStage, getStickyBottom])
+
   // Handle section click with smooth scroll
   const handleSectionClick = useCallback((sectionId: string) => {
     const element = document.getElementById(sectionId)
     if (element) {
-      // Offset = header (64) + step nav (44) + strategic insights (~200) + jump nav (~52) + padding
-      const offset = 380
+      // Land the title just below the sticky nav (matches the activation
+      // threshold above, with a small extra so the new tab is guaranteed
+      // active even before the smooth-scroll settles).
+      const offset = getStickyBottom() + 24
       const elementPosition = element.getBoundingClientRect().top + window.scrollY
       window.scrollTo({
         top: elementPosition - offset,
@@ -270,7 +282,7 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
       })
       setActiveSection(sectionId)
     }
-  }, [])
+  }, [getStickyBottom])
   
   if (status === 'idle' && !result) {
     return (
