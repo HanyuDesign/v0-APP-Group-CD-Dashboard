@@ -482,15 +482,12 @@ function SupportingEvidence({
         className="group flex w-full items-center gap-2 border-t border-border/40 pt-3 text-left transition-colors hover:text-foreground"
         aria-expanded={open}
       >
-        <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-muted-foreground transition-colors group-hover:text-foreground">
-          Supporting evidence
-        </span>
-        <span className="text-[13px] text-muted-foreground/80">
-          · Capacity expansion · Market share evolution
+        <span className="text-base font-semibold text-muted-foreground transition-colors group-hover:text-foreground">
+          Supporting Evidence
         </span>
         <ChevronDown
           className={cn(
-            'ml-auto h-3.5 w-3.5 text-muted-foreground transition-transform duration-200',
+            'ml-auto h-4 w-4 text-muted-foreground transition-transform duration-200',
             open ? 'rotate-180' : 'rotate-0',
           )}
         />
@@ -498,21 +495,19 @@ function SupportingEvidence({
 
       {open && (
         <div className="mt-5">
-          {/* Tab strip — one chart visible at a time, keeps Price Evolution as the hero */}
+          {/* Pill tab switcher — mirrors Market Performance / Financial Results tabs */}
           <div
             role="tablist"
             aria-label="Supporting evidence charts"
-            className="flex items-center gap-6 border-b border-border/40"
+            className="inline-flex gap-1 rounded-lg bg-muted/50 p-1"
           >
             <SupportingTab
               label="Capacity Expansion"
-              hint="Cumulative pulp capacity · kt"
               active={activeTab === 'capacity'}
               onClick={() => setActiveTab('capacity')}
             />
             <SupportingTab
               label="Market Share"
-              hint={`APP ${appShareStart?.toFixed(1)}% → ${appShareEnd?.toFixed(1)}%`}
               active={activeTab === 'share'}
               onClick={() => setActiveTab('share')}
             />
@@ -535,19 +530,20 @@ function SupportingEvidence({
                 }
               >
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={capacityData} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+              <AreaChart data={capacityData} margin={{ top: 4, right: 12, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="2 4" stroke={GRID_STROKE} vertical={false} />
                 <XAxis
                   dataKey="year"
-                  tick={{ ...AXIS_STYLE, fontSize: 11 }}
+                  tick={{ ...AXIS_STYLE, fontSize: 16 }}
                   axisLine={{ stroke: GRID_STROKE }}
                   tickLine={false}
+                  padding={{ left: 24, right: 12 }}
                 />
                 <YAxis
-                  tick={{ ...AXIS_STYLE, fontSize: 11 }}
+                  tick={{ ...AXIS_STYLE, fontSize: 16 }}
                   axisLine={false}
                   tickLine={false}
-                  width={38}
+                  width={60}
                 />
                 <Tooltip
                   content={<CustomTooltip unit=" kt" />}
@@ -616,20 +612,21 @@ function SupportingEvidence({
               <AreaChart
                 data={shareData}
                 stackOffset="expand"
-                margin={{ top: 4, right: 8, left: 0, bottom: 0 }}
+                margin={{ top: 4, right: 12, left: 0, bottom: 0 }}
               >
                 <CartesianGrid strokeDasharray="2 4" stroke={GRID_STROKE} vertical={false} />
                 <XAxis
                   dataKey="year"
-                  tick={{ ...AXIS_STYLE, fontSize: 11 }}
+                  tick={{ ...AXIS_STYLE, fontSize: 16 }}
                   axisLine={{ stroke: GRID_STROKE }}
                   tickLine={false}
+                  padding={{ left: 24, right: 12 }}
                 />
                 <YAxis
-                  tick={{ ...AXIS_STYLE, fontSize: 11 }}
+                  tick={{ ...AXIS_STYLE, fontSize: 16 }}
                   axisLine={false}
                   tickLine={false}
-                  width={38}
+                  width={56}
                   tickFormatter={(v) => `${Math.round(v * 100)}%`}
                 />
                 <Tooltip
@@ -697,15 +694,14 @@ function SupportingEvidence({
   )
 }
 
-// Small, calm tab trigger — borderless, underline indicator, no boxed chrome
+// Pill tab trigger — visually identical to the Market Performance / Financial
+// Results switcher used inside the Market Data card headers.
 function SupportingTab({
   label,
-  hint,
   active,
   onClick,
 }: {
   label: string
-  hint: string
   active: boolean
   onClick: () => void
 }) {
@@ -716,21 +712,13 @@ function SupportingTab({
       aria-selected={active}
       onClick={onClick}
       className={cn(
-        'group -mb-px flex flex-col items-start gap-0.5 border-b-2 px-1 pb-2.5 pt-1 text-left transition-colors',
+        'px-3.5 py-1.5 text-sm font-medium rounded-md transition-all',
         active
-          ? 'border-foreground/80 text-foreground'
-          : 'border-transparent text-muted-foreground hover:text-foreground/90',
+          ? 'bg-background text-foreground shadow-sm'
+          : 'text-muted-foreground hover:text-foreground',
       )}
     >
-      <span className="text-[15px] font-semibold tracking-tight">{label}</span>
-      <span
-        className={cn(
-          'text-[13px] transition-colors',
-          active ? 'text-muted-foreground' : 'text-muted-foreground/70',
-        )}
-      >
-        {hint}
-      </span>
+      {label}
     </button>
   )
 }
