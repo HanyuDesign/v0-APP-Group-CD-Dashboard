@@ -29,23 +29,15 @@ const YEARS = [2026, 2027, 2028, 2029, 2030, 2031] as const
 export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
   const { input } = result
 
-  // APP capacity calculations
+  // APP pulp capacity total (only the pulp number is consumed downstream now)
   const appChinaPulpAdd =
     input.appCapacity.guangxi.pulpCapacity + input.appCapacity.jiangsuFujian.pulpCapacity
-  const appChinaBoardAdd =
-    (input.appCapacity.guangxi.includeBoard ? input.appCapacity.guangxi.boardCapacity : 0) +
-    (input.appCapacity.jiangsuFujian.includeBoard ? input.appCapacity.jiangsuFujian.boardCapacity : 0)
-  const appChinaTissueAdd =
-    (input.appCapacity.guangxi.includeTissue ? input.appCapacity.guangxi.tissueCapacity : 0) +
-    (input.appCapacity.jiangsuFujian.includeTissue ? input.appCapacity.jiangsuFujian.tissueCapacity : 0)
 
   return (
     <div className="space-y-10">
       <APPStrategicPosition
         result={result}
         appPulpAdd={appChinaPulpAdd}
-        appBoardAdd={appChinaBoardAdd}
-        appTissueAdd={appChinaTissueAdd}
       />
 
       <CompetitorDynamics result={result} />
@@ -61,13 +53,9 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
 function APPStrategicPosition({
   result,
   appPulpAdd,
-  appBoardAdd,
-  appTissueAdd,
 }: {
   result: SimulationResult
   appPulpAdd: number
-  appBoardAdd: number
-  appTissueAdd: number
 }) {
   const { input } = result
 
@@ -190,27 +178,6 @@ function APPStrategicPosition({
 
       </div>
 
-      {/* Capacity totals — three summary cards directly below the build table */}
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
-        <PositionMetric
-          label="Total Capacity"
-          value={`+${appPulpAdd} kt`}
-          helper="Pulp added across Guangxi + Jiangsu / Fujian"
-          tone="negative"
-        />
-        <PositionMetric
-          label="Packaging / Cupboard"
-          value={`+${appBoardAdd} kt`}
-          helper="Board capacity (integrated downstream)"
-          tone="neutral"
-        />
-        <PositionMetric
-          label="Tissue"
-          value={`+${appTissueAdd} kt`}
-          helper="Tissue capacity (integrated downstream)"
-          tone="neutral"
-        />
-      </div>
       </CardContent>
     </Card>
   )
@@ -552,42 +519,4 @@ export function PulpExportReallocation({ result }: PulpCapacityDetailsProps) {
 // ===========================================================================
 // Shared sub-components
 // ===========================================================================
-
-function PositionMetric({
-  label,
-  value,
-  helper,
-  tone,
-}: {
-  label: string
-  value: string
-  helper: string
-  tone: 'positive' | 'negative' | 'warn' | 'neutral'
-}) {
-  const toneClass = {
-    positive: 'text-emerald-600',
-    negative: 'text-red-600',
-    warn: 'text-amber-600',
-    neutral: 'text-foreground',
-  }[tone]
-  const accentBar = {
-    positive: 'bg-emerald-500',
-    negative: 'bg-red-500',
-    warn: 'bg-amber-500',
-    neutral: 'bg-slate-400',
-  }[tone]
-
-  return (
-    <div className="relative overflow-hidden rounded-lg border border-border/50 bg-card/60 p-5">
-      <span className={cn('absolute left-0 top-0 h-full w-0.5', accentBar)} />
-      <div className="text-[15px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-        {label}
-      </div>
-      <div className={cn('mt-2.5 text-2xl font-semibold tracking-tight', toneClass)}>
-        {value}
-      </div>
-      <p className="mt-2.5 text-base leading-relaxed text-muted-foreground">{helper}</p>
-    </div>
-  )
-}
 
