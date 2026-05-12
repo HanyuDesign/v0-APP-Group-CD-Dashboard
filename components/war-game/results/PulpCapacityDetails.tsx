@@ -106,14 +106,11 @@ function APPStrategicPosition({
           </div>
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-red-700">
+              <h3 className="text-2xl font-semibold tracking-tight text-red-700">
                 APP Capacity Outcome
-              </span>
+              </h3>
               <AIBadge size="sm" />
             </div>
-            <h3 className="mt-1.5 text-2xl font-semibold tracking-tight text-foreground">
-              Did APP&apos;s strategy work?
-            </h3>
           </div>
         </div>
         <span
@@ -293,14 +290,11 @@ function CompetitorDynamics({
           </div>
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-blue-700">
+              <h3 className="text-2xl font-semibold tracking-tight text-blue-700">
                 Competitor&apos;s Reaction
-              </span>
+              </h3>
               <AIBadge size="sm" />
             </div>
-            <h3 className="mt-1.5 text-2xl font-semibold tracking-tight text-foreground">
-              Detailed yearly competitor reactions
-            </h3>
           </div>
         </div>
         <div className="hidden items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[13px] font-medium text-emerald-700 md:inline-flex">
@@ -531,8 +525,8 @@ export function PulpExportReallocation({ result }: PulpCapacityDetailsProps) {
     >
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg text-foreground/85">
-            <Globe className="h-4 w-4 text-indigo-600" />
+          <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-indigo-600">
+            <Globe className="h-5 w-5 text-indigo-600" />
             Global Reallocation
           </CardTitle>
           <AIBadge size="sm" />

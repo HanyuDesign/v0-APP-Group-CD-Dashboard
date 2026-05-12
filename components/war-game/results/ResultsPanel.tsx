@@ -155,10 +155,10 @@ function DetailedTablesAppendix({
   return (
     <section id="detailed-tables" className="scroll-mt-96 space-y-5 pt-2">
       <div className="flex items-center gap-2 border-t border-border/40 pt-4">
-        <FileText className="h-4 w-4 text-muted-foreground" />
-        <span className="text-base font-semibold text-foreground">
+        <FileText className="h-5 w-5 text-indigo-600" />
+        <h3 className="text-2xl font-semibold tracking-tight text-indigo-600">
           Detailed Market Tables
-        </span>
+        </h3>
       </div>
 
       <div className="space-y-6">

@@ -276,17 +276,14 @@ export function MarketEvolutionSection({
           </div>
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-indigo-600">
-                Executive Market Outcome
-              </span>
+              <h3 className="text-2xl font-semibold tracking-tight text-indigo-600">
+                Executive Outcome
+              </h3>
               <AIBadge size="sm" />
               <span className="rounded-full border border-border/60 bg-card/60 px-2 py-0.5 text-[13px] font-medium text-muted-foreground">
                 2026 — 2031
               </span>
             </div>
-            <h3 className="mt-1.5 text-2xl font-semibold tracking-tight text-foreground">
-              AI Strategic Summary
-            </h3>
           </div>
         </header>
 
@@ -339,14 +336,11 @@ export function MarketEvolutionSection({
         <header className="flex items-end justify-between gap-4 border-b border-border/40 pb-3">
           <div>
             <div className="flex items-center gap-2">
-              <Activity className="h-4 w-4 text-foreground/60" />
-              <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-foreground/60">
+              <Activity className="h-5 w-5 text-indigo-600" />
+              <h3 className="text-2xl font-semibold tracking-tight text-indigo-600">
                 Market Evolution
-              </span>
+              </h3>
             </div>
-            <h4 className="mt-1.5 text-2xl font-semibold tracking-tight text-foreground">
-              How pricing evolves under this scenario
-            </h4>
           </div>
           <div className="hidden items-center gap-3 md:flex">
             <LegendDot color="#cc0000" label="APP" />
