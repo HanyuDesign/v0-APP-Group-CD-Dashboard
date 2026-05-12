@@ -341,21 +341,11 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
         {/* Hero chart — Price Evolution */}
         <div className="space-y-3">
           <div className="flex items-baseline justify-between gap-4">
-            <div>
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <div className="flex items-center gap-2">
-                  <TrendingDown className="h-4 w-4 text-red-600" />
-                  <h5 className="text-lg font-semibold tracking-tight text-foreground">
-                    Price Evolution
-                  </h5>
-                </div>
-                <span className="text-sm text-muted-foreground">
-                  Bleached hardwood pulp · CFR China · USD / tonne
-                </span>
-              </div>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                Primary evidence for the recommendation — projected pricing trajectory.
-              </p>
+            <div className="flex items-center gap-2">
+              <TrendingDown className="h-4 w-4 text-red-600" />
+              <h5 className="text-lg font-semibold tracking-tight text-foreground">
+                Price Evolution
+              </h5>
             </div>
           </div>
 
@@ -365,16 +355,16 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
                 <CartesianGrid strokeDasharray="2 4" stroke={GRID_STROKE} vertical={false} />
                 <XAxis
                   dataKey="year"
-                  tick={AXIS_STYLE}
+                  tick={{ ...AXIS_STYLE, fontSize: 16 }}
                   axisLine={{ stroke: GRID_STROKE }}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={AXIS_STYLE}
+                  tick={{ ...AXIS_STYLE, fontSize: 16 }}
                   axisLine={false}
                   tickLine={false}
                   domain={['auto', 'auto']}
-                  width={48}
+                  width={64}
                 />
                 <Tooltip
                   content={<CustomTooltip unit=" $/t" />}
