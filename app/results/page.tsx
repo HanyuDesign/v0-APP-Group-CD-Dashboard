@@ -15,16 +15,23 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { ResultsPanel } from '@/components/war-game/results/ResultsPanel'
 import { OverviewPanel } from '@/components/war-game/OverviewPanel'
-import { Zap, History, Download, Share2, ClipboardList, ChevronDown, ChevronUp, ChevronRight, Bug, Check, RotateCcw } from 'lucide-react'
+import { Zap, History, Download, Share2, ClipboardList, ChevronRight, Bug, Check, RotateCcw } from 'lucide-react'
 import { useSimulation } from '@/lib/context/SimulationContext'
 import { computeAllFromInput } from '@/lib/simulation/computations'
 
 export default function ResultsPage() {
   const router = useRouter()
   const { input, result, status, history, reset } = useSimulation()
-  const [showOverview, setShowOverview] = useState(false)
   const [showDebug, setShowDebug] = useState(false)
 
   // Redirect to input page if no results
@@ -119,16 +126,27 @@ export default function ResultsPage() {
 
               {/* Control buttons */}
               <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowOverview(!showOverview)}
-                  className="gap-1.5"
-                >
-                  <ClipboardList className="h-4 w-4" />
-                  Input Overview
-                  {showOverview ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                </Button>
+                {/* Input Overview — opens as a popup so it doesn't compete
+                    for vertical space with the simulation results below. */}
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-1.5">
+                      <ClipboardList className="h-4 w-4" />
+                      Input Overview
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-h-[85vh] max-w-5xl overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Input Overview</DialogTitle>
+                      <DialogDescription>
+                        Snapshot of the inputs used to produce these simulation results.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="pt-2">
+                      <OverviewPanel input={result?.input || input} showHeader={false} />
+                    </div>
+                  </DialogContent>
+                </Dialog>
                 <div className="h-6 w-px bg-border" />
                 <Button
                   variant="outline"
@@ -265,13 +283,6 @@ export default function ResultsPage() {
         </div>
         </nav>
       </div>
-
-      {/* Expandable Overview Panel */}
-      {showOverview && (
-        <div className="border-b border-border/50 bg-muted/30 px-6 py-4">
-          <OverviewPanel input={result?.input || input} showHeader={false} />
-        </div>
-      )}
 
       {/* Debug Panel - Shows current state and computed values */}
       {showDebug && result && (
