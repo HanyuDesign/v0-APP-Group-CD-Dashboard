@@ -476,26 +476,20 @@ function SupportingEvidence({
 
   return (
     <div className="pt-2">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="group flex w-full items-center gap-2 border-t border-border/40 pt-3 text-left transition-colors hover:text-foreground"
-        aria-expanded={open}
-      >
-        <span className="text-base font-semibold text-muted-foreground transition-colors group-hover:text-foreground">
-          Supporting Evidence
-        </span>
-        <ChevronDown
-          className={cn(
-            'ml-auto h-4 w-4 text-muted-foreground transition-transform duration-200',
-            open ? 'rotate-180' : 'rotate-0',
-          )}
-        />
-      </button>
+      {/* Single header row — title, tabs (when open), and chevron on one line */}
+      <div className="flex items-center gap-4 border-t border-border/40 pt-3">
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          className="group flex items-center gap-2 text-left transition-colors hover:text-foreground"
+          aria-expanded={open}
+        >
+          <span className="text-base font-semibold text-muted-foreground transition-colors group-hover:text-foreground">
+            Supporting Evidence
+          </span>
+        </button>
 
-      {open && (
-        <div className="mt-5">
-          {/* Pill tab switcher — mirrors Market Performance / Financial Results tabs */}
+        {open && (
           <div
             role="tablist"
             aria-label="Supporting evidence charts"
@@ -512,12 +506,30 @@ function SupportingEvidence({
               onClick={() => setActiveTab('share')}
             />
           </div>
+        )}
 
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-label={open ? 'Collapse supporting evidence' : 'Expand supporting evidence'}
+          aria-expanded={open}
+          className="ml-auto inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+        >
+          <ChevronDown
+            className={cn(
+              'h-4 w-4 transition-transform duration-200',
+              open ? 'rotate-180' : 'rotate-0',
+            )}
+          />
+        </button>
+      </div>
+
+      {open && (
+        <div className="mt-5">
           {activeTab === 'capacity' && (
             <div
               role="tabpanel"
               aria-label="Capacity Expansion"
-              className="mt-5"
             >
               <SupportingChart
                 title="Capacity Expansion"
@@ -585,7 +597,6 @@ function SupportingEvidence({
             <div
               role="tabpanel"
               aria-label="Market Share Evolution"
-              className="mt-5"
             >
               <SupportingChart
                 title="Market Share Evolution"
@@ -792,12 +803,14 @@ function SupportingChart({
 }) {
   return (
     <div className="flex flex-col">
-      <div className="mb-3">
-        <h5 className="text-lg font-semibold tracking-tight text-foreground">{title}</h5>
-        <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>
+      <div className="mb-4">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <h5 className="text-lg font-semibold tracking-tight text-foreground">{title}</h5>
+          <span className="text-sm text-muted-foreground">{subtitle}</span>
+        </div>
+        <p className="mt-2 text-[15px] leading-relaxed text-foreground/75">{footnote}</p>
       </div>
-      <div className="h-[200px] w-full">{children}</div>
-      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{footnote}</p>
+      <div className="h-[220px] w-full">{children}</div>
     </div>
   )
 }
