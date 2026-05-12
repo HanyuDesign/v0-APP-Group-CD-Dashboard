@@ -808,7 +808,7 @@ function SupportingChart({
           <h5 className="text-lg font-semibold tracking-tight text-foreground">{title}</h5>
           <span className="text-sm text-muted-foreground">{subtitle}</span>
         </div>
-        <p className="mt-2 text-[15px] leading-relaxed text-foreground/75">{footnote}</p>
+        <p className="mt-2.5 text-lg leading-relaxed text-foreground/80">{footnote}</p>
       </div>
       <div className="h-[220px] w-full">{children}</div>
     </div>
