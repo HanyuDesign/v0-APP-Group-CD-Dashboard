@@ -494,7 +494,7 @@ function SupportingEvidence({
           <div
             role="tablist"
             aria-label="Supporting evidence charts"
-            className="inline-flex gap-1 rounded-lg bg-muted/50 p-1"
+            className="ml-auto inline-flex gap-1 rounded-lg bg-muted/50 p-1"
           >
             <SupportingTab
               label="Capacity Expansion"
@@ -514,7 +514,10 @@ function SupportingEvidence({
           onClick={() => setOpen((o) => !o)}
           aria-label={open ? 'Collapse supporting evidence' : 'Expand supporting evidence'}
           aria-expanded={open}
-          className="ml-auto inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+          className={cn(
+            'inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground',
+            !open && 'ml-auto',
+          )}
         >
           <ChevronDown
             className={cn(
