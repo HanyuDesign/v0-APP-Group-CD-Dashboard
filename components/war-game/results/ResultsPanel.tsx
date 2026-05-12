@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { Clock, Trees, Factory, Package } from 'lucide-react'
+import { Clock, Trees, Factory, Package, ChevronDown, FileText } from 'lucide-react'
 import { ValueChainInsights } from './ValueChainInsights'
 import { ForestryDetails } from './ForestryDetails'
 import { PulpCapacityDetails, PulpExportReallocation } from './PulpCapacityDetails'
@@ -53,12 +53,11 @@ const NAV_ITEMS: Record<ValueChainStage, { id: string; label: string }[]> = {
     { id: 'forestry-supply-demand', label: 'Supply-Demand Balance' },
   ],
   pulp: [
+    { id: 'executive-outcome', label: 'Executive Outcome' },
     { id: 'market-evolution', label: 'Market Evolution' },
-    { id: 'pulp-market-impact', label: 'Market Impact Summary' },
-    { id: 'pulp-app-capacity', label: 'APP Capacity Outcome' },
-    { id: 'pulp-competitor-response', label: 'Competitor Response' },
-    { id: 'market-data', label: 'Market Data' },
-    { id: 'pulp-export-reallocation', label: 'Global Export Reallocation' },
+    { id: 'pulp-app-position', label: 'APP Strategic Position' },
+    { id: 'pulp-competitor-dynamics', label: 'Competitor Dynamics' },
+    { id: 'detailed-tables', label: 'Detailed Tables' },
   ],
   downstream: [
     { id: 'downstream-paper', label: 'Paper' },
@@ -138,6 +137,52 @@ function StickyNav({
         ))}
       </div>
     </div>
+  )
+}
+
+// Detailed Tables Appendix — collapsible, low-priority section that groups
+// the Market Data tabs and the Global Export Reallocation table beneath the
+// strategic narrative. Defaults to closed; the jump-nav target id is on the
+// disclosure header so the page can scroll to it directly.
+function DetailedTablesAppendix({
+  result,
+  status,
+}: {
+  result: SimulationResult
+  status: SimulationStatus
+}) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <section id="detailed-tables" className="scroll-mt-96 pt-2">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="group flex w-full items-center gap-2 border-t border-border/40 pt-4 text-left transition-colors hover:text-foreground"
+        aria-expanded={open}
+      >
+        <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+        <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground transition-colors group-hover:text-foreground">
+          Detailed Market Tables
+        </span>
+        <span className="text-xs text-muted-foreground/80">
+          · Appendix · Player market data, financial IRR, and global export reallocation
+        </span>
+        <ChevronDown
+          className={cn(
+            'ml-auto h-3.5 w-3.5 text-muted-foreground transition-transform duration-200',
+            open ? 'rotate-180' : 'rotate-0',
+          )}
+        />
+      </button>
+
+      {open && (
+        <div className="mt-5 space-y-6">
+          <MarketDataTabs result={result} status={status} id="market-data" />
+          <PulpExportReallocation result={result} />
+        </div>
+      )}
+    </section>
   )
 }
 
@@ -294,14 +339,12 @@ export function ResultsPanel({ result, status }: ResultsPanelProps) {
 
           {activeStage === 'pulp' && (
             <>
-              {/* Expected Market Evolution — AI-projected competitive trajectory */}
+              {/* 1. Executive Market Outcome + 2. Market Evolution */}
               <MarketEvolutionSection result={result} />
-              {/* Market Impact Summary → APP Capacity Outcome → Competitor Response */}
+              {/* 3. APP Strategic Position + 4. Competitor Dynamics */}
               <PulpCapacityDetails result={result} />
-              {/* Market Data (shared) */}
-              <MarketDataTabs result={result} status={status} id="market-data" />
-              {/* Global Export Reallocation */}
-              <PulpExportReallocation result={result} />
+              {/* 5. Detailed Market Tables (lower-priority appendix, collapsed by default) */}
+              <DetailedTablesAppendix result={result} status={status} />
             </>
           )}
 

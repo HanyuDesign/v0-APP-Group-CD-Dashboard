@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import {
   Activity,
@@ -7,11 +8,7 @@ import {
   Sparkles,
   ArrowDownRight,
   ArrowUpRight,
-  Minus,
-  Radio,
-  Crown,
-  AlertTriangle,
-  Target,
+  ChevronDown,
 } from 'lucide-react'
 import { AIBadge } from '../shared/AIBadge'
 import type { SimulationResult } from '@/lib/types/war-game'
@@ -48,14 +45,12 @@ function buildPriceData(result: SimulationResult) {
     input.appCapacity.guangxi.pulpCapacity + input.appCapacity.jiangsuFujian.pulpCapacity
   const competitorAdd = competitorChanges.reduce((s, c) => s + c.pulpChange, 0)
   const totalNetAdd = appAdd + competitorAdd
-
   const pressure = Math.min(1, Math.max(0, totalNetAdd / 1500))
 
   return YEARS.map((year, idx) => {
     const t = idx / (YEARS.length - 1)
     const ramp = Math.max(0, t - 0.25) * 1.35
     const baseDecline = pressure * ramp * 180
-
     return {
       year: String(year),
       app: Math.round(820 - baseDecline * 0.95),
@@ -82,7 +77,8 @@ function buildCapacityData(result: SimulationResult) {
   const appBoosters = [
     0,
     input.appCapacity.guangxi.pulpCapacity * 0.4,
-    input.appCapacity.guangxi.pulpCapacity * 0.6 + input.appCapacity.jiangsuFujian.pulpCapacity * 0.3,
+    input.appCapacity.guangxi.pulpCapacity * 0.6 +
+      input.appCapacity.jiangsuFujian.pulpCapacity * 0.3,
     input.appCapacity.jiangsuFujian.pulpCapacity * 0.5,
     input.appCapacity.jiangsuFujian.pulpCapacity * 0.2,
     0,
@@ -106,7 +102,6 @@ function buildCapacityData(result: SimulationResult) {
 
   return YEARS.map((year, idx) => {
     const row: Record<string, number | string> = { year: String(year) }
-
     let appCum = appBase
     for (let i = 1; i <= idx; i++) {
       appCum += appAdditions[i] + appBoosters[i]
@@ -133,126 +128,6 @@ function buildMarketShareData(capacityData: ReturnType<typeof buildCapacityData>
     })
     return share
   })
-}
-
-interface PhaseEvent {
-  actor: string
-  color: string
-  headline: string
-  sentiment: 'app' | 'expand' | 'delay' | 'neutral'
-}
-
-function buildPhasedIntelligence(result: SimulationResult) {
-  const { competitorChanges, input } = result
-  const appAdd =
-    input.appCapacity.guangxi.pulpCapacity + input.appCapacity.jiangsuFujian.pulpCapacity
-
-  const expanders = competitorChanges.filter((c) => c.action === 'add')
-  const delayers = competitorChanges.filter((c) => c.action === 'delay')
-  const holders = competitorChanges.filter((c) => c.action === 'none')
-
-  const playerOf = (id: string) => PLAYERS.find((p) => p.id === id)
-
-  // ---- Phase 1: 2026-2027 Opening Move (APP's first-mover wave)
-  const opening: PhaseEvent[] = []
-  if (input.appCapacity.guangxi.pulpCapacity > 0) {
-    opening.push({
-      actor: 'APP China',
-      color: '#cc0000',
-      headline: `Guangxi pulp line commissioned (+${input.appCapacity.guangxi.pulpCapacity} kt)`,
-      sentiment: 'app',
-    })
-  }
-  delayers.slice(0, 2).forEach((c) => {
-    const p = playerOf(c.playerId)
-    if (!p) return
-    opening.push({
-      actor: p.name,
-      color: p.color,
-      headline: `${p.name} delays expansion, prioritises utilisation`,
-      sentiment: 'delay',
-    })
-  })
-
-  // ---- Phase 2: 2028-2029 Capacity Wave (competitors react)
-  const wave: PhaseEvent[] = []
-  if (input.appCapacity.jiangsuFujian.pulpCapacity > 0) {
-    wave.push({
-      actor: 'APP China',
-      color: '#cc0000',
-      headline: `Jiangsu / Fujian expansion comes online (+${input.appCapacity.jiangsuFujian.pulpCapacity} kt)`,
-      sentiment: 'app',
-    })
-  }
-  expanders.slice(0, 2).forEach((c) => {
-    const p = playerOf(c.playerId)
-    if (!p) return
-    wave.push({
-      actor: p.name,
-      color: p.color,
-      headline: `${p.name} matches with defensive +${c.pulpChange} kt expansion`,
-      sentiment: 'expand',
-    })
-  })
-
-  // ---- Phase 3: 2030-2031 Equilibrium (oversupply hedging, downstream pivot)
-  const equilibrium: PhaseEvent[] = []
-  if (appAdd > 250) {
-    equilibrium.push({
-      actor: 'APP Indonesia',
-      color: '#e63946',
-      headline: 'Scales board capacity for export pivot — hedges Chinese oversupply',
-      sentiment: 'app',
-    })
-  }
-  holders.slice(0, 1).forEach((c) => {
-    const p = playerOf(c.playerId)
-    if (!p) return
-    equilibrium.push({
-      actor: p.name,
-      color: p.color,
-      headline: `${p.name} holds footprint, focuses on margin recovery`,
-      sentiment: 'neutral',
-    })
-  })
-  if (equilibrium.length === 0) {
-    equilibrium.push({
-      actor: 'Market',
-      color: '#64748b',
-      headline: 'Pricing stabilises as utilisation recovers across the industry',
-      sentiment: 'neutral',
-    })
-  }
-
-  return [
-    {
-      label: 'Opening Move',
-      window: '2026 — 2027',
-      narrative:
-        delayers.length >= expanders.length
-          ? 'APP moves first while competitors hold back, prioritising utilisation over expansion. The window for share capture opens early.'
-          : 'APP commits to its first-mover wave; a subset of competitors signals matching intent — early signalling shapes the race.',
-      events: opening,
-    },
-    {
-      label: 'Capacity Wave',
-      window: '2028 — 2029',
-      narrative:
-        expanders.length > 0
-          ? `${expanders.length} competitor${expanders.length > 1 ? 's' : ''} respond with defensive expansions. Supply additions compound and pricing pressure intensifies through the period.`
-          : 'Competitors hesitate to follow. APP\'s incremental capacity comes online into a relatively un-contested supply slot.',
-      events: wave,
-    },
-    {
-      label: 'Equilibrium',
-      window: '2030 — 2031',
-      narrative:
-        appAdd > 250
-          ? 'Oversupply weighs on the spot market. APP\'s integrated downstream pull (board, tissue, export) hedges Chinese pricing weakness — competitors with weaker downstream are squeezed.'
-          : 'Market normalises into a moderated supply environment. APP retains a defendable premium versus the competitor average.',
-      events: equilibrium,
-    },
-  ]
 }
 
 // ---------------------------------------------------------------------------
@@ -312,23 +187,6 @@ function LegendDot({
   )
 }
 
-function SentimentIcon({
-  sentiment,
-  className,
-}: {
-  sentiment: 'app' | 'expand' | 'delay' | 'neutral'
-  className?: string
-}) {
-  const map = {
-    app: { Icon: ArrowUpRight, color: 'text-red-600' },
-    expand: { Icon: ArrowUpRight, color: 'text-blue-600' },
-    delay: { Icon: ArrowDownRight, color: 'text-amber-600' },
-    neutral: { Icon: Minus, color: 'text-slate-500' },
-  }[sentiment]
-  const I = map.Icon
-  return <I className={cn('h-3 w-3', map.color, className)} />
-}
-
 // ---------------------------------------------------------------------------
 // Main section — narrative-driven executive briefing
 // ---------------------------------------------------------------------------
@@ -337,7 +195,6 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
   const priceData = buildPriceData(result)
   const capacityData = buildCapacityData(result)
   const shareData = buildMarketShareData(capacityData)
-  const phases = buildPhasedIntelligence(result)
 
   const appAdd =
     result.input.appCapacity.guangxi.pulpCapacity +
@@ -361,6 +218,7 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
 
   // Headline metrics
   const priceDelta = priceData[priceData.length - 1].app - priceData[0].app
+  const priceDeltaPct = ((priceDelta / priceData[0].app) * 100).toFixed(1)
   const appShareStart = shareData[0]?.app as number
   const appShareEnd = shareData[shareData.length - 1]?.app as number
   const appShareDelta = +(appShareEnd - appShareStart).toFixed(1)
@@ -368,45 +226,43 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
   const expanders = result.competitorChanges.filter((c) => c.action === 'add')
   const delayers = result.competitorChanges.filter((c) => c.action === 'delay')
 
-  // ---- Narrative copy (executive briefing tone) ---------------------------
-  const intensity =
-    totalNetAdd > 600 ? 'heavy' : totalNetAdd > 300 ? 'meaningful' : 'modest'
+  // Competitive pressure label — derived from retaliation count
+  const retaliation =
+    expanders.length >= 3
+      ? { label: 'Heavy', tone: 'negative' as const, helper: `${expanders.length} competitors retaliate` }
+      : expanders.length >= 1
+        ? { label: 'Moderate', tone: 'warn' as const, helper: `${expanders.length} competitor${expanders.length > 1 ? 's' : ''} responding` }
+        : { label: 'Cautious', tone: 'positive' as const, helper: `${delayers.length} player${delayers.length === 1 ? '' : 's'} delaying` }
 
-  const narrative = {
-    whatHappens:
-      intensity === 'heavy'
-        ? `A capacity super-cycle of ~${totalNetAdd.toLocaleString()} kt enters the regional pulp market through 2031, with the supply wave concentrated 2028–2029.`
-        : intensity === 'meaningful'
-          ? `A meaningful ~${totalNetAdd.toLocaleString()} kt of net new capacity comes online through 2031, weighted toward the second half of the horizon.`
-          : `Net additions stay contained at ~${totalNetAdd.toLocaleString()} kt — the market remains structurally tight through 2031.`,
-    whyItHappens:
-      `APP leads a first-mover wave (+${appAdd.toLocaleString()} kt). ${expanders.length > 0 ? `${expanders.length} competitor${expanders.length > 1 ? 's' : ''} respond defensively to protect share` : 'Competitors hesitate to commit'}, while ${delayers.length} player${delayers.length === 1 ? '' : 's'} explicitly delay${delayers.length === 1 ? 's' : ''} expansion to preserve utilisation.`,
-    winners:
-      appShareDelta > 0
-        ? `APP captures +${appShareDelta} pp of regional share by 2031. ${delayers.length > 0 ? 'Delayers cede position; ' : ''}fast followers retain relative scale but at lower margin.`
-        : `APP's share holds roughly flat. Competitor responses absorb most of the strategic premium of moving first.`,
-    implication:
-      priceDelta < -40
-        ? `Pricing erodes ~${Math.abs(priceDelta)} $/t after 2028. Margin must be defended through downstream integration (board, tissue, export pivot) rather than spot pulp economics.`
-        : priceDelta < 0
-          ? `Pricing softens modestly (~${Math.abs(priceDelta)} $/t). APP's premium narrows but remains defendable — focus on cost leadership and downstream pull.`
-          : `Pricing holds firm. APP enjoys a structural window to consolidate share at premium economics — accelerate where capital permits.`,
-  }
+  // ---- Executive narrative — single paragraph, briefing tone ---------------
+  const supplyDescriptor =
+    totalNetAdd > 600 ? 'aggressive' : totalNetAdd > 300 ? 'moderate' : 'measured'
+  const priceDescriptor =
+    priceDelta < -40 ? 'meaningful pricing pressure' : priceDelta < 0 ? 'manageable pricing pressure' : 'stable pricing'
+  const shareDescriptor =
+    appShareDelta > 1.5
+      ? 'creating a clear strategic advantage for APP'
+      : appShareDelta > 0
+        ? 'creating a temporary strategic advantage for APP'
+        : 'leaving APP\'s share roughly flat'
+
+  const narrative = `${supplyDescriptor.charAt(0).toUpperCase() + supplyDescriptor.slice(1)} APP expansion is projected to increase regional supply through 2031 while resulting in ${priceDescriptor} after the 2028 capacity wave. Competitor retaliation remains ${retaliation.label.toLowerCase()} — ${delayers.length > 0 ? `${delayers.length} player${delayers.length === 1 ? '' : 's'} explicitly delay${delayers.length === 1 ? 's' : ''} expansion to defend utilisation` : 'most competitors hold their footprint'} — ${shareDescriptor}. The strategic window favours moving decisively on integrated downstream pull (board, tissue, export) rather than competing on spot pulp economics.`
 
   return (
-    <section id="market-evolution" className="scroll-mt-96 space-y-8">
+    <div className="space-y-10">
       {/* ===================================================================
-          Section header — calm, briefing-style
+          SECTION 1 · EXECUTIVE MARKET OUTCOME
+          Narrative-first. What happened, why APP benefits, in one read.
           =================================================================== */}
-      <header className="flex flex-col gap-4 border-b border-border/50 pb-5 md:flex-row md:items-end md:justify-between">
-        <div className="flex items-start gap-3">
+      <section id="executive-outcome" className="scroll-mt-96 space-y-5">
+        <header className="flex items-start gap-3">
           <div className="rounded-md bg-indigo-50 p-1.5 ring-1 ring-indigo-100">
-            <Activity className="h-4 w-4 text-indigo-600" />
+            <Sparkles className="h-4 w-4 text-indigo-600" />
           </div>
-          <div>
+          <div className="flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-[0.14em] text-indigo-600">
-                Strategic Briefing
+                Executive Market Outcome
               </span>
               <AIBadge size="sm" />
               <span className="rounded-full border border-border/60 bg-card/60 px-2 py-0.5 text-xs font-medium text-muted-foreground">
@@ -414,106 +270,94 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
               </span>
             </div>
             <h3 className="mt-1 text-xl font-semibold tracking-tight text-foreground">
-              Expected Market Evolution
+              AI Strategic Summary
             </h3>
-            <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              An AI-generated narrative of how the market is projected to evolve under this
-              scenario — and what it means for APP&apos;s strategic position.
-            </p>
           </div>
-        </div>
+        </header>
 
-        {/* KPI strip */}
-        <div className="grid grid-cols-3 gap-x-6 gap-y-1 rounded-md border border-border/50 bg-card/40 px-5 py-3">
-          <KpiStat
-            label="Price Trajectory"
-            value={`${priceDelta > 0 ? '+' : ''}${priceDelta} $/t`}
+        {/* Narrative paragraph — single, calm, no boxed chrome */}
+        <p className="max-w-4xl border-l-2 border-indigo-300 pl-5 text-base leading-relaxed text-foreground/85">
+          {narrative}
+        </p>
+
+        {/* Key Strategic Metrics — 4 KPI cards, the only "boxed" element here */}
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+          <KpiCard
+            label="Net Supply Increase"
+            value={`+${totalNetAdd.toLocaleString()}`}
+            unit="kt"
+            tone="neutral"
+            helper={`APP +${appAdd}  ·  Comp ${competitorAdd >= 0 ? '+' : ''}${competitorAdd}`}
+          />
+          <KpiCard
+            label="Pricing Trajectory"
+            value={`${priceDelta > 0 ? '+' : ''}${priceDelta}`}
+            unit="$/t"
             tone={priceDelta < -30 ? 'negative' : priceDelta < 0 ? 'warn' : 'positive'}
             direction={priceDelta < 0 ? 'down' : 'up'}
+            helper={`${priceDelta < 0 ? '' : '+'}${priceDeltaPct}% vs 2026`}
           />
-          <KpiStat
-            label="APP Share Δ"
-            value={`${appShareDelta > 0 ? '+' : ''}${appShareDelta} pp`}
+          <KpiCard
+            label="APP Share Gain"
+            value={`${appShareDelta > 0 ? '+' : ''}${appShareDelta}`}
+            unit="pp"
             tone={appShareDelta > 0 ? 'positive' : 'warn'}
             direction={appShareDelta > 0 ? 'up' : 'down'}
+            helper={`${appShareStart?.toFixed(1)}% → ${appShareEnd?.toFixed(1)}%`}
           />
-          <KpiStat
-            label="Net Capacity"
-            value={`+${totalNetAdd.toLocaleString()} kt`}
-            tone="neutral"
+          <KpiCard
+            label="Competitive Pressure"
+            value={retaliation.label}
+            tone={retaliation.tone}
+            helper={retaliation.helper}
           />
         </div>
-      </header>
+      </section>
 
       {/* ===================================================================
-          1. STRATEGIC NARRATIVE — executive briefing (what / why / who / so what)
+          SECTION 2 · MARKET EVOLUTION
+          Single hero chart (Price). Supporting charts collapsible below.
           =================================================================== */}
-      <div className="rounded-lg border border-indigo-100/70 bg-gradient-to-br from-indigo-50/30 via-card/40 to-card/40 p-6">
-        <div className="mb-4 flex items-center gap-2">
-          <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
-          <span className="text-xs font-semibold uppercase tracking-[0.14em] text-indigo-700">
-            AI Strategic Narrative
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-          <NarrativeColumn
-            icon={Activity}
-            iconColor="text-slate-500"
-            eyebrow="What happens"
-            body={narrative.whatHappens}
-          />
-          <NarrativeColumn
-            icon={AlertTriangle}
-            iconColor="text-amber-600"
-            eyebrow="Why it happens"
-            body={narrative.whyItHappens}
-          />
-          <NarrativeColumn
-            icon={Crown}
-            iconColor="text-emerald-600"
-            eyebrow="Winners & losers"
-            body={narrative.winners}
-          />
-          <NarrativeColumn
-            icon={Target}
-            iconColor="text-indigo-600"
-            eyebrow="Strategic implication"
-            body={narrative.implication}
-            emphasis
-          />
-        </div>
-      </div>
-
-      {/* ===================================================================
-          2. PRIMARY EVIDENCE — Price Evolution (hero chart)
-          =================================================================== */}
-      <div>
-        <div className="mb-3 flex items-end justify-between">
+      <section id="market-evolution" className="scroll-mt-96 space-y-4">
+        <header className="flex items-end justify-between gap-4 border-b border-border/40 pb-3">
           <div>
             <div className="flex items-center gap-2">
-              <TrendingDown className="h-4 w-4 text-red-600" />
-              <h4 className="text-base font-semibold tracking-tight text-foreground">
-                Price Evolution
-              </h4>
-              <span className="text-xs text-muted-foreground">
-                Bleached hardwood pulp · CFR China · USD / tonne
+              <Activity className="h-4 w-4 text-foreground/60" />
+              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-foreground/60">
+                Market Evolution
               </span>
             </div>
-            <p className="mt-1 text-xs text-muted-foreground">
-              The primary evidence behind the recommendation — projected pricing trajectory under
-              the current scenario.
-            </p>
+            <h4 className="mt-1 text-lg font-semibold tracking-tight text-foreground">
+              How pricing evolves under this scenario
+            </h4>
           </div>
-          <div className="flex items-center gap-3 text-xs">
+          <div className="hidden items-center gap-3 text-xs md:flex">
             <LegendDot color="#cc0000" label="APP" />
             <LegendDot color="#1d4e89" label="Competitor avg." />
             <LegendDot color="#64748b" label="Market avg." dashed />
           </div>
-        </div>
+        </header>
 
-        <div className="rounded-lg border border-border/50 bg-card/40 p-4">
-          <div className="h-[280px] w-full">
+        {/* Hero chart — Price Evolution */}
+        <div className="space-y-3">
+          <div className="flex items-baseline justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <TrendingDown className="h-4 w-4 text-red-600" />
+                <h5 className="text-base font-semibold tracking-tight text-foreground">
+                  Price Evolution
+                </h5>
+                <span className="text-xs text-muted-foreground">
+                  Bleached hardwood pulp · CFR China · USD / tonne
+                </span>
+              </div>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Primary evidence for the recommendation — projected pricing trajectory.
+              </p>
+            </div>
+          </div>
+
+          <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={priceData} margin={{ top: 16, right: 24, left: 8, bottom: 4 }}>
                 <CartesianGrid strokeDasharray="2 4" stroke={GRID_STROKE} vertical={false} />
@@ -586,31 +430,80 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
             </ResponsiveContainer>
           </div>
 
-          <div className="mt-3 flex items-start gap-2 border-t border-border/50 pt-3">
+          {/* Compact AI annotation, no extra borders */}
+          <div className="flex items-start gap-2 pt-1">
             <Sparkles className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-amber-600" />
             <p className="text-sm leading-relaxed text-muted-foreground">
               <span className="font-semibold text-foreground">AI Insight · </span>
               {priceDelta < -30
-                ? `Capacity additions of ~${totalNetAdd.toLocaleString()} kt by 2031 erode pulp pricing by ~${Math.abs(priceDelta)} $/t after 2028. APP's first-mover premium narrows; sustained margin pressure favours integrated downstream pull.`
+                ? `Capacity additions of ~${totalNetAdd.toLocaleString()} kt by 2031 erode pulp pricing by ~${Math.abs(priceDelta)} $/t after 2028. APP's first-mover premium narrows; sustained margin defence depends on integrated downstream pull.`
                 : `Net additions (~${totalNetAdd.toLocaleString()} kt) keep pricing structurally intact. APP retains a defendable premium versus the competitor average through 2031.`}
             </p>
           </div>
         </div>
-      </div>
 
-      {/* ===================================================================
-          3. SUPPORTING EVIDENCE — compact secondary charts
-          =================================================================== */}
-      <div>
-        <div className="mb-3 flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            Supporting Evidence
-          </span>
-          <span className="h-px flex-1 bg-border/60" />
-        </div>
+        {/* Supporting evidence — collapsible, low visual weight */}
+        <SupportingEvidence
+          capacityData={capacityData}
+          shareData={shareData}
+          competitorKeys={competitorKeys}
+          seriesMeta={seriesMeta}
+          appShareStart={appShareStart}
+          appShareEnd={appShareEnd}
+          appShareDelta={appShareDelta}
+        />
+      </section>
+    </div>
+  )
+}
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          {/* Capacity Expansion — compact, no card chrome */}
+// ---------------------------------------------------------------------------
+// Supporting Evidence — collapsible, calm, secondary
+// ---------------------------------------------------------------------------
+
+function SupportingEvidence({
+  capacityData,
+  shareData,
+  competitorKeys,
+  seriesMeta,
+  appShareStart,
+  appShareEnd,
+  appShareDelta,
+}: {
+  capacityData: ReturnType<typeof buildCapacityData>
+  shareData: ReturnType<typeof buildMarketShareData>
+  competitorKeys: string[]
+  seriesMeta: Record<string, { name: string; color: string }>
+  appShareStart: number
+  appShareEnd: number
+  appShareDelta: number
+}) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div className="pt-2">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="group flex w-full items-center gap-2 border-t border-border/40 pt-3 text-left transition-colors hover:text-foreground"
+        aria-expanded={open}
+      >
+        <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground transition-colors group-hover:text-foreground">
+          Supporting evidence
+        </span>
+        <span className="text-xs text-muted-foreground/80">
+          · Capacity expansion and market share evolution
+        </span>
+        <ChevronDown
+          className={cn(
+            'ml-auto h-3.5 w-3.5 text-muted-foreground transition-transform duration-200',
+            open ? 'rotate-180' : 'rotate-0',
+          )}
+        />
+      </button>
+
+      {open && (
+        <div className="mt-5 grid grid-cols-1 gap-7 lg:grid-cols-2">
           <SupportingChart
             title="Capacity Expansion"
             subtitle="Cumulative pulp capacity · kt"
@@ -670,7 +563,6 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
             </ResponsiveContainer>
           </SupportingChart>
 
-          {/* Market Share — compact, no card chrome */}
           <SupportingChart
             title="Market Share Evolution"
             subtitle="% of regional pulp capacity"
@@ -770,109 +662,27 @@ export function MarketEvolutionSection({ result }: MarketEvolutionSectionProps) 
             </ResponsiveContainer>
           </SupportingChart>
         </div>
-      </div>
-
-      {/* ===================================================================
-          4. STRATEGIC INTELLIGENCE — phased competitor narrative
-          =================================================================== */}
-      <div>
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Radio className="h-4 w-4 text-indigo-600" />
-            <span className="text-sm font-semibold tracking-tight text-foreground">
-              Strategic Intelligence
-            </span>
-            <span className="text-xs text-muted-foreground">
-              How the competitive landscape evolves across the horizon
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            </span>
-            Live feed
-          </div>
-        </div>
-
-        <div className="relative">
-          {/* vertical timeline rail */}
-          <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gradient-to-b from-indigo-200 via-border to-transparent" />
-
-          <ol className="space-y-7">
-            {phases.map((phase, idx) => (
-              <li key={phase.label} className="relative pl-7">
-                {/* phase anchor */}
-                <span
-                  className={cn(
-                    'absolute left-0 top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full ring-4 ring-background',
-                    idx === 0
-                      ? 'bg-indigo-500'
-                      : idx === 1
-                        ? 'bg-amber-500'
-                        : 'bg-emerald-500',
-                  )}
-                >
-                  <span className="h-1.5 w-1.5 rounded-full bg-white" />
-                </span>
-
-                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <span className="font-mono text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                    {phase.window}
-                  </span>
-                  <span className="text-base font-semibold tracking-tight text-foreground">
-                    {phase.label}
-                  </span>
-                </div>
-
-                <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-                  {phase.narrative}
-                </p>
-
-                {/* inline event chips — calm, no card grid */}
-                {phase.events.length > 0 && (
-                  <ul className="mt-3 space-y-1.5">
-                    {phase.events.map((event, eIdx) => (
-                      <li
-                        key={eIdx}
-                        className="flex items-start gap-2.5 text-sm leading-snug"
-                      >
-                        <span
-                          className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full"
-                          style={{ backgroundColor: event.color }}
-                        />
-                        <span className="font-medium text-foreground">{event.actor}</span>
-                        <span className="text-muted-foreground">·</span>
-                        <span className="text-muted-foreground">{event.headline}</span>
-                        <SentimentIcon
-                          sentiment={event.sentiment}
-                          className="ml-auto mt-0.5 flex-shrink-0"
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            ))}
-          </ol>
-        </div>
-      </div>
-    </section>
+      )}
+    </div>
   )
 }
 
 // ---------------------------------------------------------------------------
-// Sub-components
+// KPI card — Executive Outcome metrics. Calm, single style.
 // ---------------------------------------------------------------------------
 
-function KpiStat({
+function KpiCard({
   label,
   value,
+  unit,
+  helper,
   tone,
   direction,
 }: {
   label: string
   value: string
+  unit?: string
+  helper?: string
   tone: 'positive' | 'negative' | 'warn' | 'neutral'
   direction?: 'up' | 'down'
 }) {
@@ -883,67 +693,32 @@ function KpiStat({
     neutral: 'text-foreground',
   }[tone]
 
-  return (
-    <div className="flex flex-col">
-      <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-muted-foreground">
-        {label}
-      </span>
-      <span
-        className={cn(
-          'mt-0.5 flex items-center gap-1 font-mono text-sm font-semibold tabular-nums',
-          toneClass,
-        )}
-      >
-        {direction === 'down' ? (
-          <ArrowDownRight className="h-3.5 w-3.5" />
-        ) : direction === 'up' ? (
-          <ArrowUpRight className="h-3.5 w-3.5" />
-        ) : null}
-        {value}
-      </span>
-    </div>
-  )
-}
+  const accentBar = {
+    positive: 'bg-emerald-500',
+    negative: 'bg-red-500',
+    warn: 'bg-amber-500',
+    neutral: 'bg-slate-400',
+  }[tone]
 
-function NarrativeColumn({
-  icon: Icon,
-  iconColor,
-  eyebrow,
-  body,
-  emphasis,
-}: {
-  icon: typeof Activity
-  iconColor: string
-  eyebrow: string
-  body: string
-  emphasis?: boolean
-}) {
   return (
-    <div
-      className={cn(
-        'flex flex-col gap-2 border-l-2 pl-4',
-        emphasis ? 'border-indigo-400' : 'border-border/70',
-      )}
-    >
-      <div className="flex items-center gap-2">
-        <Icon className={cn('h-3.5 w-3.5', iconColor)} />
-        <span
-          className={cn(
-            'text-[11px] font-semibold uppercase tracking-[0.12em]',
-            emphasis ? 'text-indigo-700' : 'text-muted-foreground',
-          )}
-        >
-          {eyebrow}
-        </span>
+    <div className="relative overflow-hidden rounded-lg border border-border/50 bg-card/60 p-4">
+      <span className={cn('absolute left-0 top-0 h-full w-0.5', accentBar)} />
+      <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+        {label}
       </div>
-      <p
-        className={cn(
-          'text-sm leading-relaxed',
-          emphasis ? 'text-foreground' : 'text-foreground/80',
+      <div className="mt-2 flex items-baseline gap-1.5">
+        {direction === 'down' && <ArrowDownRight className={cn('h-4 w-4', toneClass)} />}
+        {direction === 'up' && <ArrowUpRight className={cn('h-4 w-4', toneClass)} />}
+        <span className={cn('font-mono text-2xl font-semibold leading-none tabular-nums', toneClass)}>
+          {value}
+        </span>
+        {unit && (
+          <span className="text-sm font-medium text-muted-foreground">{unit}</span>
         )}
-      >
-        {body}
-      </p>
+      </div>
+      {helper && (
+        <div className="mt-2 truncate text-xs leading-snug text-muted-foreground">{helper}</div>
+      )}
     </div>
   )
 }
@@ -961,11 +736,9 @@ function SupportingChart({
 }) {
   return (
     <div className="flex flex-col">
-      <div className="mb-2 flex items-baseline justify-between">
-        <div>
-          <h5 className="text-sm font-semibold tracking-tight text-foreground">{title}</h5>
-          <p className="text-xs text-muted-foreground">{subtitle}</p>
-        </div>
+      <div className="mb-2">
+        <h5 className="text-sm font-semibold tracking-tight text-foreground">{title}</h5>
+        <p className="text-xs text-muted-foreground">{subtitle}</p>
       </div>
       <div className="h-[180px] w-full">{children}</div>
       <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{footnote}</p>
