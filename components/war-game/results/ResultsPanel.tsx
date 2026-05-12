@@ -158,8 +158,8 @@ function DetailedTablesAppendix({
       className="border-border/40 bg-card/40 scroll-mt-96"
     >
       <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-indigo-600">
-          <FileText className="h-5 w-5 text-indigo-600" />
+        <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-slate-700">
+          <FileText className="h-5 w-5 text-slate-700" />
           Detailed Market Tables
         </CardTitle>
       </CardHeader>

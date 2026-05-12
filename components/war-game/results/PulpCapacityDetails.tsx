@@ -435,8 +435,8 @@ export function PulpExportReallocation({ result }: PulpCapacityDetailsProps) {
     >
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-indigo-600">
-            <Globe className="h-5 w-5 text-indigo-600" />
+          <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-emerald-700">
+            <Globe className="h-5 w-5 text-emerald-700" />
             Global Reallocation
           </CardTitle>
           <AIBadge size="sm" />

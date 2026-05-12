@@ -338,8 +338,8 @@ export function MarketEvolutionSection({
       >
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between gap-4">
-            <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-indigo-600">
-              <Activity className="h-5 w-5 text-indigo-600" />
+            <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-amber-700">
+              <Activity className="h-5 w-5 text-amber-700" />
               Market Evolution
             </CardTitle>
             <div className="hidden items-center gap-3 md:flex">
