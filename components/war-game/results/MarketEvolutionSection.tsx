@@ -479,6 +479,7 @@ function SupportingEvidence({
   appShareDelta: number
 }) {
   const [open, setOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState<'capacity' | 'share'>('capacity')
 
   return (
     <div className="pt-2">
@@ -492,7 +493,7 @@ function SupportingEvidence({
           Supporting evidence
         </span>
         <span className="text-xs text-muted-foreground/80">
-          · Capacity expansion and market share evolution
+          · Capacity expansion · Market share evolution
         </span>
         <ChevronDown
           className={cn(
@@ -503,17 +504,43 @@ function SupportingEvidence({
       </button>
 
       {open && (
-        <div className="mt-5 grid grid-cols-1 gap-7 lg:grid-cols-2">
-          <SupportingChart
-            title="Capacity Expansion"
-            subtitle="Cumulative pulp capacity · kt"
-            footnote={
-              <>
-                <span className="font-medium text-foreground">APP leads the wave;</span>{' '}
-                competitors follow more cautiously, reinforcing oversupply risk into 2030.
-              </>
-            }
+        <div className="mt-5">
+          {/* Tab strip — one chart visible at a time, keeps Price Evolution as the hero */}
+          <div
+            role="tablist"
+            aria-label="Supporting evidence charts"
+            className="flex items-center gap-6 border-b border-border/40"
           >
+            <SupportingTab
+              label="Capacity Expansion"
+              hint="Cumulative pulp capacity · kt"
+              active={activeTab === 'capacity'}
+              onClick={() => setActiveTab('capacity')}
+            />
+            <SupportingTab
+              label="Market Share"
+              hint={`APP ${appShareStart?.toFixed(1)}% → ${appShareEnd?.toFixed(1)}%`}
+              active={activeTab === 'share'}
+              onClick={() => setActiveTab('share')}
+            />
+          </div>
+
+          {activeTab === 'capacity' && (
+            <div
+              role="tabpanel"
+              aria-label="Capacity Expansion"
+              className="mt-5"
+            >
+              <SupportingChart
+                title="Capacity Expansion"
+                subtitle="Cumulative pulp capacity · kt"
+                footnote={
+                  <>
+                    <span className="font-medium text-foreground">APP leads the wave;</span>{' '}
+                    competitors follow more cautiously, reinforcing oversupply risk into 2030.
+                  </>
+                }
+              >
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={capacityData} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="2 4" stroke={GRID_STROKE} vertical={false} />
@@ -561,29 +588,37 @@ function SupportingEvidence({
                 />
               </AreaChart>
             </ResponsiveContainer>
-          </SupportingChart>
+              </SupportingChart>
+            </div>
+          )}
 
-          <SupportingChart
-            title="Market Share Evolution"
-            subtitle="% of regional pulp capacity"
-            footnote={
-              <span className="inline-flex items-center gap-1.5">
-                {appShareDelta > 0 ? (
-                  <ArrowUpRight className="h-3 w-3 text-emerald-600" />
-                ) : (
-                  <ArrowDownRight className="h-3 w-3 text-amber-600" />
-                )}
-                <span>
-                  APP{' '}
-                  <span className="font-medium text-foreground">
-                    {appShareStart?.toFixed(1)}% → {appShareEnd?.toFixed(1)}%
-                  </span>{' '}
-                  ({appShareDelta > 0 ? '+' : ''}
-                  {appShareDelta} pp)
-                </span>
-              </span>
-            }
-          >
+          {activeTab === 'share' && (
+            <div
+              role="tabpanel"
+              aria-label="Market Share Evolution"
+              className="mt-5"
+            >
+              <SupportingChart
+                title="Market Share Evolution"
+                subtitle="% of regional pulp capacity"
+                footnote={
+                  <span className="inline-flex items-center gap-1.5">
+                    {appShareDelta > 0 ? (
+                      <ArrowUpRight className="h-3 w-3 text-emerald-600" />
+                    ) : (
+                      <ArrowDownRight className="h-3 w-3 text-amber-600" />
+                    )}
+                    <span>
+                      APP{' '}
+                      <span className="font-medium text-foreground">
+                        {appShareStart?.toFixed(1)}% → {appShareEnd?.toFixed(1)}%
+                      </span>{' '}
+                      ({appShareDelta > 0 ? '+' : ''}
+                      {appShareDelta} pp)
+                    </span>
+                  </span>
+                }
+              >
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
                 data={shareData}
@@ -660,10 +695,50 @@ function SupportingEvidence({
                 />
               </AreaChart>
             </ResponsiveContainer>
-          </SupportingChart>
+              </SupportingChart>
+            </div>
+          )}
         </div>
       )}
     </div>
+  )
+}
+
+// Small, calm tab trigger — borderless, underline indicator, no boxed chrome
+function SupportingTab({
+  label,
+  hint,
+  active,
+  onClick,
+}: {
+  label: string
+  hint: string
+  active: boolean
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={active}
+      onClick={onClick}
+      className={cn(
+        'group -mb-px flex flex-col items-start gap-0.5 border-b-2 px-1 pb-2.5 pt-1 text-left transition-colors',
+        active
+          ? 'border-foreground/80 text-foreground'
+          : 'border-transparent text-muted-foreground hover:text-foreground/90',
+      )}
+    >
+      <span className="text-[13px] font-semibold tracking-tight">{label}</span>
+      <span
+        className={cn(
+          'text-[11px] transition-colors',
+          active ? 'text-muted-foreground' : 'text-muted-foreground/70',
+        )}
+      >
+        {hint}
+      </span>
+    </button>
   )
 }
 

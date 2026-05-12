@@ -373,6 +373,130 @@ function PhaseCard({ phase }: { phase: MarketPhase }) {
 }
 
 // ---------------------------------------------------------------------------
+// PhaseStepper — horizontal progressive disclosure. One phase visible at a
+// time; the stepper itself doubles as the pressure trajectory rail.
+// ---------------------------------------------------------------------------
+
+function PhaseStepper({ phases }: { phases: MarketPhase[] }) {
+  const [active, setActive] = useState(0)
+  const phase = phases[active]
+
+  return (
+    <div className="space-y-5 pt-2">
+      {/* Header */}
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <TrendingUp className="h-3.5 w-3.5 text-indigo-600" />
+          <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Market Evolution Phases
+          </span>
+          <span className="text-xs text-muted-foreground/80">
+            · Step through 2026 — 2031
+          </span>
+        </div>
+        <span className="flex items-center gap-1.5 text-[10.5px] font-medium uppercase tracking-[0.12em] text-muted-foreground/80">
+          <Gauge className="h-3 w-3" />
+          Pricing pressure trajectory
+        </span>
+      </div>
+
+      {/* Stepper — clickable phases, with connecting pressure-coloured rail */}
+      <nav aria-label="Market evolution phases" className="px-1">
+        <ol className="relative grid grid-cols-3">
+          {/* connecting line behind dots */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute left-[16.66%] right-[16.66%] top-4 h-px bg-gradient-to-r from-indigo-300 via-amber-400 to-emerald-400 opacity-60"
+          />
+          {phases.map((p, idx) => {
+            const isActive = idx === active
+            const isPast = idx < active
+            return (
+              <li key={p.key} className="relative flex flex-col items-center">
+                <button
+                  type="button"
+                  onClick={() => setActive(idx)}
+                  aria-current={isActive ? 'step' : undefined}
+                  className="group flex flex-col items-center gap-2 focus:outline-none"
+                >
+                  <span
+                    className={cn(
+                      'relative flex h-8 w-8 items-center justify-center rounded-full transition-all ring-background',
+                      isActive
+                        ? cn(
+                            'ring-[3px] shadow-sm',
+                            pressureBarTone(p.pressure),
+                          )
+                        : cn(
+                            'ring-2',
+                            isPast ? pressureBarTone(p.pressure) : 'bg-border',
+                          ),
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        'font-mono text-xs font-semibold tabular-nums',
+                        isActive || isPast ? 'text-white' : 'text-muted-foreground',
+                      )}
+                    >
+                      {idx + 1}
+                    </span>
+                  </span>
+                  <span className="flex flex-col items-center gap-0.5">
+                    <span
+                      className={cn(
+                        'text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors',
+                        isActive ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground/80',
+                      )}
+                    >
+                      {p.label}
+                    </span>
+                    <span
+                      className={cn(
+                        'font-mono text-[10.5px] tabular-nums',
+                        isActive ? 'text-muted-foreground' : 'text-muted-foreground/60',
+                      )}
+                    >
+                      {p.window}
+                    </span>
+                  </span>
+                </button>
+              </li>
+            )
+          })}
+        </ol>
+      </nav>
+
+      {/* Active phase detail — single, calm, full-width */}
+      <PhaseCard key={phase.key} phase={phase} />
+
+      {/* Step hint — calm scroll cue */}
+      <div className="flex items-center justify-between px-1 text-[11px] text-muted-foreground/70">
+        <button
+          type="button"
+          onClick={() => setActive((i) => Math.max(0, i - 1))}
+          disabled={active === 0}
+          className="inline-flex items-center gap-1 transition-colors hover:text-foreground disabled:opacity-30 disabled:hover:text-muted-foreground/70"
+        >
+          ← Previous phase
+        </button>
+        <span className="font-mono uppercase tracking-[0.14em]">
+          {active + 1} of {phases.length}
+        </span>
+        <button
+          type="button"
+          onClick={() => setActive((i) => Math.min(phases.length - 1, i + 1))}
+          disabled={active === phases.length - 1}
+          className="inline-flex items-center gap-1 transition-colors hover:text-foreground disabled:opacity-30 disabled:hover:text-muted-foreground/70"
+        >
+          Next phase →
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // MAIN — APP Strategic Position + Competitor Dynamics
 // (replaces the old Market Impact / APP Capacity / Competitor Response trio)
 // ---------------------------------------------------------------------------
@@ -685,80 +809,8 @@ function CompetitorDynamics({
         />
       </div>
 
-      {/* Market Evolution Phases — state-driven, not event-logged */}
-      <div className="space-y-4 pt-2">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <TrendingUp className="h-3.5 w-3.5 text-indigo-600" />
-            <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              Market Evolution Phases
-            </span>
-            <span className="text-xs text-muted-foreground/80">
-              · State transitions across 2026–2031
-            </span>
-          </div>
-          <span className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-muted-foreground/70">
-            Opening → Capacity Wave → Rebalancing
-          </span>
-        </div>
-
-        {/* Pressure trajectory rail — quick visual scan of how pressure evolves */}
-        <div className="rounded-md border border-border/40 bg-muted/20 px-4 py-3">
-          <div className="mb-2 flex items-center justify-between text-[10.5px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-            <span className="flex items-center gap-1.5">
-              <Gauge className="h-3 w-3" />
-              Pricing pressure trajectory
-            </span>
-            <span className="text-muted-foreground/70">Higher = more downward price risk</span>
-          </div>
-          <div className="relative h-1 w-full rounded-full bg-border/60">
-            {/* gradient fill from indigo → amber → emerald representing phase progression */}
-            <div className="absolute inset-y-0 left-0 right-0 rounded-full bg-gradient-to-r from-indigo-300 via-amber-400 to-emerald-400 opacity-60" />
-            {phases.map((phase, idx) => {
-              const left = idx === 0 ? '8%' : idx === 1 ? '50%' : '92%'
-              return (
-                <span
-                  key={phase.key}
-                  className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
-                  style={{ left }}
-                >
-                  <span
-                    className={cn(
-                      'flex h-3 w-3 items-center justify-center rounded-full ring-4 ring-background',
-                      pressureBarTone(phase.pressure),
-                    )}
-                  >
-                    <span className="h-1 w-1 rounded-full bg-white/90" />
-                  </span>
-                </span>
-              )
-            })}
-          </div>
-          <div className="mt-2 grid grid-cols-3 text-[10.5px] font-medium tabular-nums text-muted-foreground">
-            {phases.map((phase, idx) => (
-              <div
-                key={phase.key}
-                className={cn(
-                  'flex items-baseline gap-1.5',
-                  idx === 0 ? 'justify-start' : idx === 1 ? 'justify-center' : 'justify-end',
-                )}
-              >
-                <span className="uppercase tracking-wider">{phase.label}</span>
-                <span className={cn('font-semibold', pressureTextTone(phase.pressure))}>
-                  {phase.pressureLabel}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Phase cards — equal weight, state-driven */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {phases.map((phase) => (
-            <PhaseCard key={phase.key} phase={phase} />
-          ))}
-        </div>
-      </div>
+      {/* Market Evolution Phases — horizontal stepper · one phase at a time */}
+      <PhaseStepper phases={phases} />
 
       {/* Detailed yearly competitor reactions — expandable appendix */}
       <Disclosure
