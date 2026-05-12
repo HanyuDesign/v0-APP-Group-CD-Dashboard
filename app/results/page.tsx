@@ -135,7 +135,7 @@ export default function ResultsPage() {
                       Input Overview
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-h-[85vh] max-w-5xl overflow-y-auto">
+                  <DialogContent className="w-[96vw] max-w-[96vw] sm:max-w-[1400px] max-h-[90vh] overflow-y-auto p-8">
                     <DialogHeader>
                       <DialogTitle>Input Overview</DialogTitle>
                       <DialogDescription>
