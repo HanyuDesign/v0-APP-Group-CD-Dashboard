@@ -27,18 +27,9 @@ const YEARS = [2026, 2027, 2028, 2029, 2030, 2031] as const
 // ---------------------------------------------------------------------------
 
 export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
-  const { input } = result
-
-  // APP pulp capacity total (only the pulp number is consumed downstream now)
-  const appChinaPulpAdd =
-    input.appCapacity.guangxi.pulpCapacity + input.appCapacity.jiangsuFujian.pulpCapacity
-
   return (
     <div className="space-y-10">
-      <APPStrategicPosition
-        result={result}
-        appPulpAdd={appChinaPulpAdd}
-      />
+      <APPStrategicPosition result={result} />
 
       <CompetitorDynamics result={result} />
     </div>
@@ -52,20 +43,10 @@ export function PulpCapacityDetails({ result }: PulpCapacityDetailsProps) {
 
 function APPStrategicPosition({
   result,
-  appPulpAdd,
 }: {
   result: SimulationResult
-  appPulpAdd: number
 }) {
   const { input } = result
-
-  // Strategy stance derived from APP additions
-  const stance =
-    appPulpAdd > 250
-      ? { label: 'Aggressive', tone: 'bg-red-50 text-red-700 border-red-200' }
-      : appPulpAdd > 100
-        ? { label: 'Balanced', tone: 'bg-amber-50 text-amber-700 border-amber-200' }
-        : { label: 'Defensive', tone: 'bg-blue-50 text-blue-700 border-blue-200' }
 
   return (
     <Card
@@ -73,45 +54,17 @@ function APPStrategicPosition({
       className="border-border/40 bg-card/40 scroll-mt-96"
     >
       <CardHeader className="pb-2">
-        <div className="flex items-center justify-between gap-4">
-          <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-red-700">
-            <Building2 className="h-5 w-5 text-red-600" />
-            APP Capacity Outcome
-            <AIBadge size="sm" />
-          </CardTitle>
-          <span
-            className={cn(
-              'inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold',
-              stance.tone,
-            )}
-          >
-            {stance.label} stance
-          </span>
-        </div>
+        <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-red-700">
+          <Building2 className="h-5 w-5 text-red-600" />
+          APP Capacity Outcome
+          <AIBadge size="sm" />
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-5">
       {/* APP Capacity Outcome — always-visible build schedule card */}
       <div className="overflow-hidden rounded-lg border border-red-100 bg-red-50/30">
-        {/* Card header — title + stance badge */}
-        <div className="flex items-center justify-between gap-4 px-5 py-3">
-          <div className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-red-600" />
-            <h4 className="text-base font-semibold tracking-tight text-foreground">
-              APP Capacity Outcome
-            </h4>
-          </div>
-          <span
-            className={cn(
-              'inline-flex items-center rounded-full border px-2.5 py-0.5 text-[13px] font-semibold',
-              stance.tone,
-            )}
-          >
-            {stance.label}
-          </span>
-        </div>
-
         {/* Year-by-year table */}
-        <div className="overflow-x-auto border-t border-red-100/80">
+        <div className="overflow-x-auto">
           <table className="w-full text-base">
             <thead>
               <tr className="border-b border-red-100/80">
