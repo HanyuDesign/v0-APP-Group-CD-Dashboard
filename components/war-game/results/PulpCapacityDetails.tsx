@@ -560,7 +560,6 @@ function APPStrategicPosition({
   delayers: number
   expanders: number
 }) {
-  const [detailsOpen, setDetailsOpen] = useState(false)
   const { input } = result
 
   // Strategy stance derived from APP additions
@@ -665,24 +664,38 @@ function APPStrategicPosition({
         />
       </div>
 
-      {/* Expandable build schedule — appendix-style */}
-      <Disclosure
-        open={detailsOpen}
-        onToggle={() => setDetailsOpen((o) => !o)}
-        label="Capacity build schedule"
-        helper="Year-by-year APP China additions and market release"
-      >
-        <div className="overflow-x-auto rounded-md border border-border/40 bg-card/40">
+      {/* APP Capacity Outcome — always-visible build schedule card */}
+      <div className="overflow-hidden rounded-lg border border-red-100 bg-red-50/30">
+        {/* Card header — title + stance badge */}
+        <div className="flex items-center justify-between gap-4 px-5 py-3">
+          <div className="flex items-center gap-2">
+            <Building2 className="h-4 w-4 text-red-600" />
+            <h4 className="text-base font-semibold tracking-tight text-foreground">
+              APP Capacity Outcome
+            </h4>
+          </div>
+          <span
+            className={cn(
+              'inline-flex items-center rounded-full border px-2.5 py-0.5 text-[13px] font-semibold',
+              stance.tone,
+            )}
+          >
+            {stance.label}
+          </span>
+        </div>
+
+        {/* Year-by-year table */}
+        <div className="overflow-x-auto border-t border-red-100/80">
           <table className="w-full text-base">
             <thead>
-              <tr className="border-b border-border/50">
-                <th className="w-48 px-3 py-3 text-left text-base font-semibold text-foreground/80">
+              <tr className="border-b border-red-100/80">
+                <th className="w-44 px-5 py-3 text-left text-base font-semibold text-foreground/70">
                   Metric
                 </th>
                 {YEARS.map((year) => (
                   <th
                     key={year}
-                    className="px-3 py-3 text-center text-base font-semibold text-foreground/80"
+                    className="px-3 py-3 text-center text-base font-semibold text-foreground/70"
                   >
                     {year}
                   </th>
@@ -690,11 +703,12 @@ function APPStrategicPosition({
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-border/30">
-                <td className="px-3 py-3">
+              {/* APP China Capacity row — tinted */}
+              <tr className="bg-red-50/60">
+                <td className="px-5 py-3">
                   <div className="flex items-center gap-2">
                     <span className="h-2.5 w-2.5 rounded-full bg-red-600" />
-                    <span className="font-medium text-foreground">APP China capacity</span>
+                    <span className="font-semibold text-red-700">APP China Capacity</span>
                   </div>
                 </td>
                 {YEARS.map((year) => {
@@ -703,31 +717,31 @@ function APPStrategicPosition({
                     <td key={year} className="px-3 py-3 text-center">
                       <span
                         className={cn(
-                          'font-mono text-base font-semibold tabular-nums',
-                          year === 2026
-                            ? 'text-foreground'
-                            : value > 0
-                              ? 'text-emerald-600'
-                              : 'text-muted-foreground',
+                          'font-mono text-base font-bold tabular-nums',
+                          value > 0 ? 'text-red-700' : 'text-muted-foreground/60',
                         )}
                       >
-                        {year === 2026 ? value : value > 0 ? `+${value}` : '—'}
+                        {value > 0 ? value : '—'}
                       </span>
                     </td>
                   )
                 })}
               </tr>
+              {/* Market Release row — muted red */}
               <tr>
-                <td className="px-3 py-3 text-muted-foreground">Market release (70%)</td>
+                <td className="px-5 py-3 text-red-600/80">Market Release (70%)</td>
                 {YEARS.map((year) => {
                   const value = input.appCapacity.appChina[year]
                   const release = Math.round(value * 0.7)
                   return (
                     <td
                       key={year}
-                      className="px-3 py-3 text-center font-mono text-base tabular-nums text-muted-foreground"
+                      className={cn(
+                        'px-3 py-3 text-center font-mono text-base tabular-nums',
+                        release > 0 ? 'text-red-600/80' : 'text-muted-foreground/60',
+                      )}
                     >
-                      {year === 2026 ? release : release > 0 ? `+${release}` : '—'}
+                      {release > 0 ? release : '—'}
                     </td>
                   )
                 })}
@@ -735,7 +749,14 @@ function APPStrategicPosition({
             </tbody>
           </table>
         </div>
-      </Disclosure>
+
+        {/* Three summary cards at the bottom */}
+        <div className="grid grid-cols-1 gap-3 border-t border-red-100/80 bg-card/60 p-3 md:grid-cols-3">
+          <CapacitySummary label="Total Pulp Added" value={`+${appPulpAdd} kt`} />
+          <CapacitySummary label="Board Capacity" value={`+${appBoardAdd} kt`} />
+          <CapacitySummary label="Tissue Capacity" value={`+${appTissueAdd} kt`} />
+        </div>
+      </div>
     </section>
   )
 }
@@ -1122,6 +1143,15 @@ export function PulpExportReallocation({ result }: PulpCapacityDetailsProps) {
 // ===========================================================================
 // Shared sub-components
 // ===========================================================================
+
+function CapacitySummary({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-md border border-border/50 bg-card px-4 py-3 text-center">
+      <div className="text-sm text-muted-foreground">{label}</div>
+      <div className="mt-1 font-mono text-xl font-bold tabular-nums text-red-600">{value}</div>
+    </div>
+  )
+}
 
 function PositionMetric({
   label,
