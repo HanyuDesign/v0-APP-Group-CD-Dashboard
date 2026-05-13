@@ -185,7 +185,11 @@ export default function InputPage() {
         <div className="flex h-16 items-center justify-between px-6">
           <Link
             href="/"
-            aria-label="Go to APP Strategic War-Gaming Tool home"
+            aria-label="Go to APP Strategic War-Gaming Tool — start at Market Input"
+            // Same-route navigation won't remount the page component, so the
+            // currentStep state needs to be reset imperatively to send the
+            // user back to the first step.
+            onClick={() => setCurrentStep('market-input')}
             className="flex items-center gap-2 rounded-md outline-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-primary/60"
           >
             <Zap className="h-6 w-6 text-primary" />
