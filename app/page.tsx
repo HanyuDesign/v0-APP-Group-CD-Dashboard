@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
@@ -182,10 +183,18 @@ export default function InputPage() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex h-16 items-center justify-between px-6">
-          <div className="flex items-center gap-2">
+          <Link
+            href="/"
+            aria-label="Go to APP Strategic War-Gaming Tool — start at Market Input"
+            // Same-route navigation won't remount the page component, so the
+            // currentStep state needs to be reset imperatively to send the
+            // user back to the first step.
+            onClick={() => setCurrentStep('market-input')}
+            className="flex items-center gap-2 rounded-md outline-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-primary/60"
+          >
             <Zap className="h-6 w-6 text-primary" />
             <h1 className="text-xl font-bold">APP Strategic War-Gaming Tool</h1>
-          </div>
+          </Link>
         </div>
       </header>
 
