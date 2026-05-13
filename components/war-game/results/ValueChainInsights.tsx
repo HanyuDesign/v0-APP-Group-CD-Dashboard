@@ -99,7 +99,7 @@ export function ValueChainInsights({ result, activeStage, onStageChange, stages 
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Lightbulb className="h-5 w-5 text-indigo-600" />
@@ -108,7 +108,9 @@ export function ValueChainInsights({ result, activeStage, onStageChange, stages 
         <p className="text-base text-muted-foreground ml-auto">Click a stage to explore details</p>
       </div>
 
-      {/* Interactive Value Chain Cards */}
+      {/* Interactive Value Chain Cards — consulting-dashboard density:
+          compact padding, tight inter-row rhythm, but the primary metric
+          (text-2xl) and status badge keep their visual weight. */}
       <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] gap-3 items-stretch">
         {stages.map((stage, index) => {
           const isActive = activeStage === stage.id
@@ -123,7 +125,9 @@ export function ValueChainInsights({ result, activeStage, onStageChange, stages 
               <button
                 onClick={() => onStageChange(stage.id)}
                 className={cn(
-                  'rounded-lg border-2 p-4 text-left transition-all',
+                  // Compressed vertical padding (py-2.5) keeps the card dense
+                  // while px-4 preserves comfortable horizontal breathing room.
+                  'rounded-lg border-2 px-4 py-2.5 text-left transition-all',
                   colors.border,
                   colors.bg,
                   isActive ? 'shadow-md ring-2 ring-offset-2' : 'hover:shadow-sm hover:border-border',
@@ -132,10 +136,10 @@ export function ValueChainInsights({ result, activeStage, onStageChange, stages 
                   isActive && stage.id === 'downstream' && 'ring-purple-200'
                 )}
               >
-                {/* Header */}
-                <div className="flex items-center gap-2 mb-3">
+                {/* Header — tighter icon chip + reduced gap to metric block */}
+                <div className="flex items-center gap-2 mb-1.5">
                   <div className={cn(
-                    'p-1.5 rounded-lg',
+                    'p-1 rounded-md',
                     isActive && stage.id === 'forestry' && 'bg-green-100',
                     isActive && stage.id === 'pulp' && 'bg-blue-100',
                     isActive && stage.id === 'downstream' && 'bg-purple-100',
@@ -143,37 +147,41 @@ export function ValueChainInsights({ result, activeStage, onStageChange, stages 
                   )}>
                     <Icon className={cn('h-4 w-4', colors.icon)} />
                   </div>
-                  <div>
+                  <div className="leading-tight">
                     <h4 className={cn(
-                      'font-semibold text-base',
+                      'font-semibold text-base leading-tight',
                       isActive ? 'text-foreground' : 'text-muted-foreground'
                     )}>
                       {stage.label}
                     </h4>
-                    <p className="text-sm text-muted-foreground">{stage.description}</p>
+                    <p className="text-sm text-muted-foreground leading-snug">{stage.description}</p>
                   </div>
                 </div>
 
-                {/* Metrics */}
-                <div className="space-y-2">
+                {/* Metrics — primary value stays text-2xl bold; status badge
+                    keeps semibold weight but with tighter padding so it no
+                    longer pads the row vertically. */}
+                <div className="space-y-1">
                   <div className="flex items-baseline justify-between gap-2">
                     <span className={cn(
-                      'font-mono font-bold text-2xl leading-tight tracking-tight tabular-nums',
+                      'font-mono font-bold text-2xl leading-none tracking-tight tabular-nums',
                       isActive ? 'text-foreground' : 'text-muted-foreground'
                     )}>
                       {data.primaryValue}
                     </span>
                     <span className={cn(
-                      'px-2.5 py-1 rounded text-base font-semibold flex-shrink-0',
+                      'px-2 py-0.5 rounded text-sm font-semibold flex-shrink-0 leading-snug',
                       getStatusColor(data.status, isActive)
                     )}>
                       {data.primaryMetric}
                     </span>
                   </div>
-                  
-                  {/* Insight preview */}
+
+                  {/* Insight preview — kept at base size for readability but
+                      with snug leading and a one-line clamp to remove the
+                      tallest variable-height element. */}
                   <p className={cn(
-                    'text-base leading-relaxed line-clamp-2',
+                    'text-sm leading-snug line-clamp-1',
                     isActive ? 'text-muted-foreground' : 'text-muted-foreground/70'
                   )}>
                     {data.insight}
